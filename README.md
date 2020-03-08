@@ -35,7 +35,7 @@ batsim --enable-dynamic-jobs -e output/out -p platforms/two_nodes_bb_pfs.xml -w 
 ```
 - Using Nix
 ```
-pybatsim scheduler/burstBufferScheduler.py
+pybatsim schedulers/burstBufferScheduler.py
 ```
 ### Analisys
 ```
