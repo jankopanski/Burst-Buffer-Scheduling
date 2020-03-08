@@ -1,0 +1,15 @@
+.idea/
+.DS_Store
+
+__pycache__/
+*.py[cod]
+*$py.class
+.ipynb_checkpoints
+
+*_jobs.csv
+*_schedule.csv
+*_schedule.trace
+*_pstate_changes.csv
+*_machine_states.csv
+
+pybatsim/

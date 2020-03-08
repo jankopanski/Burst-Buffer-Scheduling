@@ -1,0 +1,61 @@
+<?xml version='1.0'?>
+<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
+<platform version="4.1">
+    <zone id="root_zone" routing="Full">
+
+        <host id="master_host" speed="1Gf"/>
+        <host id="first_host" speed="1Gf"/>
+        <host id="first_host_disk" speed="0">
+            <prop id="role" value="storage"/>
+        </host>
+        <host id="second_host" speed="1Gf"/>
+        <host id="second_host_disk" speed="0">
+            <prop id="role" value="storage"/>
+        </host>
+        <host id="pfs" speed="0">
+            <prop id="role" value="storage"/>
+        </host>
+
+        <link id="link_1" bandwidth="1Gbps" latency="100us"/>
+        <link id="link_2" bandwidth="1Gbps" latency="100us"/>
+        <link id="link_3" bandwidth="1Gbps" latency="100us"/>
+        <link id="link_4" bandwidth="1Gbps" latency="100us"/>
+        <link id="link_5" bandwidth="1Gbps" latency="100us"/>
+        <link id="link_6" bandwidth="1Gbps" latency="100us"/>
+        <link id="disk_read_1" bandwidth="450MBps" latency="500us"/>
+        <link id="disk_read_2" bandwidth="450MBps" latency="500us"/>
+        <link id="disk_write_1" bandwidth="225MBps" latency="500us"/>
+        <link id="disk_write_2" bandwidth="225MBps" latency="500us"/>
+        <link id="loopback" bandwidth="1Gbps" latency="15us" sharing_policy="FATPIPE"/>
+
+        <route src="master_host" dst="master_host"><link_ctn id="loopback"/></route>
+        <route src="first_host" dst="first_host"><link_ctn id="loopback"/></route>
+        <route src="second_host" dst="second_host"><link_ctn id="loopback"/></route>
+        <route src="pfs" dst="pfs"><link_ctn id="loopback"/></route>
+        <route src="master_host" dst="first_host"><link_ctn id="link_1"/></route>
+        <route src="master_host" dst="second_host"><link_ctn id="link_2"/></route>
+        <route src="master_host" dst="pfs"><link_ctn id="link_3"/></route>
+        <route src="first_host" dst="second_host"><link_ctn id="link_4"/></route>
+        <route src="first_host" dst="pfs"><link_ctn id="link_5"/></route>
+        <route src="second_host" dst="pfs"><link_ctn id="link_6"/></route>
+        <route src="first_host_disk" dst="first_host" symmetrical="NO"><link_ctn id="disk_read_1"/></route>
+        <route src="first_host" dst="first_host_disk" symmetrical="NO"><link_ctn id="disk_write_1"/></route>
+        <route src="second_host_disk" dst="second_host" symmetrical="NO"><link_ctn id="disk_read_2"/></route>
+        <route src="second_host" dst="second_host_disk" symmetrical="NO"><link_ctn id="disk_write_2"/></route>
+
+        <route src="first_host_disk" dst="master_host" symmetrical="NO"><link_ctn id="disk_read_1"/><link_ctn id="link_1"/></route>
+        <route src="first_host_disk" dst="second_host" symmetrical="NO"><link_ctn id="disk_read_1"/><link_ctn id="link_4"/></route>
+        <route src="first_host_disk" dst="pfs" symmetrical="NO"><link_ctn id="disk_read_1"/><link_ctn id="link_5"/></route>
+        <route src="master_host" dst="first_host_disk" symmetrical="NO"><link_ctn id="link_1"/><link_ctn id="disk_write_1"/></route>
+        <route src="second_host" dst="first_host_disk" symmetrical="NO"><link_ctn id="link_4"/><link_ctn id="disk_write_1"/></route>
+        <route src="pfs" dst="first_host_disk" symmetrical="NO"><link_ctn id="link_5"/><link_ctn id="disk_write_1"/></route>
+
+        <route src="second_host_disk" dst="master_host" symmetrical="NO"><link_ctn id="disk_read_2"/><link_ctn id="link_2"/></route>
+        <route src="second_host_disk" dst="first_host" symmetrical="NO"><link_ctn id="disk_read_2"/><link_ctn id="link_4"/></route>
+        <route src="second_host_disk" dst="pfs" symmetrical="NO"><link_ctn id="disk_read_2"/><link_ctn id="link_6"/></route>
+        <route src="master_host" dst="second_host_disk" symmetrical="NO"><link_ctn id="link_2"/><link_ctn id="disk_write_2"/></route>
+        <route src="first_host" dst="second_host_disk" symmetrical="NO"><link_ctn id="link_4"/><link_ctn id="disk_write_2"/></route>
+        <route src="pfs" dst="second_host_disk" symmetrical="NO"><link_ctn id="link_6"/><link_ctn id="disk_write_2"/></route>
+
+    </zone>
+</platform>

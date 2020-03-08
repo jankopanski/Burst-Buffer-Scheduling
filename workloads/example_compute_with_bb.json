@@ -1,0 +1,29 @@
+{
+    "nb_res": 2,
+
+    "jobs": [
+        {"id": 0, "subtime": 0, "walltime": 100, "res": 1, "profile": "compute_homogeneous"},
+        {"id": 1, "subtime": 0, "walltime": 100, "res": 1, "profile": "compute_homogeneous"},
+        {"id": 2, "subtime": 0, "walltime": 100, "res": 2, "profile": "compute_homogeneous"}
+    ],
+
+    "profiles": {
+        "delay": {
+            "type": "delay",
+            "delay": 10
+        },
+        "compute": {
+            "type": "parallel",
+            "cpu": [1e10, 1e10],
+            "com": [0, 0,
+                    0, 0],
+            "bb": 1e9
+        },
+        "compute_homogeneous": {
+            "type": "parallel_homogeneous",
+            "cpu": 1e10,
+            "com": 0,
+            "bb": 1e9
+        }
+    }
+}
