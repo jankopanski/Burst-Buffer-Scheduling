@@ -4,10 +4,12 @@
 platform=$1
 workload=$2
 
+user_id=$(id -u)
+group_id=$(id -g)
 if [[ "$OSTYPE" == "linux-gnu" ]]; then
   set -x; docker run --rm \
     --net host \
-    -u $(id -u):$(id -g) \
+    -u $user_id:$group_id \
     -v $PWD:/data \
     oarteam/batsim:3.1.0 \
     --enable-dynamic-jobs -q \
@@ -16,7 +18,7 @@ if [[ "$OSTYPE" == "linux-gnu" ]]; then
 elif [[ "$OSTYPE" == "darwin"* ]]; then
   set -x; docker run --rm \
     --net host \
-    -u $(id -u):$(id -g) \
+    -u $user_id:$group_id \
     -v $PWD:/data \
     oarteam/batsim:3.1.0 \
     -s tcp://host.docker.internal:28000 \
