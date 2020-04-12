@@ -4,7 +4,7 @@ import math
 from random import gauss, lognormvariate, weibullvariate
 from json import dump
 
-output_file = '../workloads/generated_cluster128_jobs100.json'
+output_file = '../workloads/generated_cluster30_jobs100.json'
 
 # Constants
 GFLOPS = 10**9
@@ -12,22 +12,22 @@ MB = 10**6
 GB = MB*10**3
 
 # Platform parameters
-NB_RES = 128
+NB_RES = 30
 
 # Interval times between jobs according to Weibull distribution.
 # Time in seconds
 # Scale
-TIME_DISTRIBUTION_LAMBDA = 10
+TIME_DISTRIBUTION_LAMBDA = 100
 # Shape
 TIME_DISTRIBUTION_K = 1.5
 
 # Workload parameters
 NUM_JOBS = 100
 # Nodes per job
-EXPECTED_LOG_NUM_NODES = 2
+EXPECTED_LOG_NUM_NODES = 0.8
 STDDEV_LOG_NUM_NODES = 1
 # Flops
-EXPECTED_COMPUTATIONS_PER_NODE = 100 * GFLOPS
+EXPECTED_COMPUTATIONS_PER_NODE = 10 * GFLOPS
 STDDEV_COMPUTATIONS_PER_NODE = EXPECTED_COMPUTATIONS_PER_NODE * 0.2
 # Bytes. Note that platform bandwidth is given in Megabites/s
 EXPECTED_COMMUNICATION_PER_NODE = 10 * GB
@@ -71,7 +71,7 @@ for i in range(NUM_JOBS):
     job = {
         'id': i,
         'subtime': release_time,
-        'walltime': 1000,
+        'walltime': 2000,
         'res': num_nodes,
         'profile': profile_id,
     }

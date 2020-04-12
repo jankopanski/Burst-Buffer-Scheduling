@@ -51,6 +51,9 @@ jupyter notebook analysis/single_output.ipynb
 - https://gitlab.inria.fr/batsim/pybatsim
 ### Platforms
 - https://simgrid.org/doc/latest/platform.html
+- http://simgrid.gforge.inria.fr/simgrid/3.20/doc/platform.html
+- https://simgrid.org/tutorials/simgrid-smpi-101.pdf
+- https://framagit.org/simgrid/simgrid/tree/master/examples/platforms
 - https://gitlab.inria.fr/batsim/bebida-on-batsim/tree/master/experiments/platforms
 ### Workloads
 - https://www.cs.huji.ac.il/labs/parallel/workload/

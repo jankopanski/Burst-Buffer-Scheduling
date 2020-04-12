@@ -1,0 +1,86 @@
+<?xml version='1.0'?>
+<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
+<!--This platform is not working due to the missing routing between master host and disks-->
+<platform version="4.1">
+    <zone id="dragonfly" routing="Full">
+        <cluster id="group_1" prefix="node_1_" suffix="" radical="0-1" speed="1Gf" bw="125MBps" lat="50us"/>
+        <cluster id="group_2" prefix="node_2_" suffix="" radical="0-1" speed="1Gf" bw="125MBps" lat="50us"/>
+
+        <zone id="master_zone" routing="None">
+            <host id="master" speed="0">
+                <prop id="role" value="master"/>
+            </host>
+        </zone>
+
+        <zone id="pfs_zone" routing="None">
+            <host id="pfs" speed="0">
+                <prop id="role" value="storage"/>
+            </host>
+        </zone>
+
+        <zone id="group_1_disk_zone" routing="None">
+            <host id="group_1_disk" speed="0">
+                <prop id="role" value="storage"/>
+            </host>
+        </zone>
+
+        <zone id="group_2_disk_zone" routing="None">
+            <host id="group_2_disk" speed="0">
+                <prop id="role" value="storage"/>
+            </host>
+        </zone>
+
+        <link id="link_master" bandwidth="1Gbps" latency="100us" sharing_policy="FATPIPE"/>
+        <link id="link_1_2" bandwidth="1Gbps" latency="100us"/>
+        <link id="link_pfs_1" bandwidth="1Gbps" latency="100us"/>
+        <link id="link_pfs_2" bandwidth="1Gbps" latency="100us"/>
+        <link id="disk_1_read" bandwidth="450MBps" latency="500us"/>
+        <link id="disk_1_write" bandwidth="225MBps" latency="500us"/>
+        <link id="disk_2_read" bandwidth="450MBps" latency="500us"/>
+        <link id="disk_2_write" bandwidth="225MBps" latency="500us"/>
+
+        <zoneRoute src="group_1" dst="group_2" gw_src="node_1_group_1_router" gw_dst="node_2_group_2_router">
+            <link_ctn id="link_1_2"/>
+        </zoneRoute>
+
+        <zoneRoute src="master_zone" dst="group_1" gw_src="master" gw_dst="node_1_group_1_router">
+            <link_ctn id="link_master"/>
+        </zoneRoute>
+        <zoneRoute src="master_zone" dst="group_2" gw_src="master" gw_dst="node_2_group_2_router">
+            <link_ctn id="link_master"/>
+        </zoneRoute>
+
+        <zoneRoute src="pfs_zone" dst="group_1" gw_src="pfs" gw_dst="node_1_group_1_router">
+            <link_ctn id="link_pfs_1"/>
+        </zoneRoute>
+        <zoneRoute src="pfs_zone" dst="group_2" gw_src="pfs" gw_dst="node_2_group_2_router">
+            <link_ctn id="link_pfs_2"/>
+        </zoneRoute>
+
+        <zoneRoute src="group_1_disk_zone" dst="group_1" gw_src="group_1_disk" gw_dst="node_1_group_1_router" symmetrical="NO">
+            <link_ctn id="disk_1_read"/>
+        </zoneRoute>
+        <zoneRoute src="group_1" dst="group_1_disk_zone" gw_src="node_1_group_1_router" gw_dst="group_1_disk" symmetrical="NO">
+            <link_ctn id="disk_1_write"/>
+        </zoneRoute>
+        <zoneRoute src="group_2_disk_zone" dst="group_2" gw_src="group_2_disk" gw_dst="node_2_group_2_router" symmetrical="NO">
+            <link_ctn id="disk_2_read"/>
+        </zoneRoute>
+        <zoneRoute src="group_2" dst="group_2_disk_zone" gw_src="node_2_group_2_router" gw_dst="group_2_disk" symmetrical="NO">
+            <link_ctn id="disk_2_write"/>
+        </zoneRoute>
+
+        <zoneRoute src="group_1_disk_zone" dst="pfs_zone" gw_src="group_1_disk" gw_dst="pfs" symmetrical="NO">
+            <link_ctn id="disk_1_read"/><link_ctn id="link_pfs_1"/>
+        </zoneRoute>
+        <zoneRoute src="pfs_zone" dst="group_1_disk_zone" gw_src="pfs" gw_dst="group_1_disk" symmetrical="NO">
+            <link_ctn id="link_pfs_1"/><link_ctn id="disk_1_write"/>
+        </zoneRoute>
+        <zoneRoute src="group_2_disk_zone" dst="pfs_zone" gw_src="group_2_disk" gw_dst="pfs" symmetrical="NO">
+            <link_ctn id="disk_2_read"/><link_ctn id="link_pfs_1"/>
+        </zoneRoute>
+        <zoneRoute src="pfs_zone" dst="group_2_disk_zone" gw_src="pfs" gw_dst="group_2_disk" symmetrical="NO">
+            <link_ctn id="link_pfs_1"/><link_ctn id="disk_2_write"/>
+        </zoneRoute>
+    </zone>
+</platform>
