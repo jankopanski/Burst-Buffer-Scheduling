@@ -1,6 +1,7 @@
 from typing import Optional, List, Dict, Set
 from collections import Counter
 from batsim.sched.resource import Resource, Resources
+from batsim.sched.alloc import Allocation
 from batsim.sched.job import Job
 from batsim.sched.scheduler import Scheduler
 from batsim.sched.algorithms.filling import filler_sched
@@ -91,6 +92,9 @@ class MySchedFcfs(Scheduler):
         # self._filler_schedule_prim()
         self._filler_schedule()
 
+    def on_job_submission(self, job):
+        self._validate_job(job)
+
     def on_job_completion(self, job):
         self._free_burst_buffers(job)
 
@@ -108,44 +112,79 @@ class MySchedFcfs(Scheduler):
             if assigned_compute_resources:
                 job.schedule(assigned_compute_resources)
 
-    def _filler_schedule(self):
-        for job in self.jobs.open:
+    def _filler_schedule(self, jobs=None, abort_on_first_nonfitting=True):
+        if jobs is None:
+            jobs = self.jobs.runnable
+
+        for job in jobs:
             if not job.runnable:
                 self._logger.info('Job {} is not runnable', job.id)
                 continue
-            if job.requested_resources > len(self.resources.compute):
-                job.reject("Too few resources available in the system (overall)")
-                continue
-            # Requested space for a single node must fit within single burst buffer.
-            if job.profile.bb > self.BURST_BUFFER_CAPACITY_BYTES:
-                job.reject('Too much requested burst buffer space for a single node.')
-                continue
-            # Number of how many times job.profile.bb could fit as a whole in total burst buffer
-            # space.
-            if job.requested_resources > (self.BURST_BUFFER_CAPACITY_BYTES // job.profile.bb) * \
-                    len(self._burst_buffers):
-                job.reject('Too much total requested burst buffer space.')
-                continue
 
-            start = self.time
-            end = start + job.requested_time
+            start_time = self.time
+            end_time = start_time + job.requested_time
             assigned_compute_resources = self.resources.compute.find_sufficient_resources_for_job(
                 job, filter=consecutive_resources_filter)
             if assigned_compute_resources:
                 assigned_burst_buffers = self._find_sufficient_burst_buffers(
                     assigned_compute_resources,
-                    start,
-                    end,
+                    start_time,
+                    end_time,
                     job.profile.bb)
-                if assigned_burst_buffers is not None:
+                if assigned_burst_buffers is None:
+                    # Abort due to the lack of available burst buffer space.
+                    if abort_on_first_nonfitting:
+                        break
+                else:
                     job.schedule(assigned_compute_resources)
-                    self._allocate_burst_buffers(start, end, assigned_burst_buffers, job)
+                    self._allocate_burst_buffers(start_time, end_time, assigned_burst_buffers, job)
+            elif abort_on_first_nonfitting:
+                # Abort due to the lack of available compute resources.
+                break
 
-    def _backfill_schedule(self):
+    def _backfill_schedule(self, backfilling_reservation_depth=1):
         self._filler_schedule()
 
         if not self.jobs.open:
             return
+        assert len(self.jobs.open) == len(self.jobs.runnable), 'Jobs do not have any dependencies.'
+
+        reserved_jobs = self.jobs.runnable[:backfilling_reservation_depth]
+        remaining_jobs = self.jobs.runnable[backfilling_reservation_depth:]
+
+        # Allocate compute and storage resources for reserved jobs in the future.
+        temporary_allocations = []
+        for job in reserved_jobs:
+            start_time, assigned_compute_resources = self.resources.compute.find_with_earliest_start_time(
+                job,
+                allow_future_allocations=True,
+                filter=consecutive_resources_filter,
+                time=self.time
+            )
+            end_time = start_time + job.requested_time
+            assert assigned_compute_resources
+            assigned_burst_buffers = self._find_sufficient_burst_buffers(
+                assigned_compute_resources,
+                start_time,
+                end_time,
+                job.profile.bb)
+            if assigned_burst_buffers is None:
+                break
+            compute_allocation = Allocation(start_time,
+                                            resources=assigned_compute_resources,
+                                            job=job)
+            compute_allocation.allocate_all(self)
+            self._allocate_burst_buffers(start_time, end_time, assigned_burst_buffers, job)
+            temporary_allocations.append(compute_allocation)
+
+        # Allocation for reserved jobs was successful.
+        if len(temporary_allocations) == len(reserved_jobs):
+            self._filler_schedule(jobs=remaining_jobs, abort_on_first_nonfitting=False)
+        
+        for temporary_compute_allocation in temporary_allocations:
+            job = temporary_compute_allocation.job
+            self._free_burst_buffers(job)
+            temporary_compute_allocation.free()
 
     def _find_sufficient_burst_buffers(self,
                                        assigned_compute_resources: Resources,
@@ -188,6 +227,22 @@ class MySchedFcfs(Scheduler):
             burst_buffer = self._burst_buffers[burst_buffer_id]
             burst_buffer.free(job)
         del self._burst_buffer_allocations[job.id]
+
+    def _validate_job(self, job: Job) -> bool:
+        if job.requested_resources > len(self.resources.compute):
+            job.reject("Too few resources available in the system (overall)")
+            return False
+        # Requested space for a single node must fit within single burst buffer.
+        if job.profile.bb > self.BURST_BUFFER_CAPACITY_BYTES:
+            job.reject('Too much requested burst buffer space for a single node.')
+            return False
+        # Number of how many times job.profile.bb could fit as a whole in total burst buffer
+        # space.
+        if job.requested_resources > (self.BURST_BUFFER_CAPACITY_BYTES // job.profile.bb) * \
+                len(self._burst_buffers):
+            job.reject('Too much total requested burst buffer space.')
+            return False
+        return True
 
     def _create_burst_buffer_proximity(self):
         """Compute resource id to burst buffer id proximity mapping for the Dragonfly topology."""
