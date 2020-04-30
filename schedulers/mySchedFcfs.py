@@ -1,9 +1,11 @@
 from typing import Optional, List, Dict, Set
+from collections import Counter
 from batsim.sched.resource import Resource, Resources
 from batsim.sched.job import Job
 from batsim.sched.scheduler import Scheduler
 from batsim.sched.algorithms.filling import filler_sched
 from batsim.sched.algorithms.utils import consecutive_resources_filter
+from intervaltree import Interval, IntervalTree
 
 
 class StorageResource(Resource):
@@ -17,28 +19,28 @@ class StorageResource(Resource):
         super().__init__(scheduler, name, id, resources_list,
                          resource_sharing=True)
         self._capacity = capacity_bytes
-        self._available_space = capacity_bytes
-        self._allocations: Dict[int, int] = {}  # job_id -> num_bytes
+        self._job_allocations: Dict[int, Interval] = {}  # job_id -> [(start, end, num_bytes)]
+        self._interval_tree = IntervalTree()
 
-    @property
-    def available_space(self):
-        return self._available_space
+    def available_space(self, start: float, end: float) -> int:
+        """Available space in the storage resource in a time range (start, end)."""
+        allocated_space = sum(interval.data for interval in self._interval_tree[start:end])
+        assert allocated_space < self._capacity
+        return self._capacity - allocated_space
 
-    @available_space.setter
-    def available_space(self, num_bytes: int):
-        assert num_bytes >= 0
-        self._available_space = num_bytes
-
-    def allocate(self, num_bytes: int, job: Job):
-        self.available_space -= num_bytes
-        if job.id in self._allocations:
-            self._allocations[job.id] += num_bytes
-        else:
-            self._allocations[job.id] = num_bytes
+    def allocate(self, start: float, end: float, num_bytes: int, job: Job):
+        assert self._scheduler.time <= start <= end
+        assert num_bytes > 0
+        # There should be only one interval per job.
+        assert job.id not in self._job_allocations
+        interval = Interval(start, end, num_bytes)
+        self._job_allocations[job.id] = interval
+        self._interval_tree.add(interval)
 
     def free(self, job: Job):
-        self.available_space += self._allocations[job.id]
-        del self._allocations[job.id]
+        interval = self._job_allocations[job.id]
+        self._interval_tree.remove(interval)
+        del self._job_allocations[job.id]
 
     def find_first_time_to_fit_job(self, job, time=None,
                                    future_reservation=False):
@@ -63,7 +65,7 @@ class MySchedFcfs(Scheduler):
         super().__init__(options=options)
         self._pfs_id: int
         self._burst_buffers = Resources()
-        self._burst_buffer_allocations: Dict[int, Set[int]] = {}  # job.id -> burst_buffer_ids
+        self._burst_buffer_allocations: Dict[int, List[int]] = {}  # job.id -> burst_buffer_ids
         # compute_node_id -> [chassis_bb_id, group_bb_id, all_bb_id]
         self._burst_buffer_proximity: Dict[int, List[List[int]]]
 
@@ -125,21 +127,34 @@ class MySchedFcfs(Scheduler):
                 job.reject('Too much total requested burst buffer space.')
                 continue
 
+            start = self.time
+            end = start + job.requested_time
             assigned_compute_resources = self.resources.compute.find_sufficient_resources_for_job(
                 job, filter=consecutive_resources_filter)
             if assigned_compute_resources:
                 assigned_burst_buffers = self._find_sufficient_burst_buffers(
-                    assigned_compute_resources, job.profile.bb)
+                    assigned_compute_resources,
+                    start,
+                    end,
+                    job.profile.bb)
                 if assigned_burst_buffers is not None:
                     job.schedule(assigned_compute_resources)
-                    self._allocate_burst_buffers(job, assigned_burst_buffers)
+                    self._allocate_burst_buffers(start, end, assigned_burst_buffers, job)
+
+    def _backfill_schedule(self):
+        self._filler_schedule()
+
+        if not self.jobs.open:
+            return
 
     def _find_sufficient_burst_buffers(self,
                                        assigned_compute_resources: Resources,
+                                       start: float,
+                                       end: float,
                                        requested_space: int) -> Optional[Dict[int, int]]:
         """Returns a mapping compute_resource_id -> burst_buffer_id."""
         assigned_burst_buffers = {}
-        available_space = {burst_buffer.id: burst_buffer.available_space
+        available_space = {burst_buffer.id: burst_buffer.available_space(start, end)
                            for burst_buffer in self._burst_buffers}
         for compute_resource in assigned_compute_resources:
             was_burst_buffer_assigned = False
@@ -156,11 +171,17 @@ class MySchedFcfs(Scheduler):
             return assigned_burst_buffers
         return None
 
-    def _allocate_burst_buffers(self, job: Job, assigned_burst_buffers: Dict[int, int]):
-        for compute_resource_id, burst_buffer_id in assigned_burst_buffers.items():
+    def _allocate_burst_buffers(self,
+                                start: float,
+                                end: float,
+                                assigned_burst_buffers: Dict[int, int],
+                                job: Job):
+        burst_buffer_id_counter = Counter(assigned_burst_buffers.values())
+        for burst_buffer_id, count in burst_buffer_id_counter.items():
             burst_buffer = self._burst_buffers[burst_buffer_id]
-            burst_buffer.allocate(job.profile.bb, job)
-        self._burst_buffer_allocations[job.id] = set(assigned_burst_buffers.values())
+            requested_space = count * job.profile.bb
+            burst_buffer.allocate(start, end, requested_space, job)
+        self._burst_buffer_allocations[job.id] = burst_buffer_id_counter.keys()
 
     def _free_burst_buffers(self, job):
         for burst_buffer_id in self._burst_buffer_allocations[job.id]:
