@@ -26,12 +26,12 @@ class StorageResource(Resource):
     def available_space(self, start: float, end: float) -> int:
         """Available space in the storage resource in a time range (start, end)."""
         allocated_space = sum(interval.data for interval in self._interval_tree[start:end])
-        assert allocated_space < self._capacity
+        assert allocated_space <= self._capacity
         return self._capacity - allocated_space
 
     def allocate(self, start: float, end: float, num_bytes: int, job: Job):
         assert self._scheduler.time <= start <= end
-        assert num_bytes > 0
+        assert 0 < num_bytes <= self.available_space(start, end)
         # There should be only one interval per job.
         assert job.id not in self._job_allocations
         interval = Interval(start, end, num_bytes)
@@ -56,7 +56,7 @@ class StorageResource(Resource):
 # id is an integer assigned by Batsim to a node.
 # There exists a mapping between ids and node_ids.
 class MySchedFcfs(Scheduler):
-    BURST_BUFFER_CAPACITY_GB = 2
+    BURST_BUFFER_CAPACITY_GB = 5
     NUM_GROUPS, NUM_CHASSIS, NUM_ROUTERS, NUM_NODES_PER_ROUTER = 3, 2, 3, 2
     BURST_BUFFER_CAPACITY_BYTES = BURST_BUFFER_CAPACITY_GB * 10 ** 9
     NUM_NODES = NUM_GROUPS * NUM_CHASSIS * NUM_ROUTERS * NUM_NODES_PER_ROUTER
@@ -90,7 +90,8 @@ class MySchedFcfs(Scheduler):
     def schedule(self):
         # MySchedFcfsFun(self)
         # self._filler_schedule_prim()
-        self._filler_schedule()
+        # self._filler_schedule()
+        self._backfill_schedule()
 
     def on_job_submission(self, job):
         self._validate_job(job)
@@ -180,7 +181,7 @@ class MySchedFcfs(Scheduler):
         # Allocation for reserved jobs was successful.
         if len(temporary_allocations) == len(reserved_jobs):
             self._filler_schedule(jobs=remaining_jobs, abort_on_first_nonfitting=False)
-        
+
         for temporary_compute_allocation in temporary_allocations:
             job = temporary_compute_allocation.job
             self._free_burst_buffers(job)
