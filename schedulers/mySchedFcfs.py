@@ -25,9 +25,20 @@ class StorageResource(Resource):
 
     def available_space(self, start: float, end: float) -> int:
         """Available space in the storage resource in a time range (start, end)."""
-        allocated_space = sum(interval.data for interval in self._interval_tree[start:end])
-        assert allocated_space <= self._capacity
-        return self._capacity - allocated_space
+        intervals = self._interval_tree[start:end]
+        interval_starts = [(interval.begin, interval.data) for interval in intervals]
+        interval_ends = [(interval.end, -interval.data) for interval in intervals]
+        interval_points = sorted(interval_starts + interval_ends)  # (time, value)
+
+        # Compute max of prefix sum
+        max_allocated_space = 0
+        curr_allocated_space = 0
+        for _, value in interval_points:
+            curr_allocated_space += value
+            max_allocated_space = max(max_allocated_space, curr_allocated_space)
+
+        assert max_allocated_space <= self._capacity
+        return self._capacity - max_allocated_space
 
     def allocate(self, start: float, end: float, num_bytes: int, job: Job):
         assert self._scheduler.time <= start <= end
@@ -55,6 +66,7 @@ class StorageResource(Resource):
 # node_id is an id of the node from the platform file. It is extracted from the name.
 # id is an integer assigned by Batsim to a node.
 # There exists a mapping between ids and node_ids.
+# node_ids are sorted by Batsim lexicographically.
 class MySchedFcfs(Scheduler):
     BURST_BUFFER_CAPACITY_GB = 5
     NUM_GROUPS, NUM_CHASSIS, NUM_ROUTERS, NUM_NODES_PER_ROUTER = 3, 2, 3, 2
@@ -89,7 +101,6 @@ class MySchedFcfs(Scheduler):
 
     def schedule(self):
         # MySchedFcfsFun(self)
-        # self._filler_schedule_prim()
         # self._filler_schedule()
         self._backfill_schedule()
 
@@ -99,20 +110,6 @@ class MySchedFcfs(Scheduler):
     def on_job_completion(self, job):
         self._free_burst_buffers(job)
 
-    def _filler_schedule_prim(self):
-        for job in self.jobs.open:
-            if not job.runnable:
-                self._logger.info('Job {} is not runnable', job.id)
-                continue
-            if job.requested_resources > len(self.resources.compute):
-                job.reject("Too few resources available in the system (overall)")
-                continue
-
-            assigned_compute_resources = self.resources.compute.find_sufficient_resources_for_job(
-                job, filter=consecutive_resources_filter)
-            if assigned_compute_resources:
-                job.schedule(assigned_compute_resources)
-
     def _filler_schedule(self, jobs=None, abort_on_first_nonfitting=True):
         if jobs is None:
             jobs = self.jobs.runnable
@@ -121,26 +118,15 @@ class MySchedFcfs(Scheduler):
             if not job.runnable:
                 self._logger.info('Job {} is not runnable', job.id)
                 continue
-
-            start_time = self.time
-            end_time = start_time + job.requested_time
-            assigned_compute_resources = self.resources.compute.find_sufficient_resources_for_job(
-                job, filter=consecutive_resources_filter)
-            if assigned_compute_resources:
-                assigned_burst_buffers = self._find_sufficient_burst_buffers(
-                    assigned_compute_resources,
-                    start_time,
-                    end_time,
-                    job.profile.bb)
-                if assigned_burst_buffers is None:
-                    # Abort due to the lack of available burst buffer space.
-                    if abort_on_first_nonfitting:
-                        break
-                else:
-                    job.schedule(assigned_compute_resources)
-                    self._allocate_burst_buffers(start_time, end_time, assigned_burst_buffers, job)
+            assigned_resources = self._find_all_resources(job)
+            if assigned_resources:
+                assigned_compute_resources, assigned_burst_buffers = assigned_resources
+                self._allocate_burst_buffers(self.time,
+                                             self.time + job.requested_time,
+                                             assigned_burst_buffers,
+                                             job)
+                job.schedule(assigned_compute_resources)
             elif abort_on_first_nonfitting:
-                # Abort due to the lack of available compute resources.
                 break
 
     def _backfill_schedule(self, backfilling_reservation_depth=1):
@@ -174,7 +160,8 @@ class MySchedFcfs(Scheduler):
             compute_allocation = Allocation(start_time,
                                             resources=assigned_compute_resources,
                                             job=job)
-            compute_allocation.allocate_all(self)
+            # What is the meaning of the flag self._allocated (active) of Allocation object?
+            # compute_allocation.allocate_all(self)
             self._allocate_burst_buffers(start_time, end_time, assigned_burst_buffers, job)
             temporary_allocations.append(compute_allocation)
 
@@ -182,19 +169,35 @@ class MySchedFcfs(Scheduler):
         if len(temporary_allocations) == len(reserved_jobs):
             self._filler_schedule(jobs=remaining_jobs, abort_on_first_nonfitting=False)
 
-        for temporary_compute_allocation in temporary_allocations:
-            job = temporary_compute_allocation.job
+        for compute_allocation in temporary_allocations:
+            job = compute_allocation.job
             self._free_burst_buffers(job)
-            temporary_compute_allocation.free()
+            compute_allocation.remove_all_resources()
+            # Necessary when allocate_all() was called.
+            # compute_allocation.free()
+
+    def _find_all_resources(self, job: Job):
+        """Returns (assigned_compute_resources, assigned_storage_resources) or None."""
+        assigned_compute_resources = self.resources.compute.find_sufficient_resources_for_job(
+            job, filter=consecutive_resources_filter)
+        if assigned_compute_resources:
+            assigned_burst_buffers = self._find_sufficient_burst_buffers(
+                assigned_compute_resources,
+                start_time=self.time,
+                end_time=self.time+job.requested_time,
+                requested_space=job.profile.bb)
+            if assigned_burst_buffers:
+                return assigned_compute_resources, assigned_burst_buffers
+        return None
 
     def _find_sufficient_burst_buffers(self,
                                        assigned_compute_resources: Resources,
-                                       start: float,
-                                       end: float,
+                                       start_time: float,
+                                       end_time: float,
                                        requested_space: int) -> Optional[Dict[int, int]]:
         """Returns a mapping compute_resource_id -> burst_buffer_id."""
         assigned_burst_buffers = {}
-        available_space = {burst_buffer.id: burst_buffer.available_space(start, end)
+        available_space = {burst_buffer.id: burst_buffer.available_space(start_time, end_time)
                            for burst_buffer in self._burst_buffers}
         for compute_resource in assigned_compute_resources:
             was_burst_buffer_assigned = False
@@ -284,7 +287,9 @@ class MySchedFcfs(Scheduler):
 
     @staticmethod
     def get_node_id(node_name):
-        """Gets platform node id from the name in the platform file."""
+        """Gets platform node id from the name in the platform file.
+        For 'node_42' will return 42.
+        """
         return int(node_name.split('_')[-1])
 
 
