@@ -1,10 +1,9 @@
-from typing import Optional, List, Dict, Set
+from typing import Optional, List, Dict
 from collections import Counter
 from batsim.sched.resource import Resource, Resources
 from batsim.sched.alloc import Allocation
 from batsim.sched.job import Job
 from batsim.sched.scheduler import Scheduler
-from batsim.sched.algorithms.filling import filler_sched
 from batsim.sched.algorithms.utils import consecutive_resources_filter
 from intervaltree import Interval, IntervalTree
 
@@ -59,15 +58,13 @@ class StorageResource(Resource):
         raise NotImplementedError('Later')
 
 
-# Only allocates burst buffers without executing any data transfers to burst buffers
-# class BaseAllocOnlyScheduler(Scheduler):
-
 # Convention
 # node_id is an id of the node from the platform file. It is extracted from the name.
 # id is an integer assigned by Batsim to a node.
 # There exists a mapping between ids and node_ids.
 # node_ids are sorted by Batsim lexicographically.
-class MySchedFcfs(Scheduler):
+class AllocOnlyScheduler(Scheduler):
+    """Only allocates burst buffers without executing any data transfers to burst buffers."""
     BURST_BUFFER_CAPACITY_GB = 5
     NUM_GROUPS, NUM_CHASSIS, NUM_ROUTERS, NUM_NODES_PER_ROUTER = 3, 2, 3, 2
     BURST_BUFFER_CAPACITY_BYTES = BURST_BUFFER_CAPACITY_GB * 10 ** 9
@@ -99,16 +96,14 @@ class MySchedFcfs(Scheduler):
                     capacity_bytes=self.BURST_BUFFER_CAPACITY_BYTES))
         self._create_burst_buffer_proximity()
 
-    def schedule(self):
-        # MySchedFcfsFun(self)
-        # self._filler_schedule()
-        self._backfill_schedule()
-
     def on_job_submission(self, job):
         self._validate_job(job)
 
     def on_job_completion(self, job):
         self._free_burst_buffers(job)
+
+    def schedule(self):
+        raise NotImplementedError
 
     def _filler_schedule(self, jobs=None, abort_on_first_nonfitting=True):
         if jobs is None:
@@ -291,10 +286,3 @@ class MySchedFcfs(Scheduler):
         For 'node_42' will return 42.
         """
         return int(node_name.split('_')[-1])
-
-
-def MySchedFcfsFun(scheduler):
-    return filler_sched(
-        scheduler,
-        resources_filter=consecutive_resources_filter,
-        abort_on_first_nonfitting=True)
