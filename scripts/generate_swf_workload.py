@@ -1,8 +1,10 @@
-import os.path
-import yaml
+#!/usr/bin/env python3
+from os.path import basename, splitext
+from argparse import ArgumentParser
 
-from batsim.sched.workloads.workloads import JobDescription, WorkloadDescription
 from batsim.sched.workloads.models.generator import JobModelData
+
+from burstbuffer.model import Platform, WorkloadModel, read_config
 
 
 class SWFJob(JobModelData):
@@ -32,8 +34,40 @@ class SWFJob(JobModelData):
         super().__init__(**kwargs)
 
 
-class SWFWorkloadGenerator:
-    def __init__(self, input_file, platform_config, workload_config):
-        name = os.path.basename(input_file).split('.')[0]
-        self.platform = yaml.load(platform_config)
-        self.workload = WorkloadDescription(name=name)
+parser = ArgumentParser()
+parser.add_argument('platform_config_file', help='yaml')
+parser.add_argument('workload_config_file', help='yaml')
+parser.add_argument('input_file', help='Parallel Workload Achieve swf file')
+parser.add_argument('output_file', help='Batsim json file')
+args = parser.parse_args()
+
+platform_config = read_config(args.platform_config_file)
+workload_config = read_config(args.workload_config_file)
+platform = Platform(platform_config)
+model = WorkloadModel(workload_config, platform)
+
+jobs = []
+profiles = {}
+
+with open(args.input_file) as input_file:
+    for line in input_file:
+        line = line.strip()
+        if line.startswith(';'):
+            continue
+        swf_record = [int(x) for x in line.split()]
+        job = SWFJob(swf_record)
+
+        profile_id = str(job.job_number)
+        computations = job.run_time * platform.cpu_speed
+        communication = 0 if job.requested_processors == 1 else model.generate_communication()
+        burst_buffer = model.generate_burst_buffer()
+        jobs.append(model.generate_job(job.job_number,
+                                       job.submit_time,
+                                       job.requested_time,
+                                       job.requested_processors,
+                                       profile_id))
+        profiles[profile_id] = model.generate_profile(computations, communication, burst_buffer)
+
+name = splitext(basename(args.input_file))[0]
+description = ''
+model.save_workload(args.output_file, name, description, platform.nb_res, jobs, profiles)
