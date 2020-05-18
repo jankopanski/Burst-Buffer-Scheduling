@@ -1,0 +1,5 @@
+topology: 'dragonfly'
+nb_res: 30  # Number of compute resources
+cpu_speed: 1  # GFLOPS
+bandwidth: 125  # MBps
+burst_buffer_capacity: 5  # GB

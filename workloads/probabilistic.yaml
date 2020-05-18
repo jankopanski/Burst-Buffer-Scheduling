@@ -1,0 +1,15 @@
+num_jobs: 200  # Number of jobs to generate
+time_distribution_lambda: 100
+time_distribution_k: 1.5
+expected_log_num_nodes: 0.8
+stddev_log_num_nodes: 1
+expected_computations_per_node: 5  # GFLOPS
+stddev_computations_per_node: 0.2  # %
+lambda_scale_computations_per_node: 0.5
+multiply_factor_computations_per_node: 10  # GFLOPS
+expected_communication_per_node: 10  # GB
+stddev_communication_per_node: 0.2  # %
+expected_burst_buffer_per_node: 1  # GB
+stddev_burst_buffer_per_node: 0.2  # %
+multiply_factor_walltime: 3
+stddev_walltime: 0.1  # not a %
