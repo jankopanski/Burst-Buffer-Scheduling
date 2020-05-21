@@ -1,5 +1,8 @@
-from typing import Optional, List, Dict
+import sys
 from collections import Counter
+from typing import Optional, List, Dict
+from tqdm import tqdm
+
 from batsim.sched.resource import Resource, Resources
 from batsim.sched.alloc import Allocation
 from batsim.sched.job import Job
@@ -73,6 +76,11 @@ class AllocOnlyScheduler(Scheduler):
 
     def __init__(self, options={}):
         super().__init__(options=options)
+        # Turns off Scheduler object logging.
+        # To Turn off Batsim object logging a flag -v 'warn' needs to be passed to the launcher.
+        # self._logger._logger.setLevel('WARNING')
+        self._event_logger._logger.setLevel('WARNING')
+
         self._pfs_id: int
         self._burst_buffers = Resources()
         self._burst_buffer_allocations: Dict[int, List[int]] = {}  # job.id -> burst_buffer_ids
@@ -95,12 +103,20 @@ class AllocOnlyScheduler(Scheduler):
                     resources_list=self._burst_buffers,
                     capacity_bytes=self.BURST_BUFFER_CAPACITY_BYTES))
         self._create_burst_buffer_proximity()
+        # Assume also that the number of job profiles equal to the number of static jobs.
+        num_all_jobs = sum(len(workload_profiles) for workload_profiles
+                           in self._batsim.profiles.values())
+        self.pbar = tqdm(total=num_all_jobs, file=sys.stdout, smoothing=0)
 
     def on_job_submission(self, job):
         self._validate_job(job)
 
     def on_job_completion(self, job):
         self._free_burst_buffers(job)
+        self.pbar.update()
+
+    def on_simulation_ends(self):
+        self.pbar.close()
 
     def schedule(self):
         raise NotImplementedError
