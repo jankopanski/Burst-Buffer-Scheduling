@@ -7,7 +7,7 @@ from batsim.sched.resource import Resource, Resources
 from batsim.sched.alloc import Allocation
 from batsim.sched.job import Job
 from batsim.sched.scheduler import Scheduler
-from batsim.sched.algorithms.utils import consecutive_resources_filter
+from batsim.sched.algorithms.utils import consecutive_resources_filter, generate_resources_filter
 from intervaltree import Interval, IntervalTree
 
 
@@ -86,6 +86,7 @@ class AllocOnlyScheduler(Scheduler):
         self._burst_buffer_allocations: Dict[int, List[int]] = {}  # job.id -> burst_buffer_ids
         # compute_node_id -> [chassis_bb_id, group_bb_id, all_bb_id]
         self._burst_buffer_proximity: Dict[int, List[List[int]]]
+        self._ordered_compute_resource_ids: List[int]
 
     def on_init(self):
         self._print_node_mapping()
@@ -102,7 +103,11 @@ class AllocOnlyScheduler(Scheduler):
                     name=storage_resource['name'],
                     resources_list=self._burst_buffers,
                     capacity_bytes=self.BURST_BUFFER_CAPACITY_BYTES))
+
+        self._create_ordered_compute_resource_ids()
         self._create_burst_buffer_proximity()
+        self._resource_filter = self._create_resource_filter()
+
         # Assume also that the number of job profiles equal to the number of static jobs.
         num_all_jobs = sum(len(workload_profiles) for workload_profiles
                            in self._batsim.profiles.values())
@@ -190,7 +195,7 @@ class AllocOnlyScheduler(Scheduler):
     def _find_all_resources(self, job: Job):
         """Returns (assigned_compute_resources, assigned_storage_resources) or None."""
         assigned_compute_resources = self.resources.compute.find_sufficient_resources_for_job(
-            job, filter=consecutive_resources_filter)
+            job, filter=self._resource_filter)
         if assigned_compute_resources:
             assigned_burst_buffers = self._find_sufficient_burst_buffers(
                 assigned_compute_resources,
@@ -259,6 +264,21 @@ class AllocOnlyScheduler(Scheduler):
             return False
         return True
 
+    def _create_ordered_compute_resource_ids(self):
+        """Creates a list of compute resource ids ordered according to Dragonfly topology."""
+        self._ordered_compute_resource_ids = []
+        num_nodes_in_chassis = self.NUM_ROUTERS * self.NUM_NODES_PER_ROUTER
+        for node_id in range(self.NUM_NODES):
+            if node_id % num_nodes_in_chassis == 0:
+                # This is a storage node
+                continue
+            for compute_resource in self.resources.compute:
+                curr_node_id = self.get_node_id(compute_resource.name)
+                if curr_node_id == node_id:
+                    self._ordered_compute_resource_ids.append(compute_resource.id)
+                    break
+        assert len(self._ordered_compute_resource_ids) == self.NUM_NODES - self.NUM_BURST_BUFFERS
+
     def _create_burst_buffer_proximity(self):
         """Compute resource id to burst buffer id proximity mapping for the Dragonfly topology."""
         self._burst_buffer_proximity = {compute.id: [[], [], []] for compute in
@@ -289,6 +309,28 @@ class AllocOnlyScheduler(Scheduler):
                 list(set(burst_buffer_node_id_to_id.values()) -
                      set(self._burst_buffer_proximity[compute_resource.id][0]) -
                      set(self._burst_buffer_proximity[compute_resource.id][1]))
+
+    def _create_resource_filter(self):
+        def bb_filter_func_consecutive_resources(
+                current_time,
+                job,
+                min_entries,
+                max_entries,
+                current_result,
+                current_remaining,
+                r):
+            if not current_result:
+                return True
+            last_id = current_result[-1].id
+            idx = self._ordered_compute_resource_ids.index(last_id)
+            n = len(self._ordered_compute_resource_ids)
+            prev_id = self._ordered_compute_resource_ids[(idx - 1) % n]
+            next_id = self._ordered_compute_resource_ids[(idx + 1) % n]
+            return r.id == prev_id or r.id == next_id
+
+        consecutive_resources_filter = generate_resources_filter(
+            [bb_filter_func_consecutive_resources], [])
+        return consecutive_resources_filter
 
     def _print_node_mapping(self):
         for node in self.machines['compute']:
