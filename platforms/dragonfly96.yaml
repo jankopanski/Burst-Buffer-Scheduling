@@ -1,10 +1,10 @@
-# Dragonfly cluster with 64 compute nodes and 8 storage nodes (one in each chassis).
+# Dragonfly cluster with 96 compute nodes and 12 storage nodes (one in each chassis).
 topology: 'dragonfly'
-nb_res: 64  # Number of compute resources
+nb_res: 96  # Number of compute resources
 cpu_speed: 1  # GFLOPS
 bandwidth: 125  # MBps
 burst_buffer_capacity: 8  # GB
-num_groups: 2
+num_groups: 3
 num_chassis: 4
 num_routers: 3
 num_nodes_per_router: 3

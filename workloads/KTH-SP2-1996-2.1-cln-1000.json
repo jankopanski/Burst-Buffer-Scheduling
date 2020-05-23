@@ -1,7 +1,7 @@
 {
   "name": "KTH-SP2-1996-2.1-cln",
   "description": "1000 jobs",
-  "nb_res": 64,
+  "nb_res": 96,
   "jobs": [
     {
       "id": 15,
@@ -7008,6002 +7008,6002 @@
     "15": {
       "type": "parallel_homogeneous",
       "cpu": 3477000000000,
-      "com": 129290186,
-      "bb": 1200244417
+      "com": 117246390,
+      "bb": 1364113517
     },
     "16": {
       "type": "parallel_homogeneous",
       "cpu": 2488000000000,
-      "com": 112155201,
-      "bb": 805585548
+      "com": 84144988,
+      "bb": 682748513
     },
     "17": {
       "type": "parallel_homogeneous",
       "cpu": 215337000000000,
-      "com": 102997980,
-      "bb": 489322132
+      "com": 95433740,
+      "bb": 1119457755
     },
     "18": {
       "type": "parallel_homogeneous",
       "cpu": 35373000000000,
-      "com": 100593293,
-      "bb": 1211246226
+      "com": 96975863,
+      "bb": 1105344850
     },
     "19": {
       "type": "parallel_homogeneous",
       "cpu": 29000000000,
-      "com": 74705283,
-      "bb": 1002221609
+      "com": 93543691,
+      "bb": 847915017
     },
     "20": {
       "type": "parallel_homogeneous",
       "cpu": 16000000000,
       "com": 0,
-      "bb": 1019100036
+      "bb": 632941920
     },
     "21": {
       "type": "parallel_homogeneous",
       "cpu": 13000000000,
       "com": 0,
-      "bb": 793569250
+      "bb": 1007067168
     },
     "22": {
       "type": "parallel_homogeneous",
       "cpu": 14000000000,
       "com": 0,
-      "bb": 888772587
+      "bb": 1124071596
     },
     "23": {
       "type": "parallel_homogeneous",
       "cpu": 23000000000,
-      "com": 103994196,
-      "bb": 962670832
+      "com": 137006142,
+      "bb": 795327037
     },
     "24": {
       "type": "parallel_homogeneous",
       "cpu": 24000000000,
-      "com": 97991375,
-      "bb": 1318496651
+      "com": 94353526,
+      "bb": 1303408709
     },
     "25": {
       "type": "parallel_homogeneous",
       "cpu": 4000000000,
       "com": 0,
-      "bb": 982393312
+      "bb": 913651581
     },
     "26": {
       "type": "parallel_homogeneous",
       "cpu": 22000000000,
       "com": 0,
-      "bb": 903173648
+      "bb": 758967007
     },
     "27": {
       "type": "parallel_homogeneous",
       "cpu": 40000000000,
       "com": 0,
-      "bb": 1190640954
+      "bb": 595164506
     },
     "28": {
       "type": "parallel_homogeneous",
       "cpu": 23000000000,
-      "com": 96268581,
-      "bb": 705882633
+      "com": 97762839,
+      "bb": 915018381
     },
     "29": {
       "type": "parallel_homogeneous",
       "cpu": 22000000000,
-      "com": 69695452,
-      "bb": 1022492835
+      "com": 87305470,
+      "bb": 1130847156
     },
     "30": {
       "type": "parallel_homogeneous",
       "cpu": 21000000000,
-      "com": 120204167,
-      "bb": 867524083
+      "com": 121342530,
+      "bb": 1203332813
     },
     "31": {
       "type": "parallel_homogeneous",
       "cpu": 20000000000,
-      "com": 122257521,
-      "bb": 1035528579
+      "com": 122940874,
+      "bb": 651742466
     },
     "32": {
       "type": "parallel_homogeneous",
       "cpu": 1074000000000,
       "com": 0,
-      "bb": 643320920
+      "bb": 1055257670
     },
     "33": {
       "type": "parallel_homogeneous",
       "cpu": 20000000000,
-      "com": 140061823,
-      "bb": 1141169399
+      "com": 107809884,
+      "bb": 824483437
     },
     "34": {
       "type": "parallel_homogeneous",
       "cpu": 24000000000,
-      "com": 93993940,
-      "bb": 671902265
+      "com": 74890230,
+      "bb": 1257993144
     },
     "35": {
       "type": "parallel_homogeneous",
       "cpu": 13000000000,
       "com": 0,
-      "bb": 934532375
+      "bb": 1194685480
     },
     "36": {
       "type": "parallel_homogeneous",
       "cpu": 24000000000,
-      "com": 135364291,
-      "bb": 614667083
+      "com": 108828191,
+      "bb": 865062794
     },
     "37": {
       "type": "parallel_homogeneous",
       "cpu": 15000000000,
-      "com": 61500333,
-      "bb": 1264996252
+      "com": 95997493,
+      "bb": 1004931516
     },
     "38": {
       "type": "parallel_homogeneous",
       "cpu": 57000000000,
       "com": 0,
-      "bb": 902846503
+      "bb": 841691562
     },
     "39": {
       "type": "parallel_homogeneous",
       "cpu": 47817000000000,
-      "com": 119886748,
-      "bb": 975697924
+      "com": 121024806,
+      "bb": 834887058
     },
     "40": {
       "type": "parallel_homogeneous",
       "cpu": 57000000000,
       "com": 0,
-      "bb": 1033604100
+      "bb": 1164340241
     },
     "41": {
       "type": "parallel_homogeneous",
       "cpu": 18000000000,
       "com": 0,
-      "bb": 985272227
+      "bb": 981513350
     },
     "42": {
       "type": "parallel_homogeneous",
       "cpu": 15000000000,
       "com": 0,
-      "bb": 1297513612
+      "bb": 1157599608
     },
     "43": {
       "type": "parallel_homogeneous",
       "cpu": 2113000000000,
       "com": 0,
-      "bb": 980742244
+      "bb": 1119916185
     },
     "44": {
       "type": "parallel_homogeneous",
       "cpu": 16000000000,
-      "com": 80355035,
-      "bb": 691484415
+      "com": 96076928,
+      "bb": 913610676
     },
     "45": {
       "type": "parallel_homogeneous",
       "cpu": 56000000000,
       "com": 0,
-      "bb": 1153073823
+      "bb": 1150831558
     },
     "46": {
       "type": "parallel_homogeneous",
       "cpu": 57000000000,
       "com": 0,
-      "bb": 1100810583
+      "bb": 1090372666
     },
     "47": {
       "type": "parallel_homogeneous",
       "cpu": 153000000000,
       "com": 0,
-      "bb": 1151733036
+      "bb": 1364616788
     },
     "48": {
       "type": "parallel_homogeneous",
       "cpu": 14000000000,
-      "com": 120913060,
-      "bb": 968477936
+      "com": 77377718,
+      "bb": 1217043927
     },
     "49": {
       "type": "parallel_homogeneous",
       "cpu": 17000000000,
       "com": 0,
-      "bb": 993654173
+      "bb": 947275209
     },
     "50": {
       "type": "parallel_homogeneous",
       "cpu": 23000000000,
       "com": 0,
-      "bb": 858147650
+      "bb": 797904358
     },
     "51": {
       "type": "parallel_homogeneous",
       "cpu": 79000000000,
       "com": 0,
-      "bb": 812102555
+      "bb": 1275692098
     },
     "52": {
       "type": "parallel_homogeneous",
       "cpu": 16000000000,
       "com": 0,
-      "bb": 762849650
+      "bb": 1295624058
     },
     "53": {
       "type": "parallel_homogeneous",
       "cpu": 639000000000,
       "com": 0,
-      "bb": 1084711671
+      "bb": 1207961359
     },
     "54": {
       "type": "parallel_homogeneous",
       "cpu": 4000000000,
-      "com": 93069358,
-      "bb": 790828521
+      "com": 105993681,
+      "bb": 1108099148
     },
     "55": {
       "type": "parallel_homogeneous",
       "cpu": 14000000000,
       "com": 0,
-      "bb": 828306575
+      "bb": 1641735243
     },
     "56": {
       "type": "parallel_homogeneous",
       "cpu": 16000000000,
-      "com": 103714201,
-      "bb": 933185542
+      "com": 44883280,
+      "bb": 764029617
     },
     "57": {
       "type": "parallel_homogeneous",
       "cpu": 14000000000,
-      "com": 109074908,
-      "bb": 1002765668
+      "com": 114524184,
+      "bb": 996165932
     },
     "58": {
       "type": "parallel_homogeneous",
       "cpu": 14000000000,
-      "com": 87152664,
-      "bb": 752682440
+      "com": 110676502,
+      "bb": 688847900
     },
     "59": {
       "type": "parallel_homogeneous",
       "cpu": 15000000000,
-      "com": 111530911,
-      "bb": 1187710210
+      "com": 114611735,
+      "bb": 984596789
     },
     "60": {
       "type": "parallel_homogeneous",
       "cpu": 18000000000,
-      "com": 83351567,
-      "bb": 1163139104
+      "com": 57642780,
+      "bb": 982517416
     },
     "61": {
       "type": "parallel_homogeneous",
       "cpu": 15000000000,
       "com": 0,
-      "bb": 1126260403
+      "bb": 1046573118
     },
     "62": {
       "type": "parallel_homogeneous",
       "cpu": 15000000000,
-      "com": 116131509,
-      "bb": 1140701178
+      "com": 127296401,
+      "bb": 1037624300
     },
     "63": {
       "type": "parallel_homogeneous",
       "cpu": 21000000000,
-      "com": 99729183,
-      "bb": 1027347148
+      "com": 101317434,
+      "bb": 1229135487
     },
     "64": {
       "type": "parallel_homogeneous",
       "cpu": 4000000000,
-      "com": 97751228,
-      "bb": 833933363
+      "com": 132441468,
+      "bb": 1473130962
     },
     "65": {
       "type": "parallel_homogeneous",
       "cpu": 81000000000,
-      "com": 108844635,
-      "bb": 1030273038
+      "com": 121888680,
+      "bb": 980965699
     },
     "66": {
       "type": "parallel_homogeneous",
       "cpu": 21000000000,
-      "com": 123022208,
-      "bb": 826204849
+      "com": 121407900,
+      "bb": 1090876708
     },
     "67": {
       "type": "parallel_homogeneous",
       "cpu": 7000000000,
-      "com": 102556858,
-      "bb": 1143955141
+      "com": 136641613,
+      "bb": 1114560853
     },
     "68": {
       "type": "parallel_homogeneous",
       "cpu": 27000000000,
-      "com": 109205720,
-      "bb": 808241221
+      "com": 84707496,
+      "bb": 971854087
     },
     "69": {
       "type": "parallel_homogeneous",
       "cpu": 29000000000,
-      "com": 96788658,
-      "bb": 980101389
+      "com": 95961253,
+      "bb": 1103959995
     },
     "70": {
       "type": "parallel_homogeneous",
       "cpu": 28000000000,
-      "com": 54744361,
-      "bb": 1011988800
+      "com": 70057161,
+      "bb": 863621872
     },
     "71": {
       "type": "parallel_homogeneous",
       "cpu": 23000000000,
-      "com": 96821802,
-      "bb": 1108617504
+      "com": 75449809,
+      "bb": 1143779595
     },
     "72": {
       "type": "parallel_homogeneous",
       "cpu": 31000000000,
-      "com": 146051474,
-      "bb": 979360975
+      "com": 103121469,
+      "bb": 1138547628
     },
     "73": {
       "type": "parallel_homogeneous",
       "cpu": 32000000000,
-      "com": 67415550,
-      "bb": 932190492
+      "com": 98192380,
+      "bb": 1483271116
     },
     "74": {
       "type": "parallel_homogeneous",
       "cpu": 591000000000,
       "com": 0,
-      "bb": 661028309
+      "bb": 1272220559
     },
     "75": {
       "type": "parallel_homogeneous",
       "cpu": 33000000000,
-      "com": 79926583,
-      "bb": 623158960
+      "com": 97263519,
+      "bb": 1018151961
     },
     "76": {
       "type": "parallel_homogeneous",
       "cpu": 18000000000,
-      "com": 91004011,
-      "bb": 1103679530
+      "com": 124804565,
+      "bb": 842207984
     },
     "77": {
       "type": "parallel_homogeneous",
       "cpu": 16000000000,
-      "com": 134576150,
-      "bb": 1097070190
+      "com": 104270474,
+      "bb": 738406772
     },
     "78": {
       "type": "parallel_homogeneous",
       "cpu": 23000000000,
-      "com": 81337851,
-      "bb": 1165635139
+      "com": 73487748,
+      "bb": 949041825
     },
     "79": {
       "type": "parallel_homogeneous",
       "cpu": 20000000000,
-      "com": 87520070,
-      "bb": 1034479123
+      "com": 114048180,
+      "bb": 701427868
     },
     "80": {
       "type": "parallel_homogeneous",
       "cpu": 5000000000,
-      "com": 66278632,
-      "bb": 995038438
+      "com": 96593245,
+      "bb": 763567955
     },
     "81": {
       "type": "parallel_homogeneous",
       "cpu": 20000000000,
-      "com": 109545482,
-      "bb": 1113542740
+      "com": 125516551,
+      "bb": 1148375424
     },
     "82": {
       "type": "parallel_homogeneous",
       "cpu": 22000000000,
-      "com": 94005346,
-      "bb": 948280151
+      "com": 112127110,
+      "bb": 1241822096
     },
     "83": {
       "type": "parallel_homogeneous",
       "cpu": 23000000000,
-      "com": 118018357,
-      "bb": 1224860637
+      "com": 92070381,
+      "bb": 890228887
     },
     "84": {
       "type": "parallel_homogeneous",
       "cpu": 9000000000,
-      "com": 75675761,
-      "bb": 1224301582
+      "com": 52948914,
+      "bb": 1015308643
     },
     "85": {
       "type": "parallel_homogeneous",
       "cpu": 25000000000,
-      "com": 89571199,
-      "bb": 981213260
+      "com": 90477100,
+      "bb": 862475394
     },
     "86": {
       "type": "parallel_homogeneous",
       "cpu": 12000000000,
       "com": 0,
-      "bb": 623647257
+      "bb": 830949542
     },
     "87": {
       "type": "parallel_homogeneous",
       "cpu": 14000000000,
       "com": 0,
-      "bb": 1205187602
+      "bb": 1192793693
     },
     "88": {
       "type": "parallel_homogeneous",
       "cpu": 15000000000,
-      "com": 98898912,
-      "bb": 958925123
+      "com": 69146124,
+      "bb": 825967940
     },
     "89": {
       "type": "parallel_homogeneous",
       "cpu": 15000000000,
-      "com": 72000749,
-      "bb": 999592611
+      "com": 98942382,
+      "bb": 903489713
     },
     "90": {
       "type": "parallel_homogeneous",
       "cpu": 15000000000,
-      "com": 91045480,
-      "bb": 1089077944
+      "com": 123663806,
+      "bb": 1291357538
     },
     "91": {
       "type": "parallel_homogeneous",
       "cpu": 12000000000,
-      "com": 88333859,
-      "bb": 963156673
+      "com": 106270818,
+      "bb": 706312377
     },
     "92": {
       "type": "parallel_homogeneous",
       "cpu": 14000000000,
-      "com": 118812311,
-      "bb": 871532444
+      "com": 90902308,
+      "bb": 962042828
     },
     "93": {
       "type": "parallel_homogeneous",
       "cpu": 3586000000000,
-      "com": 108421668,
-      "bb": 1497262934
+      "com": 101308325,
+      "bb": 1232212481
     },
     "94": {
       "type": "parallel_homogeneous",
       "cpu": 13000000000,
-      "com": 91248124,
-      "bb": 1028020615
+      "com": 92111753,
+      "bb": 847066838
     },
     "95": {
       "type": "parallel_homogeneous",
       "cpu": 26000000000,
-      "com": 104636403,
-      "bb": 1262150835
+      "com": 100046886,
+      "bb": 1043680315
     },
     "96": {
       "type": "parallel_homogeneous",
       "cpu": 403000000000,
       "com": 0,
-      "bb": 1050015080
+      "bb": 1024737513
     },
     "97": {
       "type": "parallel_homogeneous",
       "cpu": 12487000000000,
-      "com": 119083237,
-      "bb": 1171867182
+      "com": 84823613,
+      "bb": 894739585
     },
     "98": {
       "type": "parallel_homogeneous",
       "cpu": 22000000000,
-      "com": 87478727,
-      "bb": 1094505322
+      "com": 115577485,
+      "bb": 1058007034
     },
     "99": {
       "type": "parallel_homogeneous",
       "cpu": 428000000000,
       "com": 0,
-      "bb": 1052948775
+      "bb": 1435167473
     },
     "100": {
       "type": "parallel_homogeneous",
       "cpu": 225000000000,
       "com": 0,
-      "bb": 684954750
+      "bb": 1302783933
     },
     "101": {
       "type": "parallel_homogeneous",
       "cpu": 3577000000000,
-      "com": 89648411,
-      "bb": 1137074648
+      "com": 101828019,
+      "bb": 624286440
     },
     "102": {
       "type": "parallel_homogeneous",
       "cpu": 17944000000000,
-      "com": 118995155,
-      "bb": 891201699
+      "com": 97494875,
+      "bb": 1295528097
     },
     "103": {
       "type": "parallel_homogeneous",
       "cpu": 499000000000,
       "com": 0,
-      "bb": 1024336580
+      "bb": 926795753
     },
     "104": {
       "type": "parallel_homogeneous",
       "cpu": 502000000000,
       "com": 0,
-      "bb": 1422451225
+      "bb": 846094031
     },
     "105": {
       "type": "parallel_homogeneous",
       "cpu": 31000000000,
-      "com": 93455398,
-      "bb": 959179375
+      "com": 98457300,
+      "bb": 854847622
     },
     "106": {
       "type": "parallel_homogeneous",
       "cpu": 2000000000,
-      "com": 86617854,
-      "bb": 906435256
+      "com": 68273476,
+      "bb": 885171881
     },
     "107": {
       "type": "parallel_homogeneous",
       "cpu": 22000000000,
-      "com": 105225000,
-      "bb": 641104514
+      "com": 104409660,
+      "bb": 1317937814
     },
     "108": {
       "type": "parallel_homogeneous",
       "cpu": 11000000000,
-      "com": 69736017,
-      "bb": 1094101195
+      "com": 116836581,
+      "bb": 526163283
     },
     "109": {
       "type": "parallel_homogeneous",
       "cpu": 1912000000000,
-      "com": 112903237,
-      "bb": 853310466
+      "com": 70857500,
+      "bb": 1117605266
     },
     "110": {
       "type": "parallel_homogeneous",
       "cpu": 1994000000000,
-      "com": 87982842,
-      "bb": 1068781627
+      "com": 78703728,
+      "bb": 1009872337
     },
     "111": {
       "type": "parallel_homogeneous",
       "cpu": 2337000000000,
-      "com": 90262749,
-      "bb": 1022440447
+      "com": 92582122,
+      "bb": 796762266
     },
     "112": {
       "type": "parallel_homogeneous",
       "cpu": 3282000000000,
-      "com": 117811150,
-      "bb": 1144591381
+      "com": 106084627,
+      "bb": 934126671
     },
     "113": {
       "type": "parallel_homogeneous",
       "cpu": 3221000000000,
-      "com": 111787225,
-      "bb": 1127162463
+      "com": 88479710,
+      "bb": 1064863085
     },
     "114": {
       "type": "parallel_homogeneous",
       "cpu": 44256000000000,
-      "com": 144527930,
-      "bb": 1117733779
+      "com": 115189703,
+      "bb": 1161058713
     },
     "115": {
       "type": "parallel_homogeneous",
       "cpu": 1311000000000,
       "com": 0,
-      "bb": 1117834678
+      "bb": 966482482
     },
     "116": {
       "type": "parallel_homogeneous",
       "cpu": 875000000000,
       "com": 0,
-      "bb": 622998956
+      "bb": 1340937892
     },
     "117": {
       "type": "parallel_homogeneous",
       "cpu": 26000000000,
-      "com": 105973003,
-      "bb": 1080531432
+      "com": 132354965,
+      "bb": 933528141
     },
     "118": {
       "type": "parallel_homogeneous",
       "cpu": 943000000000,
       "com": 0,
-      "bb": 1226744463
+      "bb": 1371002293
     },
     "119": {
       "type": "parallel_homogeneous",
       "cpu": 51000000000,
-      "com": 72248059,
-      "bb": 974992597
+      "com": 89532875,
+      "bb": 1164380976
     },
     "120": {
       "type": "parallel_homogeneous",
       "cpu": 42000000000,
-      "com": 102104983,
-      "bb": 1172561751
+      "com": 114060519,
+      "bb": 1233696098
     },
     "121": {
       "type": "parallel_homogeneous",
       "cpu": 14000000000,
-      "com": 86373918,
-      "bb": 1049324384
+      "com": 112402565,
+      "bb": 1178856100
     },
     "122": {
       "type": "parallel_homogeneous",
       "cpu": 10000000000,
-      "com": 102548834,
-      "bb": 1007238646
+      "com": 72029634,
+      "bb": 746921325
     },
     "123": {
       "type": "parallel_homogeneous",
       "cpu": 40000000000,
-      "com": 119867539,
-      "bb": 459356221
+      "com": 96731471,
+      "bb": 963189348
     },
     "124": {
       "type": "parallel_homogeneous",
       "cpu": 11000000000,
-      "com": 137487024,
-      "bb": 1012402299
+      "com": 100646391,
+      "bb": 957943729
     },
     "125": {
       "type": "parallel_homogeneous",
       "cpu": 31000000000,
-      "com": 120773453,
-      "bb": 823179325
+      "com": 123088418,
+      "bb": 1064907156
     },
     "126": {
       "type": "parallel_homogeneous",
       "cpu": 51000000000,
-      "com": 105140404,
-      "bb": 970467967
+      "com": 118153536,
+      "bb": 1514921138
     },
     "127": {
       "type": "parallel_homogeneous",
       "cpu": 129000000000,
-      "com": 104039245,
-      "bb": 126969336
+      "com": 101615550,
+      "bb": 1125121950
     },
     "128": {
       "type": "parallel_homogeneous",
       "cpu": 111000000000,
-      "com": 103191098,
-      "bb": 976323188
+      "com": 101297696,
+      "bb": 985211141
     },
     "129": {
       "type": "parallel_homogeneous",
       "cpu": 159000000000,
-      "com": 119905105,
-      "bb": 1329001248
+      "com": 109903667,
+      "bb": 1148556816
     },
     "130": {
       "type": "parallel_homogeneous",
       "cpu": 160000000000,
-      "com": 130502370,
-      "bb": 1175356961
+      "com": 115417995,
+      "bb": 753866731
     },
     "131": {
       "type": "parallel_homogeneous",
       "cpu": 161000000000,
-      "com": 98810477,
-      "bb": 953128709
+      "com": 80707648,
+      "bb": 942083351
     },
     "132": {
       "type": "parallel_homogeneous",
       "cpu": 13000000000,
       "com": 0,
-      "bb": 658576218
+      "bb": 751977581
     },
     "133": {
       "type": "parallel_homogeneous",
       "cpu": 6000000000,
-      "com": 81732364,
-      "bb": 1623016709
+      "com": 120400559,
+      "bb": 831468797
     },
     "134": {
       "type": "parallel_homogeneous",
       "cpu": 12000000000,
       "com": 0,
-      "bb": 1184266085
+      "bb": 793639501
     },
     "135": {
       "type": "parallel_homogeneous",
       "cpu": 11776000000000,
-      "com": 126543031,
-      "bb": 882044012
+      "com": 115982669,
+      "bb": 1400354753
     },
     "136": {
       "type": "parallel_homogeneous",
       "cpu": 41000000000,
-      "com": 114041230,
-      "bb": 729698559
+      "com": 117660348,
+      "bb": 1077969084
     },
     "137": {
       "type": "parallel_homogeneous",
       "cpu": 28000000000,
-      "com": 107945445,
-      "bb": 1242694883
+      "com": 104508561,
+      "bb": 877056480
     },
     "138": {
       "type": "parallel_homogeneous",
       "cpu": 17000000000,
-      "com": 94099716,
-      "bb": 1183012913
+      "com": 90848556,
+      "bb": 1003512768
     },
     "139": {
       "type": "parallel_homogeneous",
       "cpu": 24000000000,
-      "com": 96059403,
-      "bb": 535506755
+      "com": 86798799,
+      "bb": 1143276266
     },
     "140": {
       "type": "parallel_homogeneous",
       "cpu": 31000000000,
-      "com": 140140921,
-      "bb": 841785071
+      "com": 86150019,
+      "bb": 928225016
     },
     "141": {
       "type": "parallel_homogeneous",
       "cpu": 18000000000,
-      "com": 104876204,
-      "bb": 1273088905
+      "com": 99579821,
+      "bb": 1087763084
     },
     "142": {
       "type": "parallel_homogeneous",
       "cpu": 3000000000,
-      "com": 100293185,
-      "bb": 1396714808
+      "com": 105454190,
+      "bb": 874431621
     },
     "143": {
       "type": "parallel_homogeneous",
       "cpu": 14000000000,
-      "com": 92909706,
-      "bb": 1167440898
+      "com": 87511571,
+      "bb": 825172799
     },
     "144": {
       "type": "parallel_homogeneous",
       "cpu": 49000000000,
-      "com": 103687203,
-      "bb": 991543454
+      "com": 109720156,
+      "bb": 960480474
     },
     "145": {
       "type": "parallel_homogeneous",
       "cpu": 4000000000,
-      "com": 81787209,
-      "bb": 1128139107
+      "com": 94939589,
+      "bb": 765041838
     },
     "146": {
       "type": "parallel_homogeneous",
       "cpu": 42000000000,
-      "com": 46263809,
-      "bb": 1192127631
+      "com": 77395245,
+      "bb": 1404134758
     },
     "147": {
       "type": "parallel_homogeneous",
       "cpu": 8000000000,
-      "com": 126018613,
-      "bb": 1128414986
+      "com": 65678324,
+      "bb": 718446041
     },
     "148": {
       "type": "parallel_homogeneous",
       "cpu": 26000000000,
-      "com": 109563326,
-      "bb": 569397557
+      "com": 80684872,
+      "bb": 821137662
     },
     "149": {
       "type": "parallel_homogeneous",
       "cpu": 232000000000,
       "com": 0,
-      "bb": 978103319
+      "bb": 1188429360
     },
     "150": {
       "type": "parallel_homogeneous",
       "cpu": 2497000000000,
-      "com": 63042195,
-      "bb": 1364435275
+      "com": 124564706,
+      "bb": 1319173506
     },
     "151": {
       "type": "parallel_homogeneous",
       "cpu": 8770000000000,
-      "com": 113646453,
-      "bb": 1410565746
+      "com": 95601869,
+      "bb": 977561981
     },
     "152": {
       "type": "parallel_homogeneous",
       "cpu": 3568000000000,
-      "com": 121759167,
-      "bb": 833298983
+      "com": 77346818,
+      "bb": 834938776
     },
     "153": {
       "type": "parallel_homogeneous",
       "cpu": 8647000000000,
-      "com": 104466229,
-      "bb": 908211402
+      "com": 100274359,
+      "bb": 1162665597
     },
     "154": {
       "type": "parallel_homogeneous",
       "cpu": 23000000000,
-      "com": 132400902,
-      "bb": 1207666694
+      "com": 119182720,
+      "bb": 820066313
     },
     "155": {
       "type": "parallel_homogeneous",
       "cpu": 4131000000000,
       "com": 0,
-      "bb": 1004798921
+      "bb": 1034051278
     },
     "156": {
       "type": "parallel_homogeneous",
       "cpu": 832000000000,
-      "com": 84064812,
-      "bb": 830918069
+      "com": 80462764,
+      "bb": 1244844217
     },
     "157": {
       "type": "parallel_homogeneous",
       "cpu": 565000000000,
-      "com": 92994290,
-      "bb": 989478225
+      "com": 74296043,
+      "bb": 958640184
     },
     "158": {
       "type": "parallel_homogeneous",
       "cpu": 2575000000000,
       "com": 0,
-      "bb": 1161785573
+      "bb": 846971151
     },
     "159": {
       "type": "parallel_homogeneous",
       "cpu": 6678000000000,
-      "com": 120467543,
-      "bb": 705220154
+      "com": 122673129,
+      "bb": 1244548570
     },
     "160": {
       "type": "parallel_homogeneous",
       "cpu": 435000000000,
-      "com": 135174168,
-      "bb": 885469707
+      "com": 91025752,
+      "bb": 780607396
     },
     "161": {
       "type": "parallel_homogeneous",
       "cpu": 807000000000,
-      "com": 99668644,
-      "bb": 1040243353
+      "com": 107798617,
+      "bb": 915245470
     },
     "162": {
       "type": "parallel_homogeneous",
       "cpu": 9602000000000,
-      "com": 80737665,
-      "bb": 810857548
+      "com": 100836724,
+      "bb": 1259427696
     },
     "163": {
       "type": "parallel_homogeneous",
       "cpu": 573000000000,
-      "com": 83199322,
-      "bb": 940174419
+      "com": 78856836,
+      "bb": 902252483
     },
     "164": {
       "type": "parallel_homogeneous",
       "cpu": 526000000000,
-      "com": 103802578,
-      "bb": 1051377264
+      "com": 91330278,
+      "bb": 1208535625
     },
     "165": {
       "type": "parallel_homogeneous",
       "cpu": 23000000000,
-      "com": 58886290,
-      "bb": 977503558
+      "com": 146875723,
+      "bb": 1489324326
     },
     "166": {
       "type": "parallel_homogeneous",
       "cpu": 556000000000,
-      "com": 42391753,
-      "bb": 963494710
+      "com": 82404795,
+      "bb": 1194806314
     },
     "167": {
       "type": "parallel_homogeneous",
       "cpu": 31000000000,
       "com": 0,
-      "bb": 873647122
+      "bb": 1425990014
     },
     "168": {
       "type": "parallel_homogeneous",
       "cpu": 40422000000000,
-      "com": 100437220,
-      "bb": 1091984136
+      "com": 104020592,
+      "bb": 570816057
     },
     "169": {
       "type": "parallel_homogeneous",
       "cpu": 14000000000,
-      "com": 97811362,
-      "bb": 874247254
+      "com": 92338584,
+      "bb": 767799311
     },
     "170": {
       "type": "parallel_homogeneous",
       "cpu": 24000000000,
-      "com": 111206322,
-      "bb": 1267172131
+      "com": 104282095,
+      "bb": 527034076
     },
     "171": {
       "type": "parallel_homogeneous",
       "cpu": 25000000000,
-      "com": 92283054,
-      "bb": 1064900565
+      "com": 88829479,
+      "bb": 701041702
     },
     "172": {
       "type": "parallel_homogeneous",
       "cpu": 557000000000,
-      "com": 116386900,
-      "bb": 1140207884
+      "com": 82333478,
+      "bb": 867353608
     },
     "173": {
       "type": "parallel_homogeneous",
       "cpu": 828000000000,
-      "com": 102148590,
-      "bb": 791144539
+      "com": 105899387,
+      "bb": 570271127
     },
     "174": {
       "type": "parallel_homogeneous",
       "cpu": 3000000000,
-      "com": 146855315,
-      "bb": 548471285
+      "com": 76023214,
+      "bb": 786864974
     },
     "175": {
       "type": "parallel_homogeneous",
       "cpu": 1056000000000,
-      "com": 96178165,
-      "bb": 663977161
+      "com": 99483721,
+      "bb": 928317471
     },
     "176": {
       "type": "parallel_homogeneous",
       "cpu": 1166000000000,
-      "com": 117160756,
-      "bb": 996367710
+      "com": 97139185,
+      "bb": 1140448339
     },
     "177": {
       "type": "parallel_homogeneous",
       "cpu": 887000000000,
-      "com": 109232384,
-      "bb": 846747882
+      "com": 90781421,
+      "bb": 753606900
     },
     "178": {
       "type": "parallel_homogeneous",
       "cpu": 1715000000000,
-      "com": 100124155,
-      "bb": 1253867721
+      "com": 83585394,
+      "bb": 884765093
     },
     "179": {
       "type": "parallel_homogeneous",
       "cpu": 867000000000,
       "com": 0,
-      "bb": 1004601915
+      "bb": 973004179
     },
     "180": {
       "type": "parallel_homogeneous",
       "cpu": 1471000000000,
       "com": 0,
-      "bb": 991046469
+      "bb": 1014560694
     },
     "181": {
       "type": "parallel_homogeneous",
       "cpu": 2819000000000,
-      "com": 57167150,
-      "bb": 646262743
+      "com": 73927079,
+      "bb": 900835725
     },
     "182": {
       "type": "parallel_homogeneous",
       "cpu": 2291000000000,
-      "com": 113012642,
-      "bb": 534128679
+      "com": 70132531,
+      "bb": 1168150344
     },
     "183": {
       "type": "parallel_homogeneous",
       "cpu": 102000000000,
-      "com": 99907162,
-      "bb": 1321352447
+      "com": 104131835,
+      "bb": 641777217
     },
     "184": {
       "type": "parallel_homogeneous",
       "cpu": 5857000000000,
-      "com": 82410327,
-      "bb": 712106647
+      "com": 98915479,
+      "bb": 1135832693
     },
     "185": {
       "type": "parallel_homogeneous",
       "cpu": 163000000000,
-      "com": 108655165,
-      "bb": 1055863676
+      "com": 119291683,
+      "bb": 1193042009
     },
     "186": {
       "type": "parallel_homogeneous",
       "cpu": 2371000000000,
-      "com": 90457476,
-      "bb": 1122698298
+      "com": 128298787,
+      "bb": 583449189
     },
     "187": {
       "type": "parallel_homogeneous",
       "cpu": 24000000000,
-      "com": 104641330,
-      "bb": 1168023450
+      "com": 77988528,
+      "bb": 1146881511
     },
     "188": {
       "type": "parallel_homogeneous",
       "cpu": 26000000000,
-      "com": 91357923,
-      "bb": 828223661
+      "com": 83071691,
+      "bb": 979597842
     },
     "189": {
       "type": "parallel_homogeneous",
       "cpu": 13745000000000,
-      "com": 75598723,
-      "bb": 945372467
+      "com": 104211547,
+      "bb": 1230544126
     },
     "190": {
       "type": "parallel_homogeneous",
       "cpu": 13255000000000,
-      "com": 86806274,
-      "bb": 891798235
+      "com": 76818259,
+      "bb": 1141113449
     },
     "191": {
       "type": "parallel_homogeneous",
       "cpu": 22000000000,
-      "com": 88020221,
-      "bb": 845399283
+      "com": 72071314,
+      "bb": 824478071
     },
     "192": {
       "type": "parallel_homogeneous",
       "cpu": 37000000000,
-      "com": 81453644,
-      "bb": 911014515
+      "com": 74139652,
+      "bb": 591504553
     },
     "193": {
       "type": "parallel_homogeneous",
       "cpu": 32000000000,
-      "com": 95763068,
-      "bb": 1280154711
+      "com": 113911960,
+      "bb": 989793423
     },
     "194": {
       "type": "parallel_homogeneous",
       "cpu": 118000000000,
-      "com": 93755935,
-      "bb": 1279209872
+      "com": 119058849,
+      "bb": 715204707
     },
     "195": {
       "type": "parallel_homogeneous",
       "cpu": 37000000000,
-      "com": 70974047,
-      "bb": 1195513158
+      "com": 129139577,
+      "bb": 1075674835
     },
     "196": {
       "type": "parallel_homogeneous",
       "cpu": 33000000000,
-      "com": 112259828,
-      "bb": 899496502
+      "com": 80463033,
+      "bb": 658686624
     },
     "197": {
       "type": "parallel_homogeneous",
       "cpu": 116000000000,
-      "com": 144252831,
-      "bb": 701572460
+      "com": 63527545,
+      "bb": 924945061
     },
     "198": {
       "type": "parallel_homogeneous",
       "cpu": 36000000000,
-      "com": 79205930,
-      "bb": 693883845
+      "com": 46074669,
+      "bb": 999016044
     },
     "199": {
       "type": "parallel_homogeneous",
       "cpu": 34000000000,
-      "com": 116438299,
-      "bb": 1068541896
+      "com": 140621843,
+      "bb": 723080997
     },
     "200": {
       "type": "parallel_homogeneous",
       "cpu": 35000000000,
-      "com": 105300177,
-      "bb": 1063461692
+      "com": 111270239,
+      "bb": 807639184
     },
     "201": {
       "type": "parallel_homogeneous",
       "cpu": 40000000000,
-      "com": 102591434,
-      "bb": 743254039
+      "com": 91837636,
+      "bb": 869642621
     },
     "202": {
       "type": "parallel_homogeneous",
       "cpu": 54000000000,
-      "com": 120073511,
-      "bb": 994912341
+      "com": 119953951,
+      "bb": 854289735
     },
     "203": {
       "type": "parallel_homogeneous",
       "cpu": 78000000000,
-      "com": 94895153,
-      "bb": 920996375
+      "com": 88948626,
+      "bb": 876274939
     },
     "204": {
       "type": "parallel_homogeneous",
       "cpu": 80000000000,
-      "com": 101583479,
-      "bb": 781224453
+      "com": 103653639,
+      "bb": 1048526866
     },
     "205": {
       "type": "parallel_homogeneous",
       "cpu": 50000000000,
-      "com": 133968809,
-      "bb": 807735151
+      "com": 78316138,
+      "bb": 1061753776
     },
     "206": {
       "type": "parallel_homogeneous",
       "cpu": 28000000000,
-      "com": 110410358,
-      "bb": 1314471428
+      "com": 80032665,
+      "bb": 730206652
     },
     "207": {
       "type": "parallel_homogeneous",
       "cpu": 1335000000000,
-      "com": 86168766,
-      "bb": 961216043
+      "com": 58484491,
+      "bb": 775750315
     },
     "208": {
       "type": "parallel_homogeneous",
       "cpu": 141000000000,
-      "com": 87927142,
-      "bb": 933773981
+      "com": 123113117,
+      "bb": 976309237
     },
     "209": {
       "type": "parallel_homogeneous",
       "cpu": 2674000000000,
-      "com": 77017292,
-      "bb": 962674259
+      "com": 94328870,
+      "bb": 816937855
     },
     "210": {
       "type": "parallel_homogeneous",
       "cpu": 195000000000,
-      "com": 102744235,
-      "bb": 958161649
+      "com": 150282940,
+      "bb": 1222151101
     },
     "211": {
       "type": "parallel_homogeneous",
       "cpu": 27000000000,
-      "com": 96182549,
-      "bb": 1027086036
+      "com": 90326791,
+      "bb": 672263386
     },
     "212": {
       "type": "parallel_homogeneous",
       "cpu": 760000000000,
-      "com": 118436447,
-      "bb": 983367913
+      "com": 90443148,
+      "bb": 937889957
     },
     "213": {
       "type": "parallel_homogeneous",
       "cpu": 1142000000000,
-      "com": 108886484,
-      "bb": 1093910331
+      "com": 94868752,
+      "bb": 1096346552
     },
     "214": {
       "type": "parallel_homogeneous",
       "cpu": 4266000000000,
-      "com": 97637579,
-      "bb": 850149474
+      "com": 85387009,
+      "bb": 727281447
     },
     "215": {
       "type": "parallel_homogeneous",
       "cpu": 525000000000,
-      "com": 89100122,
-      "bb": 769818122
+      "com": 115956538,
+      "bb": 1181573119
     },
     "216": {
       "type": "parallel_homogeneous",
       "cpu": 11961000000000,
-      "com": 53683813,
-      "bb": 1092743882
+      "com": 136580279,
+      "bb": 1026186898
     },
     "217": {
       "type": "parallel_homogeneous",
       "cpu": 28918000000000,
-      "com": 95277291,
-      "bb": 1246459521
+      "com": 105902341,
+      "bb": 1078536210
     },
     "218": {
       "type": "parallel_homogeneous",
       "cpu": 12000000000,
-      "com": 110274436,
-      "bb": 1252700102
+      "com": 79945918,
+      "bb": 1241298840
     },
     "219": {
       "type": "parallel_homogeneous",
       "cpu": 19000000000,
-      "com": 91055912,
-      "bb": 867634818
+      "com": 132750174,
+      "bb": 921106925
     },
     "220": {
       "type": "parallel_homogeneous",
       "cpu": 29000000000,
-      "com": 118100361,
-      "bb": 1019176128
+      "com": 90328932,
+      "bb": 891665445
     },
     "221": {
       "type": "parallel_homogeneous",
       "cpu": 979000000000,
-      "com": 111774070,
-      "bb": 1073587542
+      "com": 76257932,
+      "bb": 1244724121
     },
     "222": {
       "type": "parallel_homogeneous",
       "cpu": 1082000000000,
-      "com": 91756631,
-      "bb": 1374699652
+      "com": 130092236,
+      "bb": 594664392
     },
     "223": {
       "type": "parallel_homogeneous",
       "cpu": 23000000000,
-      "com": 98470496,
-      "bb": 883109664
+      "com": 94159023,
+      "bb": 1152248826
     },
     "224": {
       "type": "parallel_homogeneous",
       "cpu": 21000000000,
-      "com": 111817743,
-      "bb": 1404027954
+      "com": 91281680,
+      "bb": 1398734908
     },
     "225": {
       "type": "parallel_homogeneous",
       "cpu": 29000000000,
-      "com": 123105183,
-      "bb": 794335820
+      "com": 103836339,
+      "bb": 843029038
     },
     "226": {
       "type": "parallel_homogeneous",
       "cpu": 25000000000,
-      "com": 93505549,
-      "bb": 1002689414
+      "com": 117172918,
+      "bb": 1053635963
     },
     "227": {
       "type": "parallel_homogeneous",
       "cpu": 18000000000,
-      "com": 107196952,
-      "bb": 1093870278
+      "com": 73311325,
+      "bb": 999665733
     },
     "228": {
       "type": "parallel_homogeneous",
       "cpu": 6000000000,
-      "com": 91000325,
-      "bb": 939222548
+      "com": 106040830,
+      "bb": 1077508425
     },
     "229": {
       "type": "parallel_homogeneous",
       "cpu": 15000000000,
-      "com": 125300763,
-      "bb": 855641394
+      "com": 103395356,
+      "bb": 730079192
     },
     "230": {
       "type": "parallel_homogeneous",
       "cpu": 2000000000,
-      "com": 89174074,
-      "bb": 1253094416
+      "com": 89163633,
+      "bb": 1107135149
     },
     "231": {
       "type": "parallel_homogeneous",
       "cpu": 25000000000,
-      "com": 145697086,
-      "bb": 879953774
+      "com": 59194483,
+      "bb": 1041506724
     },
     "232": {
       "type": "parallel_homogeneous",
       "cpu": 11302000000000,
       "com": 0,
-      "bb": 810046456
+      "bb": 974763227
     },
     "233": {
       "type": "parallel_homogeneous",
       "cpu": 28000000000,
-      "com": 104182502,
-      "bb": 1138398081
+      "com": 112311065,
+      "bb": 1201183103
     },
     "234": {
       "type": "parallel_homogeneous",
       "cpu": 12821000000000,
-      "com": 58573174,
-      "bb": 1221988729
+      "com": 109352423,
+      "bb": 1062852543
     },
     "235": {
       "type": "parallel_homogeneous",
       "cpu": 25000000000,
-      "com": 93560670,
-      "bb": 1009373038
+      "com": 96515399,
+      "bb": 1201660001
     },
     "236": {
       "type": "parallel_homogeneous",
       "cpu": 593000000000,
-      "com": 114928635,
-      "bb": 824122582
+      "com": 96163594,
+      "bb": 686597855
     },
     "237": {
       "type": "parallel_homogeneous",
       "cpu": 970000000000,
-      "com": 139968728,
-      "bb": 816934920
+      "com": 119183534,
+      "bb": 852086119
     },
     "238": {
       "type": "parallel_homogeneous",
       "cpu": 21000000000,
-      "com": 83471947,
-      "bb": 1365796721
+      "com": 128920353,
+      "bb": 619404844
     },
     "239": {
       "type": "parallel_homogeneous",
       "cpu": 15000000000,
-      "com": 127034021,
-      "bb": 942933896
+      "com": 126505838,
+      "bb": 993866189
     },
     "240": {
       "type": "parallel_homogeneous",
       "cpu": 21000000000,
-      "com": 89012514,
-      "bb": 1087556794
+      "com": 93273745,
+      "bb": 964800757
     },
     "241": {
       "type": "parallel_homogeneous",
       "cpu": 20000000000,
-      "com": 60059198,
-      "bb": 1332124134
+      "com": 64210225,
+      "bb": 1370093119
     },
     "242": {
       "type": "parallel_homogeneous",
       "cpu": 3138000000000,
-      "com": 120812587,
-      "bb": 1165399100
+      "com": 70797544,
+      "bb": 1246674645
     },
     "243": {
       "type": "parallel_homogeneous",
       "cpu": 1771000000000,
-      "com": 99127608,
-      "bb": 1030261821
+      "com": 91798416,
+      "bb": 767285061
     },
     "244": {
       "type": "parallel_homogeneous",
       "cpu": 303000000000,
-      "com": 99557481,
-      "bb": 1179146748
+      "com": 86251502,
+      "bb": 1137294902
     },
     "245": {
       "type": "parallel_homogeneous",
       "cpu": 20000000000,
-      "com": 102824590,
-      "bb": 1172607803
+      "com": 59394116,
+      "bb": 890076969
     },
     "246": {
       "type": "parallel_homogeneous",
       "cpu": 17000000000,
-      "com": 93590322,
-      "bb": 1095909307
+      "com": 93544644,
+      "bb": 1077054814
     },
     "247": {
       "type": "parallel_homogeneous",
       "cpu": 661000000000,
-      "com": 108628061,
-      "bb": 881239265
+      "com": 91364282,
+      "bb": 701657508
     },
     "248": {
       "type": "parallel_homogeneous",
       "cpu": 9545000000000,
-      "com": 66694780,
-      "bb": 1066980230
+      "com": 94069167,
+      "bb": 840391626
     },
     "249": {
       "type": "parallel_homogeneous",
       "cpu": 19067000000000,
-      "com": 53715350,
-      "bb": 672125888
+      "com": 96120443,
+      "bb": 832142496
     },
     "250": {
       "type": "parallel_homogeneous",
       "cpu": 13771000000000,
-      "com": 82293846,
-      "bb": 1194492022
+      "com": 84867648,
+      "bb": 1030315376
     },
     "251": {
       "type": "parallel_homogeneous",
       "cpu": 13227000000000,
-      "com": 139850865,
-      "bb": 1002745654
+      "com": 79365400,
+      "bb": 1077309902
     },
     "252": {
       "type": "parallel_homogeneous",
       "cpu": 47048000000000,
-      "com": 88262391,
-      "bb": 467952910
+      "com": 84396133,
+      "bb": 1112044078
     },
     "253": {
       "type": "parallel_homogeneous",
       "cpu": 44126000000000,
-      "com": 112256774,
-      "bb": 1025908955
+      "com": 107875951,
+      "bb": 790781282
     },
     "254": {
       "type": "parallel_homogeneous",
       "cpu": 23958000000000,
-      "com": 110581973,
-      "bb": 1004669767
+      "com": 88580270,
+      "bb": 1136168070
     },
     "255": {
       "type": "parallel_homogeneous",
       "cpu": 14000000000,
       "com": 0,
-      "bb": 1417646774
+      "bb": 1374111345
     },
     "256": {
       "type": "parallel_homogeneous",
       "cpu": 9000000000,
-      "com": 69483441,
-      "bb": 1126299612
+      "com": 88538719,
+      "bb": 938448657
     },
     "257": {
       "type": "parallel_homogeneous",
       "cpu": 13000000000,
-      "com": 110724714,
-      "bb": 1081192996
+      "com": 75469604,
+      "bb": 1089037667
     },
     "258": {
       "type": "parallel_homogeneous",
       "cpu": 20000000000,
-      "com": 103925394,
-      "bb": 1286782569
+      "com": 62555528,
+      "bb": 937472879
     },
     "259": {
       "type": "parallel_homogeneous",
       "cpu": 21000000000,
-      "com": 116918121,
-      "bb": 1109684826
+      "com": 127785388,
+      "bb": 611624814
     },
     "260": {
       "type": "parallel_homogeneous",
       "cpu": 26000000000,
-      "com": 120831808,
-      "bb": 890096404
+      "com": 98458638,
+      "bb": 1137532185
     },
     "261": {
       "type": "parallel_homogeneous",
       "cpu": 29000000000,
-      "com": 121546163,
-      "bb": 795575713
+      "com": 90736255,
+      "bb": 1400096403
     },
     "262": {
       "type": "parallel_homogeneous",
       "cpu": 19000000000,
-      "com": 84972226,
-      "bb": 1021905021
+      "com": 105744839,
+      "bb": 783776635
     },
     "263": {
       "type": "parallel_homogeneous",
       "cpu": 8186000000000,
-      "com": 81347709,
-      "bb": 1153024667
+      "com": 111294203,
+      "bb": 757421484
     },
     "264": {
       "type": "parallel_homogeneous",
       "cpu": 41331000000000,
-      "com": 115180717,
-      "bb": 1010311726
+      "com": 77626113,
+      "bb": 806019132
     },
     "265": {
       "type": "parallel_homogeneous",
       "cpu": 24000000000,
-      "com": 93556247,
-      "bb": 1099746614
+      "com": 162426547,
+      "bb": 1022517448
     },
     "266": {
       "type": "parallel_homogeneous",
       "cpu": 400000000000,
-      "com": 85269894,
-      "bb": 870510893
+      "com": 115678614,
+      "bb": 824499310
     },
     "267": {
       "type": "parallel_homogeneous",
       "cpu": 45000000000,
-      "com": 93832646,
-      "bb": 875758678
+      "com": 121549960,
+      "bb": 1180291200
     },
     "268": {
       "type": "parallel_homogeneous",
       "cpu": 7936000000000,
-      "com": 99585968,
-      "bb": 909939305
+      "com": 111506418,
+      "bb": 1131827177
     },
     "269": {
       "type": "parallel_homogeneous",
       "cpu": 260000000000,
       "com": 0,
-      "bb": 880362250
+      "bb": 1086658847
     },
     "270": {
       "type": "parallel_homogeneous",
       "cpu": 14000000000,
-      "com": 99762706,
-      "bb": 889231032
+      "com": 79693257,
+      "bb": 1163750248
     },
     "271": {
       "type": "parallel_homogeneous",
       "cpu": 490000000000,
-      "com": 103133553,
-      "bb": 1200014348
+      "com": 108413177,
+      "bb": 863299594
     },
     "272": {
       "type": "parallel_homogeneous",
       "cpu": 53000000000,
-      "com": 100488373,
-      "bb": 1192322423
+      "com": 68143732,
+      "bb": 664506909
     },
     "273": {
       "type": "parallel_homogeneous",
       "cpu": 483000000000,
-      "com": 88857362,
-      "bb": 908369226
+      "com": 143304663,
+      "bb": 1018912120
     },
     "274": {
       "type": "parallel_homogeneous",
       "cpu": 51000000000,
-      "com": 115616713,
-      "bb": 1117103411
+      "com": 89947425,
+      "bb": 953976657
     },
     "275": {
       "type": "parallel_homogeneous",
       "cpu": 15000000000,
-      "com": 120146316,
-      "bb": 805926223
+      "com": 106428465,
+      "bb": 1346418452
     },
     "276": {
       "type": "parallel_homogeneous",
       "cpu": 30000000000,
-      "com": 124941247,
-      "bb": 1302679829
+      "com": 126547965,
+      "bb": 1381305895
     },
     "277": {
       "type": "parallel_homogeneous",
       "cpu": 19000000000,
-      "com": 112947156,
-      "bb": 991484474
+      "com": 105803985,
+      "bb": 1324220586
     },
     "278": {
       "type": "parallel_homogeneous",
       "cpu": 2717000000000,
-      "com": 82174480,
-      "bb": 1097935530
+      "com": 97783457,
+      "bb": 1153702730
     },
     "279": {
       "type": "parallel_homogeneous",
       "cpu": 12000000000,
-      "com": 94896893,
-      "bb": 1085833693
+      "com": 122204980,
+      "bb": 1016267430
     },
     "280": {
       "type": "parallel_homogeneous",
       "cpu": 24000000000,
       "com": 0,
-      "bb": 988762841
+      "bb": 1003526892
     },
     "281": {
       "type": "parallel_homogeneous",
       "cpu": 30000000000,
-      "com": 97995765,
-      "bb": 1258083493
+      "com": 106692138,
+      "bb": 1310877972
     },
     "282": {
       "type": "parallel_homogeneous",
       "cpu": 30000000000,
-      "com": 105139929,
-      "bb": 1016313243
+      "com": 101902710,
+      "bb": 872509150
     },
     "283": {
       "type": "parallel_homogeneous",
       "cpu": 21000000000,
-      "com": 81610226,
-      "bb": 858160894
+      "com": 81976593,
+      "bb": 791372008
     },
     "284": {
       "type": "parallel_homogeneous",
       "cpu": 23000000000,
-      "com": 108680930,
-      "bb": 1177670560
+      "com": 102735486,
+      "bb": 1231618837
     },
     "285": {
       "type": "parallel_homogeneous",
       "cpu": 18000000000,
-      "com": 88279479,
-      "bb": 1389240567
+      "com": 110790363,
+      "bb": 874718752
     },
     "286": {
       "type": "parallel_homogeneous",
       "cpu": 19000000000,
-      "com": 115077954,
-      "bb": 592060304
+      "com": 130936096,
+      "bb": 907055173
     },
     "287": {
       "type": "parallel_homogeneous",
       "cpu": 19000000000,
-      "com": 117539084,
-      "bb": 1034051988
+      "com": 79189921,
+      "bb": 598917148
     },
     "288": {
       "type": "parallel_homogeneous",
       "cpu": 25000000000,
-      "com": 87655510,
-      "bb": 1056207059
+      "com": 89302130,
+      "bb": 1169621666
     },
     "289": {
       "type": "parallel_homogeneous",
       "cpu": 17000000000,
-      "com": 105022526,
-      "bb": 968498404
+      "com": 106632867,
+      "bb": 1236946531
     },
     "290": {
       "type": "parallel_homogeneous",
       "cpu": 21000000000,
       "com": 0,
-      "bb": 716823777
+      "bb": 1150736530
     },
     "291": {
       "type": "parallel_homogeneous",
       "cpu": 16000000000,
-      "com": 86762358,
-      "bb": 1037852146
+      "com": 132155940,
+      "bb": 771921873
     },
     "292": {
       "type": "parallel_homogeneous",
       "cpu": 15000000000,
       "com": 0,
-      "bb": 844606640
+      "bb": 977620821
     },
     "293": {
       "type": "parallel_homogeneous",
       "cpu": 20000000000,
-      "com": 124158811,
-      "bb": 1093020859
+      "com": 95878184,
+      "bb": 895528203
     },
     "294": {
       "type": "parallel_homogeneous",
       "cpu": 14000000000,
-      "com": 66112664,
-      "bb": 1314484191
+      "com": 90988108,
+      "bb": 1045822498
     },
     "295": {
       "type": "parallel_homogeneous",
       "cpu": 14000000000,
-      "com": 98013578,
-      "bb": 711884583
+      "com": 76558117,
+      "bb": 686937817
     },
     "296": {
       "type": "parallel_homogeneous",
       "cpu": 16000000000,
-      "com": 120488553,
-      "bb": 1295117259
+      "com": 101679772,
+      "bb": 1283908133
     },
     "297": {
       "type": "parallel_homogeneous",
       "cpu": 15000000000,
-      "com": 69953435,
-      "bb": 925920766
+      "com": 127114498,
+      "bb": 1246196058
     },
     "298": {
       "type": "parallel_homogeneous",
       "cpu": 449000000000,
-      "com": 81981851,
-      "bb": 945541084
+      "com": 77796586,
+      "bb": 1025865236
     },
     "299": {
       "type": "parallel_homogeneous",
       "cpu": 21000000000,
-      "com": 77708891,
-      "bb": 948326387
+      "com": 116843316,
+      "bb": 1341461741
     },
     "300": {
       "type": "parallel_homogeneous",
       "cpu": 48000000000,
-      "com": 97776563,
-      "bb": 610246495
+      "com": 93810724,
+      "bb": 1065816370
     },
     "301": {
       "type": "parallel_homogeneous",
       "cpu": 3945000000000,
-      "com": 63842063,
-      "bb": 1414193496
+      "com": 109284513,
+      "bb": 973397842
     },
     "302": {
       "type": "parallel_homogeneous",
       "cpu": 22000000000,
-      "com": 111437371,
-      "bb": 1048489472
+      "com": 122769597,
+      "bb": 1005957233
     },
     "303": {
       "type": "parallel_homogeneous",
       "cpu": 11000000000,
-      "com": 94099984,
-      "bb": 1166800062
+      "com": 74017928,
+      "bb": 842487552
     },
     "304": {
       "type": "parallel_homogeneous",
       "cpu": 6000000000,
-      "com": 86328342,
-      "bb": 768759629
+      "com": 90163748,
+      "bb": 993188760
     },
     "305": {
       "type": "parallel_homogeneous",
       "cpu": 15000000000,
-      "com": 84833008,
-      "bb": 1108029086
+      "com": 112488706,
+      "bb": 1011507760
     },
     "306": {
       "type": "parallel_homogeneous",
       "cpu": 17000000000,
-      "com": 90658616,
-      "bb": 1167520610
+      "com": 105967148,
+      "bb": 920320407
     },
     "307": {
       "type": "parallel_homogeneous",
       "cpu": 13000000000,
-      "com": 95870725,
-      "bb": 1178311032
+      "com": 139920933,
+      "bb": 968737169
     },
     "308": {
       "type": "parallel_homogeneous",
       "cpu": 2992000000000,
       "com": 0,
-      "bb": 779140210
+      "bb": 894033909
     },
     "309": {
       "type": "parallel_homogeneous",
       "cpu": 13000000000,
-      "com": 91225170,
-      "bb": 661594661
+      "com": 134914542,
+      "bb": 1030949326
     },
     "310": {
       "type": "parallel_homogeneous",
       "cpu": 14000000000,
-      "com": 112598680,
-      "bb": 885472220
+      "com": 109319606,
+      "bb": 860490666
     },
     "311": {
       "type": "parallel_homogeneous",
       "cpu": 52000000000,
-      "com": 76521391,
-      "bb": 1111551601
+      "com": 102281252,
+      "bb": 969934535
     },
     "312": {
       "type": "parallel_homogeneous",
       "cpu": 22000000000,
-      "com": 73071297,
-      "bb": 1096003370
+      "com": 140875794,
+      "bb": 1185014995
     },
     "313": {
       "type": "parallel_homogeneous",
       "cpu": 53000000000,
-      "com": 97651311,
-      "bb": 1002374562
+      "com": 79387403,
+      "bb": 1350737469
     },
     "314": {
       "type": "parallel_homogeneous",
       "cpu": 54000000000,
-      "com": 90824753,
-      "bb": 978094193
+      "com": 77605502,
+      "bb": 989139063
     },
     "315": {
       "type": "parallel_homogeneous",
       "cpu": 29000000000,
-      "com": 96062366,
-      "bb": 1154398990
+      "com": 80434196,
+      "bb": 1257453163
     },
     "316": {
       "type": "parallel_homogeneous",
       "cpu": 58000000000,
-      "com": 92529668,
-      "bb": 843889790
+      "com": 116190955,
+      "bb": 946740097
     },
     "317": {
       "type": "parallel_homogeneous",
       "cpu": 8000000000,
-      "com": 109424601,
-      "bb": 941750071
+      "com": 81448166,
+      "bb": 931292387
     },
     "318": {
       "type": "parallel_homogeneous",
       "cpu": 2749000000000,
-      "com": 95522131,
-      "bb": 664741042
+      "com": 72102377,
+      "bb": 918034517
     },
     "319": {
       "type": "parallel_homogeneous",
       "cpu": 8397000000000,
-      "com": 93070427,
-      "bb": 1186952011
+      "com": 126582497,
+      "bb": 988733983
     },
     "320": {
       "type": "parallel_homogeneous",
       "cpu": 14344000000000,
-      "com": 86428314,
-      "bb": 906461734
+      "com": 114688958,
+      "bb": 1000742820
     },
     "321": {
       "type": "parallel_homogeneous",
       "cpu": 62000000000,
-      "com": 66115113,
-      "bb": 1251280861
+      "com": 74379053,
+      "bb": 795929723
     },
     "322": {
       "type": "parallel_homogeneous",
       "cpu": 30133000000000,
-      "com": 104164571,
-      "bb": 1042751873
+      "com": 54200114,
+      "bb": 1123898022
     },
     "323": {
       "type": "parallel_homogeneous",
       "cpu": 869000000000,
-      "com": 92674690,
-      "bb": 1116484619
+      "com": 60178744,
+      "bb": 765935301
     },
     "324": {
       "type": "parallel_homogeneous",
       "cpu": 868000000000,
-      "com": 111315214,
-      "bb": 1085042366
+      "com": 47634653,
+      "bb": 902381323
     },
     "325": {
       "type": "parallel_homogeneous",
       "cpu": 531000000000,
-      "com": 111768902,
-      "bb": 1112221592
+      "com": 96199640,
+      "bb": 856745993
     },
     "326": {
       "type": "parallel_homogeneous",
       "cpu": 56000000000,
-      "com": 115589477,
-      "bb": 1077758807
+      "com": 104180033,
+      "bb": 764770593
     },
     "327": {
       "type": "parallel_homogeneous",
       "cpu": 16000000000,
-      "com": 116269431,
-      "bb": 941900106
+      "com": 132890059,
+      "bb": 978439119
     },
     "328": {
       "type": "parallel_homogeneous",
       "cpu": 5000000000,
-      "com": 115733041,
-      "bb": 1108092774
+      "com": 98508952,
+      "bb": 1138811377
     },
     "329": {
       "type": "parallel_homogeneous",
       "cpu": 22914000000000,
-      "com": 72258021,
-      "bb": 1051392820
+      "com": 74811691,
+      "bb": 1379455861
     },
     "330": {
       "type": "parallel_homogeneous",
       "cpu": 3554000000000,
-      "com": 93187826,
-      "bb": 1146819241
+      "com": 77023832,
+      "bb": 1030702145
     },
     "331": {
       "type": "parallel_homogeneous",
       "cpu": 1744000000000,
-      "com": 63429683,
-      "bb": 969248881
+      "com": 116539490,
+      "bb": 939525933
     },
     "332": {
       "type": "parallel_homogeneous",
       "cpu": 41936000000000,
-      "com": 99337649,
-      "bb": 1029698705
+      "com": 109716059,
+      "bb": 992999259
     },
     "333": {
       "type": "parallel_homogeneous",
       "cpu": 11000000000,
-      "com": 115973702,
-      "bb": 808652867
+      "com": 102923070,
+      "bb": 1291645138
     },
     "334": {
       "type": "parallel_homogeneous",
       "cpu": 19000000000,
-      "com": 79425950,
-      "bb": 1276937963
+      "com": 103489320,
+      "bb": 1371841060
     },
     "335": {
       "type": "parallel_homogeneous",
       "cpu": 35933000000000,
-      "com": 104279195,
-      "bb": 1110762694
+      "com": 65743532,
+      "bb": 1267154208
     },
     "336": {
       "type": "parallel_homogeneous",
       "cpu": 5000000000,
-      "com": 96849110,
-      "bb": 1009148035
+      "com": 101465115,
+      "bb": 1075548519
     },
     "337": {
       "type": "parallel_homogeneous",
       "cpu": 6000000000,
-      "com": 140867364,
-      "bb": 853717017
+      "com": 119809279,
+      "bb": 963900231
     },
     "338": {
       "type": "parallel_homogeneous",
       "cpu": 18000000000,
-      "com": 92494836,
-      "bb": 1190187206
+      "com": 116377680,
+      "bb": 1414691112
     },
     "339": {
       "type": "parallel_homogeneous",
       "cpu": 5000000000,
-      "com": 107678368,
-      "bb": 801440185
+      "com": 126682249,
+      "bb": 1166568260
     },
     "340": {
       "type": "parallel_homogeneous",
       "cpu": 18000000000,
-      "com": 78148251,
-      "bb": 600815720
+      "com": 87989021,
+      "bb": 665960901
     },
     "341": {
       "type": "parallel_homogeneous",
       "cpu": 13000000000,
-      "com": 135212866,
-      "bb": 1185931476
+      "com": 102837821,
+      "bb": 765157014
     },
     "342": {
       "type": "parallel_homogeneous",
       "cpu": 12000000000,
-      "com": 112422421,
-      "bb": 881364571
+      "com": 93304394,
+      "bb": 903615188
     },
     "343": {
       "type": "parallel_homogeneous",
       "cpu": 19137000000000,
-      "com": 96420404,
-      "bb": 818617799
+      "com": 111478452,
+      "bb": 863739265
     },
     "344": {
       "type": "parallel_homogeneous",
       "cpu": 12000000000,
-      "com": 111372167,
-      "bb": 1299712554
+      "com": 64847590,
+      "bb": 1203077544
     },
     "345": {
       "type": "parallel_homogeneous",
       "cpu": 9000000000,
-      "com": 147166118,
-      "bb": 940658402
+      "com": 95380717,
+      "bb": 772541590
     },
     "346": {
       "type": "parallel_homogeneous",
       "cpu": 50000000000,
-      "com": 79363353,
-      "bb": 993293341
+      "com": 93637629,
+      "bb": 1092224226
     },
     "347": {
       "type": "parallel_homogeneous",
       "cpu": 2729000000000,
-      "com": 79032630,
-      "bb": 922759017
+      "com": 99520733,
+      "bb": 1079386700
     },
     "348": {
       "type": "parallel_homogeneous",
       "cpu": 9000000000,
-      "com": 106775598,
-      "bb": 1180085222
+      "com": 96027836,
+      "bb": 659370177
     },
     "349": {
       "type": "parallel_homogeneous",
       "cpu": 29000000000,
-      "com": 98278245,
-      "bb": 1217987803
+      "com": 152952755,
+      "bb": 669714674
     },
     "350": {
       "type": "parallel_homogeneous",
       "cpu": 8000000000,
-      "com": 105067828,
-      "bb": 1518942194
+      "com": 95698401,
+      "bb": 1216635340
     },
     "351": {
       "type": "parallel_homogeneous",
       "cpu": 38000000000,
-      "com": 79545925,
-      "bb": 482279566
+      "com": 101614868,
+      "bb": 937931711
     },
     "352": {
       "type": "parallel_homogeneous",
       "cpu": 22000000000,
-      "com": 111940168,
-      "bb": 676001584
+      "com": 105351216,
+      "bb": 1131381014
     },
     "353": {
       "type": "parallel_homogeneous",
       "cpu": 13000000000,
       "com": 0,
-      "bb": 1021809699
+      "bb": 1140994393
     },
     "354": {
       "type": "parallel_homogeneous",
       "cpu": 36000000000,
-      "com": 122460685,
-      "bb": 826289089
+      "com": 99487605,
+      "bb": 759239214
     },
     "355": {
       "type": "parallel_homogeneous",
       "cpu": 33000000000,
-      "com": 113976648,
-      "bb": 684592277
+      "com": 48951472,
+      "bb": 817898758
     },
     "356": {
       "type": "parallel_homogeneous",
       "cpu": 45000000000,
-      "com": 86296139,
-      "bb": 964411333
+      "com": 84040901,
+      "bb": 771183147
     },
     "357": {
       "type": "parallel_homogeneous",
       "cpu": 439000000000,
       "com": 0,
-      "bb": 584337556
+      "bb": 829606298
     },
     "358": {
       "type": "parallel_homogeneous",
       "cpu": 375000000000,
-      "com": 93125438,
-      "bb": 1030858283
+      "com": 82812964,
+      "bb": 1046356844
     },
     "359": {
       "type": "parallel_homogeneous",
       "cpu": 286000000000,
-      "com": 96586891,
-      "bb": 815351063
+      "com": 118677885,
+      "bb": 899948713
     },
     "360": {
       "type": "parallel_homogeneous",
       "cpu": 439000000000,
-      "com": 105956609,
-      "bb": 866292340
+      "com": 136172029,
+      "bb": 912294405
     },
     "361": {
       "type": "parallel_homogeneous",
       "cpu": 2729000000000,
-      "com": 95151000,
-      "bb": 861948570
+      "com": 83233235,
+      "bb": 1224845233
     },
     "362": {
       "type": "parallel_homogeneous",
       "cpu": 30000000000,
-      "com": 118887278,
-      "bb": 888143615
+      "com": 109137239,
+      "bb": 917011716
     },
     "363": {
       "type": "parallel_homogeneous",
       "cpu": 9000000000,
       "com": 0,
-      "bb": 876615438
+      "bb": 1299609022
     },
     "364": {
       "type": "parallel_homogeneous",
       "cpu": 25000000000,
       "com": 0,
-      "bb": 795386798
+      "bb": 1181106641
     },
     "365": {
       "type": "parallel_homogeneous",
       "cpu": 58049000000000,
-      "com": 58192095,
-      "bb": 749220785
+      "com": 108358873,
+      "bb": 891414460
     },
     "366": {
       "type": "parallel_homogeneous",
       "cpu": 41000000000,
-      "com": 63294337,
-      "bb": 768401983
+      "com": 98347119,
+      "bb": 481644364
     },
     "367": {
       "type": "parallel_homogeneous",
       "cpu": 65000000000,
-      "com": 94315651,
-      "bb": 994134733
+      "com": 134902775,
+      "bb": 1051499772
     },
     "368": {
       "type": "parallel_homogeneous",
       "cpu": 180000000000,
-      "com": 92610935,
-      "bb": 1013739666
+      "com": 107885485,
+      "bb": 772386776
     },
     "369": {
       "type": "parallel_homogeneous",
       "cpu": 459000000000,
       "com": 0,
-      "bb": 785265688
+      "bb": 913038024
     },
     "370": {
       "type": "parallel_homogeneous",
       "cpu": 53288000000000,
-      "com": 87931657,
-      "bb": 809953355
+      "com": 124394941,
+      "bb": 838489512
     },
     "371": {
       "type": "parallel_homogeneous",
       "cpu": 38000000000,
-      "com": 72048540,
-      "bb": 992165176
+      "com": 109031329,
+      "bb": 1338930122
     },
     "372": {
       "type": "parallel_homogeneous",
       "cpu": 2721000000000,
-      "com": 95617862,
-      "bb": 564495756
+      "com": 112654679,
+      "bb": 1401075329
     },
     "373": {
       "type": "parallel_homogeneous",
       "cpu": 260000000000,
-      "com": 71432867,
-      "bb": 950758139
+      "com": 122334643,
+      "bb": 1350102195
     },
     "374": {
       "type": "parallel_homogeneous",
       "cpu": 8173000000000,
-      "com": 124352472,
-      "bb": 1242529052
+      "com": 124755452,
+      "bb": 805473500
     },
     "375": {
       "type": "parallel_homogeneous",
       "cpu": 21000000000,
-      "com": 139400419,
-      "bb": 1052584770
+      "com": 119087643,
+      "bb": 924072960
     },
     "376": {
       "type": "parallel_homogeneous",
       "cpu": 152000000000,
-      "com": 105969149,
-      "bb": 1089738028
+      "com": 142327810,
+      "bb": 930469547
     },
     "377": {
       "type": "parallel_homogeneous",
       "cpu": 21000000000,
-      "com": 97784196,
-      "bb": 1155512836
+      "com": 144670447,
+      "bb": 1234917399
     },
     "378": {
       "type": "parallel_homogeneous",
       "cpu": 106000000000,
-      "com": 97634991,
-      "bb": 1094315789
+      "com": 123092914,
+      "bb": 737338097
     },
     "379": {
       "type": "parallel_homogeneous",
       "cpu": 23000000000,
       "com": 0,
-      "bb": 867972592
+      "bb": 864451288
     },
     "380": {
       "type": "parallel_homogeneous",
       "cpu": 27000000000,
-      "com": 119900710,
-      "bb": 963116407
+      "com": 112536889,
+      "bb": 1323432588
     },
     "381": {
       "type": "parallel_homogeneous",
       "cpu": 347000000000,
-      "com": 94027231,
-      "bb": 812676514
+      "com": 81582905,
+      "bb": 1321065931
     },
     "382": {
       "type": "parallel_homogeneous",
       "cpu": 35172000000000,
-      "com": 94198312,
-      "bb": 1096036067
+      "com": 120973972,
+      "bb": 744901602
     },
     "383": {
       "type": "parallel_homogeneous",
       "cpu": 66000000000,
       "com": 0,
-      "bb": 1152621993
+      "bb": 1236040011
     },
     "384": {
       "type": "parallel_homogeneous",
       "cpu": 29000000000,
-      "com": 113589405,
-      "bb": 920817484
+      "com": 107995823,
+      "bb": 873427237
     },
     "385": {
       "type": "parallel_homogeneous",
       "cpu": 24000000000,
-      "com": 99735723,
-      "bb": 961584686
+      "com": 98900001,
+      "bb": 1060820297
     },
     "386": {
       "type": "parallel_homogeneous",
       "cpu": 26000000000,
-      "com": 113423308,
-      "bb": 386977551
+      "com": 81855625,
+      "bb": 799478190
     },
     "387": {
       "type": "parallel_homogeneous",
       "cpu": 20000000000,
-      "com": 114968895,
-      "bb": 873151494
+      "com": 78548691,
+      "bb": 839004745
     },
     "388": {
       "type": "parallel_homogeneous",
       "cpu": 924000000000,
-      "com": 41685280,
-      "bb": 882078908
+      "com": 93167323,
+      "bb": 1051150466
     },
     "389": {
       "type": "parallel_homogeneous",
       "cpu": 31000000000,
-      "com": 99297581,
-      "bb": 740538920
+      "com": 88958623,
+      "bb": 1371095476
     },
     "390": {
       "type": "parallel_homogeneous",
       "cpu": 8000000000,
-      "com": 96041613,
-      "bb": 1101025551
+      "com": 108476642,
+      "bb": 901182998
     },
     "391": {
       "type": "parallel_homogeneous",
       "cpu": 25000000000,
-      "com": 83495244,
-      "bb": 849342812
+      "com": 89992966,
+      "bb": 1238400718
     },
     "392": {
       "type": "parallel_homogeneous",
       "cpu": 21000000000,
-      "com": 125430527,
-      "bb": 1157458067
+      "com": 120857291,
+      "bb": 974891953
     },
     "393": {
       "type": "parallel_homogeneous",
       "cpu": 26000000000,
-      "com": 69589539,
-      "bb": 1262460287
+      "com": 87166306,
+      "bb": 765197491
     },
     "394": {
       "type": "parallel_homogeneous",
       "cpu": 21000000000,
-      "com": 119952903,
-      "bb": 753196173
+      "com": 151628978,
+      "bb": 937262482
     },
     "395": {
       "type": "parallel_homogeneous",
       "cpu": 35853000000000,
-      "com": 144864156,
-      "bb": 1030329019
+      "com": 140496595,
+      "bb": 893387128
     },
     "396": {
       "type": "parallel_homogeneous",
       "cpu": 19000000000,
-      "com": 84192080,
-      "bb": 816407273
+      "com": 110016781,
+      "bb": 977073029
     },
     "397": {
       "type": "parallel_homogeneous",
       "cpu": 5000000000,
-      "com": 121704521,
-      "bb": 851137969
+      "com": 96604776,
+      "bb": 1210769199
     },
     "398": {
       "type": "parallel_homogeneous",
       "cpu": 5000000000,
-      "com": 86573242,
-      "bb": 1077804575
+      "com": 148246841,
+      "bb": 764717420
     },
     "399": {
       "type": "parallel_homogeneous",
       "cpu": 19000000000,
-      "com": 91123253,
-      "bb": 1237544469
+      "com": 92348126,
+      "bb": 906782448
     },
     "400": {
       "type": "parallel_homogeneous",
       "cpu": 12000000000,
-      "com": 76326691,
-      "bb": 1017061326
+      "com": 104340360,
+      "bb": 1093611569
     },
     "401": {
       "type": "parallel_homogeneous",
       "cpu": 10000000000,
-      "com": 102326979,
-      "bb": 1235357847
+      "com": 82697173,
+      "bb": 1113269571
     },
     "402": {
       "type": "parallel_homogeneous",
       "cpu": 27000000000,
-      "com": 91129163,
-      "bb": 992117214
+      "com": 100473401,
+      "bb": 1168651136
     },
     "403": {
       "type": "parallel_homogeneous",
       "cpu": 115000000000,
       "com": 0,
-      "bb": 997153397
+      "bb": 1616367857
     },
     "404": {
       "type": "parallel_homogeneous",
       "cpu": 9000000000,
-      "com": 126655825,
-      "bb": 1208308071
+      "com": 101500282,
+      "bb": 935056006
     },
     "405": {
       "type": "parallel_homogeneous",
       "cpu": 54000000000,
-      "com": 72740315,
-      "bb": 1230449479
+      "com": 64982165,
+      "bb": 1204838408
     },
     "406": {
       "type": "parallel_homogeneous",
       "cpu": 135000000000,
-      "com": 117258934,
-      "bb": 846733195
+      "com": 119519611,
+      "bb": 1285663838
     },
     "407": {
       "type": "parallel_homogeneous",
       "cpu": 4000000000,
       "com": 0,
-      "bb": 1141808551
+      "bb": 1230145780
     },
     "408": {
       "type": "parallel_homogeneous",
       "cpu": 4000000000,
-      "com": 125307713,
-      "bb": 1021019613
+      "com": 83859531,
+      "bb": 1059085861
     },
     "409": {
       "type": "parallel_homogeneous",
       "cpu": 35000000000,
-      "com": 69371973,
-      "bb": 993716667
+      "com": 99208562,
+      "bb": 950222479
     },
     "410": {
       "type": "parallel_homogeneous",
       "cpu": 33000000000,
-      "com": 65003024,
-      "bb": 443149937
+      "com": 98024436,
+      "bb": 916909784
     },
     "411": {
       "type": "parallel_homogeneous",
       "cpu": 25000000000,
       "com": 0,
-      "bb": 779268097
+      "bb": 1294207891
     },
     "412": {
       "type": "parallel_homogeneous",
       "cpu": 2000000000,
-      "com": 110554132,
-      "bb": 906241358
+      "com": 87238767,
+      "bb": 1260156626
     },
     "413": {
       "type": "parallel_homogeneous",
       "cpu": 15000000000,
       "com": 0,
-      "bb": 1054793173
+      "bb": 1317952204
     },
     "414": {
       "type": "parallel_homogeneous",
       "cpu": 30000000000,
-      "com": 124369397,
-      "bb": 975865649
+      "com": 93716357,
+      "bb": 858847404
     },
     "415": {
       "type": "parallel_homogeneous",
       "cpu": 20000000000,
-      "com": 108788007,
-      "bb": 1034701469
+      "com": 129149388,
+      "bb": 884089457
     },
     "416": {
       "type": "parallel_homogeneous",
       "cpu": 10000000000,
-      "com": 113737075,
-      "bb": 1068282954
+      "com": 112451722,
+      "bb": 1010335437
     },
     "417": {
       "type": "parallel_homogeneous",
       "cpu": 11000000000,
-      "com": 115622307,
-      "bb": 1179393347
+      "com": 103424075,
+      "bb": 1049957491
     },
     "418": {
       "type": "parallel_homogeneous",
       "cpu": 21000000000,
-      "com": 100824492,
-      "bb": 1040929506
+      "com": 80634835,
+      "bb": 953401994
     },
     "419": {
       "type": "parallel_homogeneous",
       "cpu": 27000000000,
-      "com": 110817107,
-      "bb": 1372692424
+      "com": 136614170,
+      "bb": 900805347
     },
     "420": {
       "type": "parallel_homogeneous",
       "cpu": 16000000000,
-      "com": 117542154,
-      "bb": 752078917
+      "com": 88300330,
+      "bb": 990701570
     },
     "421": {
       "type": "parallel_homogeneous",
       "cpu": 19000000000,
-      "com": 114901399,
-      "bb": 1026531239
+      "com": 98609057,
+      "bb": 1125482321
     },
     "422": {
       "type": "parallel_homogeneous",
       "cpu": 43000000000,
-      "com": 117532884,
-      "bb": 1199856943
+      "com": 89430571,
+      "bb": 1126445713
     },
     "423": {
       "type": "parallel_homogeneous",
       "cpu": 16000000000,
-      "com": 119112156,
-      "bb": 1254887160
+      "com": 92434082,
+      "bb": 916576495
     },
     "424": {
       "type": "parallel_homogeneous",
       "cpu": 13000000000,
-      "com": 115723502,
-      "bb": 1274052579
+      "com": 92237214,
+      "bb": 1162015418
     },
     "425": {
       "type": "parallel_homogeneous",
       "cpu": 23000000000,
-      "com": 119563928,
-      "bb": 944203317
+      "com": 101551688,
+      "bb": 651258040
     },
     "426": {
       "type": "parallel_homogeneous",
       "cpu": 15000000000,
-      "com": 87589043,
-      "bb": 1142876959
+      "com": 127328120,
+      "bb": 1083489731
     },
     "427": {
       "type": "parallel_homogeneous",
       "cpu": 5000000000,
-      "com": 98650232,
-      "bb": 746275684
+      "com": 124401414,
+      "bb": 1098324744
     },
     "428": {
       "type": "parallel_homogeneous",
       "cpu": 20000000000,
-      "com": 97386815,
-      "bb": 1096317611
+      "com": 99099587,
+      "bb": 607472853
     },
     "429": {
       "type": "parallel_homogeneous",
       "cpu": 22000000000,
-      "com": 157085536,
-      "bb": 923184640
+      "com": 106984215,
+      "bb": 922275885
     },
     "430": {
       "type": "parallel_homogeneous",
       "cpu": 8000000000,
-      "com": 84797780,
-      "bb": 884889896
+      "com": 91606589,
+      "bb": 800141735
     },
     "431": {
       "type": "parallel_homogeneous",
       "cpu": 20000000000,
-      "com": 77334083,
-      "bb": 656700466
+      "com": 132530613,
+      "bb": 1204780678
     },
     "432": {
       "type": "parallel_homogeneous",
       "cpu": 14000000000,
-      "com": 142611393,
-      "bb": 872524043
+      "com": 85044345,
+      "bb": 970062721
     },
     "433": {
       "type": "parallel_homogeneous",
       "cpu": 27000000000,
-      "com": 94924368,
-      "bb": 710427317
+      "com": 125468848,
+      "bb": 933900406
     },
     "434": {
       "type": "parallel_homogeneous",
       "cpu": 3535000000000,
       "com": 0,
-      "bb": 1053475335
+      "bb": 763791686
     },
     "435": {
       "type": "parallel_homogeneous",
       "cpu": 25000000000,
-      "com": 109390530,
-      "bb": 1566689624
+      "com": 124605004,
+      "bb": 1002502997
     },
     "436": {
       "type": "parallel_homogeneous",
       "cpu": 10000000000,
-      "com": 122678782,
-      "bb": 939982555
+      "com": 112322084,
+      "bb": 640640424
     },
     "437": {
       "type": "parallel_homogeneous",
       "cpu": 17000000000,
-      "com": 100489403,
-      "bb": 740734644
+      "com": 74024401,
+      "bb": 866094643
     },
     "438": {
       "type": "parallel_homogeneous",
       "cpu": 18000000000,
-      "com": 62615570,
-      "bb": 1191444660
+      "com": 54101991,
+      "bb": 1149023730
     },
     "439": {
       "type": "parallel_homogeneous",
       "cpu": 17000000000,
-      "com": 102596675,
-      "bb": 1113091494
+      "com": 83776077,
+      "bb": 1015327995
     },
     "440": {
       "type": "parallel_homogeneous",
       "cpu": 8000000000,
-      "com": 114395726,
-      "bb": 864221093
+      "com": 115664014,
+      "bb": 990185201
     },
     "441": {
       "type": "parallel_homogeneous",
       "cpu": 5000000000,
-      "com": 128587802,
-      "bb": 892683617
+      "com": 112876364,
+      "bb": 997669175
     },
     "442": {
       "type": "parallel_homogeneous",
       "cpu": 6000000000,
-      "com": 105329396,
-      "bb": 1364340911
+      "com": 115422601,
+      "bb": 559591112
     },
     "443": {
       "type": "parallel_homogeneous",
       "cpu": 14000000000,
-      "com": 95029533,
-      "bb": 1168991805
+      "com": 134449059,
+      "bb": 1152896611
     },
     "444": {
       "type": "parallel_homogeneous",
       "cpu": 21000000000,
-      "com": 100222471,
-      "bb": 868999055
+      "com": 90861121,
+      "bb": 985421749
     },
     "445": {
       "type": "parallel_homogeneous",
       "cpu": 4000000000,
-      "com": 90269767,
-      "bb": 1082664596
+      "com": 98735990,
+      "bb": 994614105
     },
     "446": {
       "type": "parallel_homogeneous",
       "cpu": 6000000000,
-      "com": 100943776,
-      "bb": 634732483
+      "com": 100425506,
+      "bb": 972443417
     },
     "447": {
       "type": "parallel_homogeneous",
       "cpu": 4000000000,
-      "com": 123556560,
-      "bb": 1141970256
+      "com": 100790425,
+      "bb": 1099488796
     },
     "448": {
       "type": "parallel_homogeneous",
       "cpu": 6000000000,
-      "com": 89310595,
-      "bb": 1109988518
+      "com": 85520030,
+      "bb": 1109853182
     },
     "449": {
       "type": "parallel_homogeneous",
       "cpu": 33000000000,
-      "com": 119006105,
-      "bb": 724914139
+      "com": 75172632,
+      "bb": 1723667605
     },
     "450": {
       "type": "parallel_homogeneous",
       "cpu": 15000000000,
-      "com": 88101254,
-      "bb": 868374090
+      "com": 108574262,
+      "bb": 1307147988
     },
     "451": {
       "type": "parallel_homogeneous",
       "cpu": 10000000000,
-      "com": 116653583,
-      "bb": 715077281
+      "com": 72763123,
+      "bb": 840954308
     },
     "452": {
       "type": "parallel_homogeneous",
       "cpu": 8000000000,
       "com": 0,
-      "bb": 976941733
+      "bb": 803870139
     },
     "453": {
       "type": "parallel_homogeneous",
       "cpu": 9000000000,
       "com": 0,
-      "bb": 1120811182
+      "bb": 1112731779
     },
     "454": {
       "type": "parallel_homogeneous",
       "cpu": 112000000000,
-      "com": 123038352,
-      "bb": 1175945499
+      "com": 143875586,
+      "bb": 1260151617
     },
     "455": {
       "type": "parallel_homogeneous",
       "cpu": 11925000000000,
-      "com": 84238472,
-      "bb": 1033141255
+      "com": 119443117,
+      "bb": 581652126
     },
     "456": {
       "type": "parallel_homogeneous",
       "cpu": 1765000000000,
-      "com": 118173707,
-      "bb": 1094163519
+      "com": 105481442,
+      "bb": 1193230228
     },
     "457": {
       "type": "parallel_homogeneous",
       "cpu": 238000000000,
-      "com": 119654976,
-      "bb": 845683755
+      "com": 90375190,
+      "bb": 1220822101
     },
     "458": {
       "type": "parallel_homogeneous",
       "cpu": 240000000000,
       "com": 0,
-      "bb": 951803686
+      "bb": 1136124250
     },
     "459": {
       "type": "parallel_homogeneous",
       "cpu": 30000000000,
       "com": 0,
-      "bb": 1271411367
+      "bb": 1098461984
     },
     "460": {
       "type": "parallel_homogeneous",
       "cpu": 32000000000,
-      "com": 107962037,
-      "bb": 824526993
+      "com": 113060083,
+      "bb": 934550229
     },
     "461": {
       "type": "parallel_homogeneous",
       "cpu": 17000000000,
-      "com": 88001157,
-      "bb": 1191988715
+      "com": 97248562,
+      "bb": 1104535571
     },
     "462": {
       "type": "parallel_homogeneous",
       "cpu": 9230000000000,
-      "com": 116313479,
-      "bb": 918485479
+      "com": 135671901,
+      "bb": 923376053
     },
     "463": {
       "type": "parallel_homogeneous",
       "cpu": 24000000000,
-      "com": 119823517,
-      "bb": 891300408
+      "com": 117505778,
+      "bb": 1610920913
     },
     "464": {
       "type": "parallel_homogeneous",
       "cpu": 37000000000,
-      "com": 133457103,
-      "bb": 1434667399
+      "com": 114351435,
+      "bb": 809505707
     },
     "465": {
       "type": "parallel_homogeneous",
       "cpu": 28000000000,
-      "com": 79244120,
-      "bb": 715181978
+      "com": 98478930,
+      "bb": 1056291374
     },
     "466": {
       "type": "parallel_homogeneous",
       "cpu": 25000000000,
       "com": 0,
-      "bb": 847371836
+      "bb": 1287931646
     },
     "467": {
       "type": "parallel_homogeneous",
       "cpu": 15000000000,
-      "com": 120333985,
-      "bb": 1179039165
+      "com": 96347076,
+      "bb": 1018103128
     },
     "468": {
       "type": "parallel_homogeneous",
       "cpu": 22000000000,
-      "com": 80960968,
-      "bb": 944379114
+      "com": 71874898,
+      "bb": 1047954898
     },
     "469": {
       "type": "parallel_homogeneous",
       "cpu": 19000000000,
-      "com": 87197704,
-      "bb": 1059642179
+      "com": 70974991,
+      "bb": 793311087
     },
     "470": {
       "type": "parallel_homogeneous",
       "cpu": 21000000000,
-      "com": 90747123,
-      "bb": 1061900421
+      "com": 132452294,
+      "bb": 1162383404
     },
     "471": {
       "type": "parallel_homogeneous",
       "cpu": 27000000000,
-      "com": 130497442,
-      "bb": 1064733117
+      "com": 106201717,
+      "bb": 1026489425
     },
     "472": {
       "type": "parallel_homogeneous",
       "cpu": 19000000000,
       "com": 0,
-      "bb": 976434911
+      "bb": 1083654573
     },
     "473": {
       "type": "parallel_homogeneous",
       "cpu": 32000000000,
-      "com": 103461532,
-      "bb": 1136577313
+      "com": 86631152,
+      "bb": 727603152
     },
     "474": {
       "type": "parallel_homogeneous",
       "cpu": 19000000000,
-      "com": 114198681,
-      "bb": 1214644859
+      "com": 136276287,
+      "bb": 1056169028
     },
     "475": {
       "type": "parallel_homogeneous",
       "cpu": 22000000000,
-      "com": 105592444,
-      "bb": 1265242976
+      "com": 90961515,
+      "bb": 1216614895
     },
     "476": {
       "type": "parallel_homogeneous",
       "cpu": 19000000000,
-      "com": 98800917,
-      "bb": 823572075
+      "com": 94240506,
+      "bb": 1078044552
     },
     "477": {
       "type": "parallel_homogeneous",
       "cpu": 43000000000,
-      "com": 111839936,
-      "bb": 961859423
+      "com": 129544872,
+      "bb": 1064191092
     },
     "478": {
       "type": "parallel_homogeneous",
       "cpu": 18000000000,
-      "com": 127446134,
-      "bb": 850513664
+      "com": 77355704,
+      "bb": 1182056184
     },
     "479": {
       "type": "parallel_homogeneous",
       "cpu": 13000000000,
       "com": 0,
-      "bb": 851274618
+      "bb": 1195567201
     },
     "480": {
       "type": "parallel_homogeneous",
       "cpu": 14000000000,
-      "com": 147942453,
-      "bb": 1132615740
+      "com": 116769028,
+      "bb": 1194716383
     },
     "481": {
       "type": "parallel_homogeneous",
       "cpu": 23000000000,
-      "com": 109889158,
-      "bb": 1015006691
+      "com": 89613690,
+      "bb": 831898127
     },
     "482": {
       "type": "parallel_homogeneous",
       "cpu": 8919000000000,
-      "com": 71797696,
-      "bb": 883557859
+      "com": 76140407,
+      "bb": 1005050391
     },
     "483": {
       "type": "parallel_homogeneous",
       "cpu": 20000000000,
       "com": 0,
-      "bb": 686857165
+      "bb": 986511232
     },
     "484": {
       "type": "parallel_homogeneous",
       "cpu": 83000000000,
-      "com": 170681492,
-      "bb": 1319265606
+      "com": 104238490,
+      "bb": 1337340588
     },
     "485": {
       "type": "parallel_homogeneous",
       "cpu": 1284000000000,
-      "com": 57717782,
-      "bb": 1001774764
+      "com": 106769201,
+      "bb": 674700724
     },
     "486": {
       "type": "parallel_homogeneous",
       "cpu": 22000000000,
       "com": 0,
-      "bb": 850561047
+      "bb": 914305963
     },
     "487": {
       "type": "parallel_homogeneous",
       "cpu": 123000000000,
       "com": 0,
-      "bb": 833517175
+      "bb": 1252884183
     },
     "488": {
       "type": "parallel_homogeneous",
       "cpu": 22000000000,
       "com": 0,
-      "bb": 885976554
+      "bb": 965959822
     },
     "489": {
       "type": "parallel_homogeneous",
       "cpu": 14000000000,
-      "com": 98045293,
-      "bb": 944406063
+      "com": 130058063,
+      "bb": 810401881
     },
     "490": {
       "type": "parallel_homogeneous",
       "cpu": 15000000000,
-      "com": 103240559,
-      "bb": 1092386826
+      "com": 117387634,
+      "bb": 810786485
     },
     "491": {
       "type": "parallel_homogeneous",
       "cpu": 33000000000,
-      "com": 77831607,
-      "bb": 1058592706
+      "com": 118853791,
+      "bb": 728724821
     },
     "492": {
       "type": "parallel_homogeneous",
       "cpu": 323000000000,
-      "com": 48263079,
-      "bb": 1071120838
+      "com": 106514245,
+      "bb": 735889542
     },
     "493": {
       "type": "parallel_homogeneous",
       "cpu": 116000000000,
       "com": 0,
-      "bb": 843820058
+      "bb": 1106196928
     },
     "494": {
       "type": "parallel_homogeneous",
       "cpu": 1770000000000,
-      "com": 117138720,
-      "bb": 396572426
+      "com": 111653069,
+      "bb": 881852369
     },
     "495": {
       "type": "parallel_homogeneous",
       "cpu": 44000000000,
-      "com": 122967207,
-      "bb": 1052741357
+      "com": 93381514,
+      "bb": 886779536
     },
     "496": {
       "type": "parallel_homogeneous",
       "cpu": 6930000000000,
-      "com": 114519686,
-      "bb": 1232406447
+      "com": 108114796,
+      "bb": 623257371
     },
     "497": {
       "type": "parallel_homogeneous",
       "cpu": 2748000000000,
-      "com": 90771023,
-      "bb": 1334338979
+      "com": 117819001,
+      "bb": 888920698
     },
     "498": {
       "type": "parallel_homogeneous",
       "cpu": 14062000000000,
       "com": 0,
-      "bb": 992013602
+      "bb": 843618404
     },
     "499": {
       "type": "parallel_homogeneous",
       "cpu": 8606000000000,
-      "com": 66040097,
-      "bb": 1137613360
+      "com": 102966880,
+      "bb": 745215008
     },
     "500": {
       "type": "parallel_homogeneous",
       "cpu": 5000000000,
-      "com": 124477672,
-      "bb": 1379516024
+      "com": 68878700,
+      "bb": 822031383
     },
     "501": {
       "type": "parallel_homogeneous",
       "cpu": 15000000000,
-      "com": 60567448,
-      "bb": 1253241061
+      "com": 126432067,
+      "bb": 946267752
     },
     "502": {
       "type": "parallel_homogeneous",
       "cpu": 29000000000,
-      "com": 96751811,
-      "bb": 1250537167
+      "com": 79940583,
+      "bb": 971829634
     },
     "503": {
       "type": "parallel_homogeneous",
       "cpu": 26000000000,
-      "com": 121782073,
-      "bb": 1093199334
+      "com": 110500102,
+      "bb": 1247769245
     },
     "504": {
       "type": "parallel_homogeneous",
       "cpu": 10000000000,
-      "com": 109516540,
-      "bb": 1019013030
+      "com": 123261099,
+      "bb": 905771581
     },
     "505": {
       "type": "parallel_homogeneous",
       "cpu": 17000000000,
-      "com": 134211039,
-      "bb": 802594332
+      "com": 106150311,
+      "bb": 996879473
     },
     "506": {
       "type": "parallel_homogeneous",
       "cpu": 5000000000,
-      "com": 80966203,
-      "bb": 767903206
+      "com": 113198227,
+      "bb": 861662693
     },
     "507": {
       "type": "parallel_homogeneous",
       "cpu": 32000000000,
-      "com": 62946862,
-      "bb": 745767742
+      "com": 97913812,
+      "bb": 917406113
     },
     "508": {
       "type": "parallel_homogeneous",
       "cpu": 23000000000,
-      "com": 107804599,
-      "bb": 943877698
+      "com": 59095610,
+      "bb": 657585290
     },
     "509": {
       "type": "parallel_homogeneous",
       "cpu": 28000000000,
-      "com": 91564451,
-      "bb": 685847062
+      "com": 77945123,
+      "bb": 801029683
     },
     "510": {
       "type": "parallel_homogeneous",
       "cpu": 21000000000,
-      "com": 130748515,
-      "bb": 708493210
+      "com": 92386960,
+      "bb": 945241096
     },
     "511": {
       "type": "parallel_homogeneous",
       "cpu": 19000000000,
-      "com": 85024670,
-      "bb": 1344968681
+      "com": 65490013,
+      "bb": 874422917
     },
     "512": {
       "type": "parallel_homogeneous",
       "cpu": 17000000000,
-      "com": 111977475,
-      "bb": 1553721026
+      "com": 82284064,
+      "bb": 813927473
     },
     "513": {
       "type": "parallel_homogeneous",
       "cpu": 12000000000,
-      "com": 118018776,
-      "bb": 980349941
+      "com": 109024465,
+      "bb": 1201160010
     },
     "514": {
       "type": "parallel_homogeneous",
       "cpu": 1536000000000,
       "com": 0,
-      "bb": 852267837
+      "bb": 765763366
     },
     "515": {
       "type": "parallel_homogeneous",
       "cpu": 1766000000000,
-      "com": 69450187,
-      "bb": 680261560
+      "com": 126673194,
+      "bb": 1006179925
     },
     "516": {
       "type": "parallel_homogeneous",
       "cpu": 3554000000000,
-      "com": 90956900,
-      "bb": 681559347
+      "com": 103936803,
+      "bb": 756212485
     },
     "517": {
       "type": "parallel_homogeneous",
       "cpu": 20241000000000,
-      "com": 114150336,
-      "bb": 1220065734
+      "com": 98716872,
+      "bb": 861549885
     },
     "518": {
       "type": "parallel_homogeneous",
       "cpu": 11000000000,
       "com": 0,
-      "bb": 1112966560
+      "bb": 935679749
     },
     "519": {
       "type": "parallel_homogeneous",
       "cpu": 111000000000,
       "com": 0,
-      "bb": 995766571
+      "bb": 1396809098
     },
     "520": {
       "type": "parallel_homogeneous",
       "cpu": 666000000000,
       "com": 0,
-      "bb": 907063554
+      "bb": 1109647030
     },
     "521": {
       "type": "parallel_homogeneous",
       "cpu": 363000000000,
       "com": 0,
-      "bb": 956546998
+      "bb": 1001740409
     },
     "522": {
       "type": "parallel_homogeneous",
       "cpu": 152000000000,
       "com": 0,
-      "bb": 1521443669
+      "bb": 1105388235
     },
     "523": {
       "type": "parallel_homogeneous",
       "cpu": 47104000000000,
-      "com": 101492357,
-      "bb": 939997696
+      "com": 123477020,
+      "bb": 1338400121
     },
     "524": {
       "type": "parallel_homogeneous",
       "cpu": 35931000000000,
-      "com": 85914900,
-      "bb": 579902072
+      "com": 88829749,
+      "bb": 908601919
     },
     "525": {
       "type": "parallel_homogeneous",
       "cpu": 35939000000000,
-      "com": 131738507,
-      "bb": 1012916891
+      "com": 65218499,
+      "bb": 1161864356
     },
     "526": {
       "type": "parallel_homogeneous",
       "cpu": 634000000000,
-      "com": 118343547,
-      "bb": 910988603
+      "com": 89008194,
+      "bb": 1052139502
     },
     "527": {
       "type": "parallel_homogeneous",
       "cpu": 17000000000,
-      "com": 124422541,
-      "bb": 803557779
+      "com": 88823642,
+      "bb": 1147614899
     },
     "528": {
       "type": "parallel_homogeneous",
       "cpu": 24000000000,
-      "com": 103974622,
-      "bb": 1078951971
+      "com": 115695407,
+      "bb": 836473504
     },
     "529": {
       "type": "parallel_homogeneous",
       "cpu": 29000000000,
-      "com": 89640972,
-      "bb": 800219986
+      "com": 90169316,
+      "bb": 847081967
     },
     "530": {
       "type": "parallel_homogeneous",
       "cpu": 20000000000,
-      "com": 111146103,
-      "bb": 1117063090
+      "com": 106465367,
+      "bb": 881782313
     },
     "531": {
       "type": "parallel_homogeneous",
       "cpu": 76000000000,
-      "com": 113315630,
-      "bb": 994569228
+      "com": 116963812,
+      "bb": 881190579
     },
     "532": {
       "type": "parallel_homogeneous",
       "cpu": 21500000000000,
-      "com": 120644662,
-      "bb": 1299923458
+      "com": 65599286,
+      "bb": 917376458
     },
     "533": {
       "type": "parallel_homogeneous",
       "cpu": 16000000000,
-      "com": 101652845,
-      "bb": 1071987226
+      "com": 80876440,
+      "bb": 1081793411
     },
     "534": {
       "type": "parallel_homogeneous",
       "cpu": 52000000000,
-      "com": 96097420,
-      "bb": 963387549
+      "com": 110860896,
+      "bb": 1034068874
     },
     "535": {
       "type": "parallel_homogeneous",
       "cpu": 12000000000,
-      "com": 71760211,
-      "bb": 1044350371
+      "com": 96124283,
+      "bb": 1178719104
     },
     "536": {
       "type": "parallel_homogeneous",
       "cpu": 25000000000,
-      "com": 103202555,
-      "bb": 1438391060
+      "com": 100174953,
+      "bb": 683675477
     },
     "537": {
       "type": "parallel_homogeneous",
       "cpu": 26000000000,
-      "com": 114099265,
-      "bb": 843329326
+      "com": 121318169,
+      "bb": 1071225577
     },
     "538": {
       "type": "parallel_homogeneous",
       "cpu": 194000000000,
-      "com": 79458010,
-      "bb": 769476672
+      "com": 114139425,
+      "bb": 761634264
     },
     "539": {
       "type": "parallel_homogeneous",
       "cpu": 14000000000,
-      "com": 149370398,
-      "bb": 752631103
+      "com": 127242952,
+      "bb": 816733404
     },
     "540": {
       "type": "parallel_homogeneous",
       "cpu": 13000000000,
-      "com": 79240758,
-      "bb": 1437848798
+      "com": 85991065,
+      "bb": 825032379
     },
     "541": {
       "type": "parallel_homogeneous",
       "cpu": 901000000000,
-      "com": 75371944,
-      "bb": 988409910
+      "com": 107010371,
+      "bb": 1297649685
     },
     "542": {
       "type": "parallel_homogeneous",
       "cpu": 139000000000,
-      "com": 116380906,
-      "bb": 869889270
+      "com": 90217208,
+      "bb": 1473616560
     },
     "543": {
       "type": "parallel_homogeneous",
       "cpu": 166000000000,
-      "com": 130983525,
-      "bb": 982350721
+      "com": 81544752,
+      "bb": 880247475
     },
     "544": {
       "type": "parallel_homogeneous",
       "cpu": 11000000000,
-      "com": 110058384,
-      "bb": 1041504548
+      "com": 106522269,
+      "bb": 1040910310
     },
     "545": {
       "type": "parallel_homogeneous",
       "cpu": 19000000000,
-      "com": 89444876,
-      "bb": 786555958
+      "com": 101599575,
+      "bb": 710574429
     },
     "546": {
       "type": "parallel_homogeneous",
       "cpu": 28000000000,
-      "com": 96114737,
-      "bb": 800884900
+      "com": 69922206,
+      "bb": 1391303943
     },
     "547": {
       "type": "parallel_homogeneous",
       "cpu": 13000000000,
-      "com": 102036388,
-      "bb": 1217918519
+      "com": 53699879,
+      "bb": 992747039
     },
     "548": {
       "type": "parallel_homogeneous",
       "cpu": 25000000000,
-      "com": 77230528,
-      "bb": 1143033493
+      "com": 124682284,
+      "bb": 937773134
     },
     "549": {
       "type": "parallel_homogeneous",
       "cpu": 28000000000,
-      "com": 116126417,
-      "bb": 885709095
+      "com": 133885305,
+      "bb": 1049191549
     },
     "550": {
       "type": "parallel_homogeneous",
       "cpu": 168000000000,
-      "com": 106586705,
-      "bb": 888536246
+      "com": 89442200,
+      "bb": 1008432496
     },
     "551": {
       "type": "parallel_homogeneous",
       "cpu": 30000000000,
-      "com": 77392149,
-      "bb": 1104280364
+      "com": 91385912,
+      "bb": 1217549083
     },
     "552": {
       "type": "parallel_homogeneous",
       "cpu": 2671000000000,
-      "com": 77427308,
-      "bb": 988987332
+      "com": 104078079,
+      "bb": 852427787
     },
     "553": {
       "type": "parallel_homogeneous",
       "cpu": 231000000000,
-      "com": 86866422,
-      "bb": 1175979264
+      "com": 94791232,
+      "bb": 1534367412
     },
     "554": {
       "type": "parallel_homogeneous",
       "cpu": 191000000000,
-      "com": 84224200,
-      "bb": 1341223017
+      "com": 111711813,
+      "bb": 1140609547
     },
     "555": {
       "type": "parallel_homogeneous",
       "cpu": 172000000000,
-      "com": 108185044,
-      "bb": 979213606
+      "com": 77369002,
+      "bb": 1073332299
     },
     "556": {
       "type": "parallel_homogeneous",
       "cpu": 14000000000,
-      "com": 99757442,
-      "bb": 1188879134
+      "com": 104435484,
+      "bb": 721839463
     },
     "557": {
       "type": "parallel_homogeneous",
       "cpu": 12000000000,
-      "com": 100141945,
-      "bb": 1223874487
+      "com": 82516135,
+      "bb": 853204339
     },
     "558": {
       "type": "parallel_homogeneous",
       "cpu": 109000000000,
-      "com": 73389391,
-      "bb": 885061814
+      "com": 102167093,
+      "bb": 889239477
     },
     "559": {
       "type": "parallel_homogeneous",
       "cpu": 116000000000,
-      "com": 119124235,
-      "bb": 1415719361
+      "com": 114051822,
+      "bb": 789576531
     },
     "560": {
       "type": "parallel_homogeneous",
       "cpu": 16000000000,
-      "com": 94366261,
-      "bb": 831395485
+      "com": 93074020,
+      "bb": 945775059
     },
     "561": {
       "type": "parallel_homogeneous",
       "cpu": 29000000000,
-      "com": 93838808,
-      "bb": 1137832626
+      "com": 101173522,
+      "bb": 1067164035
     },
     "562": {
       "type": "parallel_homogeneous",
       "cpu": 95000000000,
-      "com": 88449034,
-      "bb": 1318449183
+      "com": 109221265,
+      "bb": 1073097818
     },
     "563": {
       "type": "parallel_homogeneous",
       "cpu": 159000000000,
-      "com": 115264740,
-      "bb": 1263006896
+      "com": 83841027,
+      "bb": 1236480863
     },
     "564": {
       "type": "parallel_homogeneous",
       "cpu": 28000000000,
-      "com": 93040401,
-      "bb": 574356335
+      "com": 80406851,
+      "bb": 1238383592
     },
     "565": {
       "type": "parallel_homogeneous",
       "cpu": 17000000000,
-      "com": 97845052,
-      "bb": 871429092
+      "com": 81779434,
+      "bb": 781264847
     },
     "566": {
       "type": "parallel_homogeneous",
       "cpu": 559000000000,
-      "com": 79278811,
-      "bb": 922103984
+      "com": 92085681,
+      "bb": 1132462681
     },
     "567": {
       "type": "parallel_homogeneous",
       "cpu": 169000000000,
-      "com": 93375944,
-      "bb": 1067714281
+      "com": 81399741,
+      "bb": 849868975
     },
     "568": {
       "type": "parallel_homogeneous",
       "cpu": 1528000000000,
-      "com": 88594344,
-      "bb": 1260795987
+      "com": 92499949,
+      "bb": 995294138
     },
     "569": {
       "type": "parallel_homogeneous",
       "cpu": 157000000000,
-      "com": 107809610,
-      "bb": 900359700
+      "com": 107587881,
+      "bb": 1000671395
     },
     "570": {
       "type": "parallel_homogeneous",
       "cpu": 30000000000,
-      "com": 100699934,
-      "bb": 954015075
+      "com": 106788399,
+      "bb": 774299362
     },
     "571": {
       "type": "parallel_homogeneous",
       "cpu": 14000000000,
-      "com": 123669142,
-      "bb": 981693158
+      "com": 96070462,
+      "bb": 1076941010
     },
     "572": {
       "type": "parallel_homogeneous",
       "cpu": 22000000000,
-      "com": 109506932,
-      "bb": 1077885366
+      "com": 85471242,
+      "bb": 1315477796
     },
     "573": {
       "type": "parallel_homogeneous",
       "cpu": 130000000000,
-      "com": 72776431,
-      "bb": 814501837
+      "com": 94994582,
+      "bb": 1058970434
     },
     "574": {
       "type": "parallel_homogeneous",
       "cpu": 23000000000,
-      "com": 77505905,
-      "bb": 1184580390
+      "com": 108060389,
+      "bb": 993065942
     },
     "575": {
       "type": "parallel_homogeneous",
       "cpu": 50000000000,
-      "com": 92682834,
-      "bb": 1302899370
+      "com": 98156039,
+      "bb": 1059476432
     },
     "576": {
       "type": "parallel_homogeneous",
       "cpu": 147000000000,
-      "com": 104033742,
-      "bb": 1028039087
+      "com": 53006292,
+      "bb": 1317907343
     },
     "577": {
       "type": "parallel_homogeneous",
       "cpu": 14000000000,
-      "com": 137694551,
-      "bb": 805107407
+      "com": 114069058,
+      "bb": 867792511
     },
     "578": {
       "type": "parallel_homogeneous",
       "cpu": 1322000000000,
-      "com": 132564841,
-      "bb": 1048151521
+      "com": 66836430,
+      "bb": 805305967
     },
     "579": {
       "type": "parallel_homogeneous",
       "cpu": 17000000000,
-      "com": 77454659,
-      "bb": 988683126
+      "com": 116406780,
+      "bb": 966423787
     },
     "580": {
       "type": "parallel_homogeneous",
       "cpu": 151000000000,
-      "com": 97751768,
-      "bb": 1032253314
+      "com": 88605788,
+      "bb": 1059693823
     },
     "581": {
       "type": "parallel_homogeneous",
       "cpu": 630000000000,
-      "com": 92436921,
-      "bb": 907570088
+      "com": 118565937,
+      "bb": 1121692042
     },
     "582": {
       "type": "parallel_homogeneous",
       "cpu": 142000000000,
-      "com": 123952999,
-      "bb": 882534208
+      "com": 127430937,
+      "bb": 954372366
     },
     "583": {
       "type": "parallel_homogeneous",
       "cpu": 26000000000,
-      "com": 60664253,
-      "bb": 1095308509
+      "com": 149243377,
+      "bb": 1518744298
     },
     "584": {
       "type": "parallel_homogeneous",
       "cpu": 132000000000,
-      "com": 111873013,
-      "bb": 1074933320
+      "com": 96050595,
+      "bb": 853459929
     },
     "585": {
       "type": "parallel_homogeneous",
       "cpu": 31000000000,
-      "com": 83728567,
-      "bb": 988563170
+      "com": 109927428,
+      "bb": 897022974
     },
     "586": {
       "type": "parallel_homogeneous",
       "cpu": 2718000000000,
-      "com": 129064629,
-      "bb": 802844023
+      "com": 128604747,
+      "bb": 795870441
     },
     "587": {
       "type": "parallel_homogeneous",
       "cpu": 2713000000000,
-      "com": 92008647,
-      "bb": 1135335080
+      "com": 81413508,
+      "bb": 1115651251
     },
     "588": {
       "type": "parallel_homogeneous",
       "cpu": 2729000000000,
-      "com": 110515962,
-      "bb": 1132683468
+      "com": 101993860,
+      "bb": 1335767421
     },
     "589": {
       "type": "parallel_homogeneous",
       "cpu": 2717000000000,
-      "com": 100954206,
-      "bb": 1306891564
+      "com": 103455896,
+      "bb": 1271660882
     },
     "590": {
       "type": "parallel_homogeneous",
       "cpu": 125000000000,
-      "com": 113080375,
-      "bb": 594970386
+      "com": 86862474,
+      "bb": 707147966
     },
     "591": {
       "type": "parallel_homogeneous",
       "cpu": 128000000000,
       "com": 0,
-      "bb": 774076351
+      "bb": 722979570
     },
     "592": {
       "type": "parallel_homogeneous",
       "cpu": 20000000000,
-      "com": 110275778,
-      "bb": 1166946801
+      "com": 119236316,
+      "bb": 875787857
     },
     "593": {
       "type": "parallel_homogeneous",
       "cpu": 23000000000,
-      "com": 90195212,
-      "bb": 527396747
+      "com": 85303794,
+      "bb": 1065130913
     },
     "594": {
       "type": "parallel_homogeneous",
       "cpu": 114000000000,
-      "com": 89549057,
-      "bb": 778455583
+      "com": 47814138,
+      "bb": 1175084033
     },
     "595": {
       "type": "parallel_homogeneous",
       "cpu": 676000000000,
-      "com": 98200267,
-      "bb": 1380437707
+      "com": 117024085,
+      "bb": 948763560
     },
     "596": {
       "type": "parallel_homogeneous",
       "cpu": 866000000000,
-      "com": 121425704,
-      "bb": 949863398
+      "com": 95406472,
+      "bb": 768376219
     },
     "597": {
       "type": "parallel_homogeneous",
       "cpu": 1802000000000,
-      "com": 107535738,
-      "bb": 809239176
+      "com": 48887578,
+      "bb": 870192265
     },
     "598": {
       "type": "parallel_homogeneous",
       "cpu": 50907000000000,
-      "com": 106162732,
-      "bb": 1059295500
+      "com": 125160055,
+      "bb": 1210816868
     },
     "599": {
       "type": "parallel_homogeneous",
       "cpu": 3504000000000,
-      "com": 75906555,
-      "bb": 1144433495
+      "com": 107259783,
+      "bb": 890337429
     },
     "600": {
       "type": "parallel_homogeneous",
       "cpu": 15000000000,
-      "com": 97615214,
-      "bb": 1128147764
+      "com": 104544933,
+      "bb": 1056069594
     },
     "601": {
       "type": "parallel_homogeneous",
       "cpu": 925000000000,
-      "com": 122701611,
-      "bb": 997712298
+      "com": 72117047,
+      "bb": 942493077
     },
     "602": {
       "type": "parallel_homogeneous",
       "cpu": 1721000000000,
-      "com": 90372018,
-      "bb": 852714996
+      "com": 85635383,
+      "bb": 1133274645
     },
     "603": {
       "type": "parallel_homogeneous",
       "cpu": 13271000000000,
       "com": 0,
-      "bb": 821986156
+      "bb": 1061003582
     },
     "604": {
       "type": "parallel_homogeneous",
       "cpu": 1778000000000,
-      "com": 60044327,
-      "bb": 1089134802
+      "com": 121873934,
+      "bb": 1182455511
     },
     "605": {
       "type": "parallel_homogeneous",
       "cpu": 10727000000000,
-      "com": 103524554,
-      "bb": 861546441
+      "com": 87481400,
+      "bb": 1081969064
     },
     "606": {
       "type": "parallel_homogeneous",
       "cpu": 11992000000000,
       "com": 0,
-      "bb": 1167343985
+      "bb": 996668360
     },
     "607": {
       "type": "parallel_homogeneous",
       "cpu": 38000000000,
-      "com": 105648384,
-      "bb": 682526465
+      "com": 98388664,
+      "bb": 840830211
     },
     "608": {
       "type": "parallel_homogeneous",
       "cpu": 24000000000,
       "com": 0,
-      "bb": 902738122
+      "bb": 990433451
     },
     "609": {
       "type": "parallel_homogeneous",
       "cpu": 7102000000000,
-      "com": 93505107,
-      "bb": 987081042
+      "com": 97550682,
+      "bb": 830812759
     },
     "610": {
       "type": "parallel_homogeneous",
       "cpu": 7118000000000,
-      "com": 83416250,
-      "bb": 1376949800
+      "com": 89776621,
+      "bb": 889828883
     },
     "611": {
       "type": "parallel_homogeneous",
       "cpu": 20000000000,
       "com": 0,
-      "bb": 771114167
+      "bb": 837814283
     },
     "612": {
       "type": "parallel_homogeneous",
       "cpu": 46000000000,
       "com": 0,
-      "bb": 1494648372
+      "bb": 1212480798
     },
     "613": {
       "type": "parallel_homogeneous",
       "cpu": 13000000000,
       "com": 0,
-      "bb": 1166906463
+      "bb": 1039348971
     },
     "614": {
       "type": "parallel_homogeneous",
       "cpu": 22000000000,
-      "com": 135270913,
-      "bb": 1039403801
+      "com": 108951607,
+      "bb": 935740239
     },
     "615": {
       "type": "parallel_homogeneous",
       "cpu": 34746000000000,
-      "com": 106023961,
-      "bb": 797753596
+      "com": 110759706,
+      "bb": 1480164396
     },
     "616": {
       "type": "parallel_homogeneous",
       "cpu": 850000000000,
       "com": 0,
-      "bb": 1078857510
+      "bb": 1195877363
     },
     "617": {
       "type": "parallel_homogeneous",
       "cpu": 17000000000,
-      "com": 38436097,
-      "bb": 674510583
+      "com": 69552521,
+      "bb": 686714495
     },
     "618": {
       "type": "parallel_homogeneous",
       "cpu": 122000000000,
-      "com": 108470579,
-      "bb": 1104728507
+      "com": 128323623,
+      "bb": 1318781392
     },
     "619": {
       "type": "parallel_homogeneous",
       "cpu": 14159000000000,
-      "com": 99449806,
-      "bb": 923602658
+      "com": 100677591,
+      "bb": 589680565
     },
     "620": {
       "type": "parallel_homogeneous",
       "cpu": 13586000000000,
-      "com": 79507353,
-      "bb": 1087508980
+      "com": 75765445,
+      "bb": 1315009166
     },
     "621": {
       "type": "parallel_homogeneous",
       "cpu": 8262000000000,
-      "com": 66615156,
-      "bb": 1013083247
+      "com": 92162232,
+      "bb": 682296112
     },
     "622": {
       "type": "parallel_homogeneous",
       "cpu": 32000000000,
       "com": 0,
-      "bb": 1091928224
+      "bb": 1079632767
     },
     "623": {
       "type": "parallel_homogeneous",
       "cpu": 20000000000,
       "com": 0,
-      "bb": 1286579815
+      "bb": 936476572
     },
     "624": {
       "type": "parallel_homogeneous",
       "cpu": 15000000000,
-      "com": 95417662,
-      "bb": 1331459071
+      "com": 115077968,
+      "bb": 774381056
     },
     "625": {
       "type": "parallel_homogeneous",
       "cpu": 16000000000,
-      "com": 101094036,
-      "bb": 724806540
+      "com": 99974203,
+      "bb": 1055232020
     },
     "626": {
       "type": "parallel_homogeneous",
       "cpu": 22000000000,
-      "com": 119773853,
-      "bb": 1242351259
+      "com": 114906177,
+      "bb": 683141863
     },
     "627": {
       "type": "parallel_homogeneous",
       "cpu": 26000000000,
-      "com": 108840977,
-      "bb": 1244011672
+      "com": 155823123,
+      "bb": 980660213
     },
     "628": {
       "type": "parallel_homogeneous",
       "cpu": 25000000000,
-      "com": 93753139,
-      "bb": 1147234800
+      "com": 88866272,
+      "bb": 1085422230
     },
     "629": {
       "type": "parallel_homogeneous",
       "cpu": 8318000000000,
-      "com": 104361792,
-      "bb": 905887160
+      "com": 79775594,
+      "bb": 893412820
     },
     "630": {
       "type": "parallel_homogeneous",
       "cpu": 3000000000,
       "com": 0,
-      "bb": 1288989858
+      "bb": 758132319
     },
     "631": {
       "type": "parallel_homogeneous",
       "cpu": 1137000000000,
       "com": 0,
-      "bb": 886534935
+      "bb": 1096382424
     },
     "632": {
       "type": "parallel_homogeneous",
       "cpu": 78000000000,
       "com": 0,
-      "bb": 1029545681
+      "bb": 932548081
     },
     "633": {
       "type": "parallel_homogeneous",
       "cpu": 3576000000000,
-      "com": 89614234,
-      "bb": 1072295920
+      "com": 88280966,
+      "bb": 1038332190
     },
     "634": {
       "type": "parallel_homogeneous",
       "cpu": 35948000000000,
-      "com": 86994633,
-      "bb": 1191834391
+      "com": 90671085,
+      "bb": 996943390
     },
     "635": {
       "type": "parallel_homogeneous",
       "cpu": 5000000000,
       "com": 0,
-      "bb": 833935697
+      "bb": 1002027425
     },
     "636": {
       "type": "parallel_homogeneous",
       "cpu": 10000000000,
       "com": 0,
-      "bb": 828518301
+      "bb": 826774749
     },
     "637": {
       "type": "parallel_homogeneous",
       "cpu": 168000000000,
-      "com": 155734311,
-      "bb": 1190704250
+      "com": 90582957,
+      "bb": 911927813
     },
     "638": {
       "type": "parallel_homogeneous",
       "cpu": 169000000000,
-      "com": 98589136,
-      "bb": 802834553
+      "com": 96552890,
+      "bb": 859951737
     },
     "639": {
       "type": "parallel_homogeneous",
       "cpu": 124000000000,
       "com": 0,
-      "bb": 528490830
+      "bb": 923275482
     },
     "640": {
       "type": "parallel_homogeneous",
       "cpu": 176000000000,
-      "com": 88417820,
-      "bb": 1133451964
+      "com": 125429195,
+      "bb": 1422863120
     },
     "641": {
       "type": "parallel_homogeneous",
       "cpu": 186000000000,
-      "com": 146749537,
-      "bb": 877370519
+      "com": 72216596,
+      "bb": 1101104793
     },
     "642": {
       "type": "parallel_homogeneous",
       "cpu": 172000000000,
-      "com": 115692257,
-      "bb": 1099626558
+      "com": 31585930,
+      "bb": 1033468094
     },
     "643": {
       "type": "parallel_homogeneous",
       "cpu": 189000000000,
-      "com": 86242479,
-      "bb": 967639544
+      "com": 105040025,
+      "bb": 1286565954
     },
     "644": {
       "type": "parallel_homogeneous",
       "cpu": 199000000000,
-      "com": 107275928,
-      "bb": 1351464623
+      "com": 80259806,
+      "bb": 917118384
     },
     "645": {
       "type": "parallel_homogeneous",
       "cpu": 8000000000,
       "com": 0,
-      "bb": 898257504
+      "bb": 947477434
     },
     "646": {
       "type": "parallel_homogeneous",
       "cpu": 9376000000000,
-      "com": 107442344,
-      "bb": 1215546358
+      "com": 112028620,
+      "bb": 1194407515
     },
     "647": {
       "type": "parallel_homogeneous",
       "cpu": 619000000000,
-      "com": 99653847,
-      "bb": 1045094321
+      "com": 88729366,
+      "bb": 1173391766
     },
     "648": {
       "type": "parallel_homogeneous",
       "cpu": 20000000000,
       "com": 0,
-      "bb": 740280356
+      "bb": 1016070243
     },
     "649": {
       "type": "parallel_homogeneous",
       "cpu": 19000000000,
-      "com": 68254905,
-      "bb": 1146056260
+      "com": 134712753,
+      "bb": 1218819910
     },
     "650": {
       "type": "parallel_homogeneous",
       "cpu": 23000000000,
-      "com": 90440063,
-      "bb": 697560494
+      "com": 70036764,
+      "bb": 1086205831
     },
     "651": {
       "type": "parallel_homogeneous",
       "cpu": 24000000000,
-      "com": 96428457,
-      "bb": 1253374678
+      "com": 133597530,
+      "bb": 1035173755
     },
     "652": {
       "type": "parallel_homogeneous",
       "cpu": 21000000000,
-      "com": 133979090,
-      "bb": 955640865
+      "com": 77497835,
+      "bb": 1072054531
     },
     "653": {
       "type": "parallel_homogeneous",
       "cpu": 29000000000,
-      "com": 122139991,
-      "bb": 812140550
+      "com": 80250874,
+      "bb": 1149713992
     },
     "654": {
       "type": "parallel_homogeneous",
       "cpu": 468000000000,
-      "com": 94973238,
-      "bb": 1128908939
+      "com": 66988063,
+      "bb": 792656595
     },
     "655": {
       "type": "parallel_homogeneous",
       "cpu": 18000000000,
       "com": 0,
-      "bb": 1003460646
+      "bb": 1146121692
     },
     "656": {
       "type": "parallel_homogeneous",
       "cpu": 19000000000,
       "com": 0,
-      "bb": 928047785
+      "bb": 986830261
     },
     "657": {
       "type": "parallel_homogeneous",
       "cpu": 19000000000,
       "com": 0,
-      "bb": 1349831296
+      "bb": 852098727
     },
     "658": {
       "type": "parallel_homogeneous",
       "cpu": 137000000000,
       "com": 0,
-      "bb": 897230200
+      "bb": 991789488
     },
     "659": {
       "type": "parallel_homogeneous",
       "cpu": 32000000000,
       "com": 0,
-      "bb": 976351873
+      "bb": 886202164
     },
     "660": {
       "type": "parallel_homogeneous",
       "cpu": 671000000000,
-      "com": 105528133,
-      "bb": 985787765
+      "com": 93504238,
+      "bb": 850702717
     },
     "661": {
       "type": "parallel_homogeneous",
       "cpu": 904000000000,
-      "com": 99275107,
-      "bb": 1020509757
+      "com": 111478235,
+      "bb": 1050468435
     },
     "662": {
       "type": "parallel_homogeneous",
       "cpu": 7162000000000,
-      "com": 94228803,
-      "bb": 1017019443
+      "com": 121692618,
+      "bb": 1258887345
     },
     "663": {
       "type": "parallel_homogeneous",
       "cpu": 8427000000000,
-      "com": 74880562,
-      "bb": 1143790198
+      "com": 123990499,
+      "bb": 1407112525
     },
     "664": {
       "type": "parallel_homogeneous",
       "cpu": 8462000000000,
-      "com": 81385804,
-      "bb": 989781450
+      "com": 118775573,
+      "bb": 947027255
     },
     "665": {
       "type": "parallel_homogeneous",
       "cpu": 209963000000000,
-      "com": 125371177,
-      "bb": 951500307
+      "com": 124959425,
+      "bb": 938080185
     },
     "666": {
       "type": "parallel_homogeneous",
       "cpu": 24000000000,
-      "com": 143217394,
-      "bb": 1129790792
+      "com": 95267024,
+      "bb": 1258315931
     },
     "667": {
       "type": "parallel_homogeneous",
       "cpu": 209929000000000,
-      "com": 98116349,
-      "bb": 1219262149
+      "com": 50573888,
+      "bb": 1173626741
     },
     "668": {
       "type": "parallel_homogeneous",
       "cpu": 8834000000000,
       "com": 0,
-      "bb": 972610885
+      "bb": 1108667731
     },
     "669": {
       "type": "parallel_homogeneous",
       "cpu": 23000000000,
-      "com": 75489278,
-      "bb": 896258437
+      "com": 77739459,
+      "bb": 1296387499
     },
     "670": {
       "type": "parallel_homogeneous",
       "cpu": 16000000000,
       "com": 0,
-      "bb": 1132866648
+      "bb": 1179387771
     },
     "671": {
       "type": "parallel_homogeneous",
       "cpu": 17000000000,
-      "com": 75670325,
-      "bb": 856921462
+      "com": 71335525,
+      "bb": 1153825129
     },
     "672": {
       "type": "parallel_homogeneous",
       "cpu": 20000000000,
-      "com": 82250051,
-      "bb": 1125243764
+      "com": 99336678,
+      "bb": 755264604
     },
     "673": {
       "type": "parallel_homogeneous",
       "cpu": 23000000000,
-      "com": 98346928,
-      "bb": 1145099164
+      "com": 109025224,
+      "bb": 1211896417
     },
     "674": {
       "type": "parallel_homogeneous",
       "cpu": 140000000000,
-      "com": 96933495,
-      "bb": 812053194
+      "com": 101140006,
+      "bb": 889095809
     },
     "675": {
       "type": "parallel_homogeneous",
       "cpu": 121000000000,
       "com": 0,
-      "bb": 970665764
+      "bb": 866865266
     },
     "676": {
       "type": "parallel_homogeneous",
       "cpu": 165000000000,
-      "com": 131876337,
-      "bb": 976875198
+      "com": 98163257,
+      "bb": 1004250339
     },
     "677": {
       "type": "parallel_homogeneous",
       "cpu": 177000000000,
-      "com": 100944970,
-      "bb": 964746821
+      "com": 97887642,
+      "bb": 966715484
     },
     "678": {
       "type": "parallel_homogeneous",
       "cpu": 2000000000,
       "com": 0,
-      "bb": 1081800149
+      "bb": 860767631
     },
     "679": {
       "type": "parallel_homogeneous",
       "cpu": 14187000000000,
-      "com": 106522834,
-      "bb": 609277165
+      "com": 69616984,
+      "bb": 1161322197
     },
     "680": {
       "type": "parallel_homogeneous",
       "cpu": 13000000000,
-      "com": 102454637,
-      "bb": 1040520753
+      "com": 89252220,
+      "bb": 1114991709
     },
     "681": {
       "type": "parallel_homogeneous",
       "cpu": 53330000000000,
-      "com": 107433317,
-      "bb": 1035501072
+      "com": 106716557,
+      "bb": 769062523
     },
     "682": {
       "type": "parallel_homogeneous",
       "cpu": 19000000000,
-      "com": 134558410,
-      "bb": 1118746212
+      "com": 121681620,
+      "bb": 1072230040
     },
     "683": {
       "type": "parallel_homogeneous",
       "cpu": 20358000000000,
-      "com": 101916011,
-      "bb": 923157961
+      "com": 85746392,
+      "bb": 753130794
     },
     "684": {
       "type": "parallel_homogeneous",
       "cpu": 149984000000000,
-      "com": 61987478,
-      "bb": 733231040
+      "com": 104898543,
+      "bb": 992025093
     },
     "685": {
       "type": "parallel_homogeneous",
       "cpu": 161142000000000,
-      "com": 84274359,
-      "bb": 1240965548
+      "com": 110508716,
+      "bb": 960663752
     },
     "686": {
       "type": "parallel_homogeneous",
       "cpu": 19359000000000,
-      "com": 149308557,
-      "bb": 1345967102
+      "com": 104001454,
+      "bb": 873793884
     },
     "687": {
       "type": "parallel_homogeneous",
       "cpu": 29516000000000,
-      "com": 106325800,
-      "bb": 650736387
+      "com": 99187034,
+      "bb": 999911276
     },
     "688": {
       "type": "parallel_homogeneous",
       "cpu": 19115000000000,
-      "com": 91338587,
-      "bb": 845096661
+      "com": 105325177,
+      "bb": 1254359814
     },
     "689": {
       "type": "parallel_homogeneous",
       "cpu": 13000000000,
-      "com": 119756991,
-      "bb": 784079584
+      "com": 131274800,
+      "bb": 854083881
     },
     "690": {
       "type": "parallel_homogeneous",
       "cpu": 15000000000,
-      "com": 129873303,
-      "bb": 977014463
+      "com": 109075932,
+      "bb": 1300547469
     },
     "691": {
       "type": "parallel_homogeneous",
       "cpu": 27000000000,
-      "com": 117609107,
-      "bb": 1047694290
+      "com": 92431183,
+      "bb": 1013664198
     },
     "692": {
       "type": "parallel_homogeneous",
       "cpu": 835000000000,
-      "com": 89591026,
-      "bb": 815930459
+      "com": 82572498,
+      "bb": 882354299
     },
     "693": {
       "type": "parallel_homogeneous",
       "cpu": 26000000000,
-      "com": 94669196,
-      "bb": 844144600
+      "com": 88802618,
+      "bb": 1417330812
     },
     "694": {
       "type": "parallel_homogeneous",
       "cpu": 191000000000,
-      "com": 79534762,
-      "bb": 911756366
+      "com": 95982703,
+      "bb": 1126508170
     },
     "695": {
       "type": "parallel_homogeneous",
       "cpu": 188000000000,
-      "com": 92202935,
-      "bb": 1048957223
+      "com": 83363016,
+      "bb": 605300706
     },
     "696": {
       "type": "parallel_homogeneous",
       "cpu": 199000000000,
-      "com": 105935184,
-      "bb": 1097245080
+      "com": 106274863,
+      "bb": 913115238
     },
     "697": {
       "type": "parallel_homogeneous",
       "cpu": 3558000000000,
-      "com": 89790709,
-      "bb": 1217354470
+      "com": 106316456,
+      "bb": 1091634816
     },
     "698": {
       "type": "parallel_homogeneous",
       "cpu": 17000000000,
-      "com": 109990070,
-      "bb": 880169621
+      "com": 80183823,
+      "bb": 768121091
     },
     "699": {
       "type": "parallel_homogeneous",
       "cpu": 53889000000000,
-      "com": 88932501,
-      "bb": 1057061080
+      "com": 117524823,
+      "bb": 1243673534
     },
     "700": {
       "type": "parallel_homogeneous",
       "cpu": 4000000000,
-      "com": 111380465,
-      "bb": 706890494
+      "com": 92829726,
+      "bb": 890438189
     },
     "701": {
       "type": "parallel_homogeneous",
       "cpu": 2000000000,
-      "com": 94126899,
-      "bb": 925430893
+      "com": 120515562,
+      "bb": 766459907
     },
     "702": {
       "type": "parallel_homogeneous",
       "cpu": 12000000000,
       "com": 0,
-      "bb": 977858550
+      "bb": 1072435935
     },
     "703": {
       "type": "parallel_homogeneous",
       "cpu": 16000000000,
       "com": 0,
-      "bb": 1325894602
+      "bb": 1103509497
     },
     "704": {
       "type": "parallel_homogeneous",
       "cpu": 8000000000,
       "com": 0,
-      "bb": 794262476
+      "bb": 636604346
     },
     "705": {
       "type": "parallel_homogeneous",
       "cpu": 10000000000,
       "com": 0,
-      "bb": 1100389844
+      "bb": 892762167
     },
     "706": {
       "type": "parallel_homogeneous",
       "cpu": 11000000000,
-      "com": 134014605,
-      "bb": 1262229854
+      "com": 106618280,
+      "bb": 676458676
     },
     "707": {
       "type": "parallel_homogeneous",
       "cpu": 9000000000,
       "com": 0,
-      "bb": 618561240
+      "bb": 1167567464
     },
     "708": {
       "type": "parallel_homogeneous",
       "cpu": 11000000000,
-      "com": 100826250,
-      "bb": 963958854
+      "com": 96807497,
+      "bb": 1075470165
     },
     "709": {
       "type": "parallel_homogeneous",
       "cpu": 9000000000,
       "com": 0,
-      "bb": 909316935
+      "bb": 1067217810
     },
     "710": {
       "type": "parallel_homogeneous",
       "cpu": 9000000000,
-      "com": 96543070,
-      "bb": 1202234887
+      "com": 125517741,
+      "bb": 1106362391
     },
     "711": {
       "type": "parallel_homogeneous",
       "cpu": 10000000000,
       "com": 0,
-      "bb": 874009951
+      "bb": 1111196527
     },
     "712": {
       "type": "parallel_homogeneous",
       "cpu": 9000000000,
-      "com": 81986117,
-      "bb": 869959260
+      "com": 80258747,
+      "bb": 1134439816
     },
     "713": {
       "type": "parallel_homogeneous",
       "cpu": 10000000000,
-      "com": 91433455,
-      "bb": 835853401
+      "com": 119754597,
+      "bb": 1120162013
     },
     "714": {
       "type": "parallel_homogeneous",
       "cpu": 9000000000,
-      "com": 67532683,
-      "bb": 1183369079
+      "com": 96417014,
+      "bb": 563200962
     },
     "715": {
       "type": "parallel_homogeneous",
       "cpu": 8000000000,
       "com": 0,
-      "bb": 877309769
+      "bb": 1025778921
     },
     "716": {
       "type": "parallel_homogeneous",
       "cpu": 11000000000,
-      "com": 127964596,
-      "bb": 1254196874
+      "com": 66199747,
+      "bb": 923062251
     },
     "717": {
       "type": "parallel_homogeneous",
       "cpu": 3000000000,
-      "com": 109288700,
-      "bb": 914202168
+      "com": 124117165,
+      "bb": 1187693705
     },
     "718": {
       "type": "parallel_homogeneous",
       "cpu": 9000000000,
-      "com": 89044833,
-      "bb": 1299765593
+      "com": 76260756,
+      "bb": 900325969
     },
     "719": {
       "type": "parallel_homogeneous",
       "cpu": 4000000000,
-      "com": 93552150,
-      "bb": 1010594718
+      "com": 57922778,
+      "bb": 621081172
     },
     "720": {
       "type": "parallel_homogeneous",
       "cpu": 3000000000,
-      "com": 92017848,
-      "bb": 899500462
+      "com": 118425847,
+      "bb": 747535874
     },
     "721": {
       "type": "parallel_homogeneous",
       "cpu": 2000000000,
-      "com": 113604796,
-      "bb": 942705942
+      "com": 68156948,
+      "bb": 1160711313
     },
     "722": {
       "type": "parallel_homogeneous",
       "cpu": 3000000000,
-      "com": 58291177,
-      "bb": 742915007
+      "com": 82230019,
+      "bb": 1029328694
     },
     "723": {
       "type": "parallel_homogeneous",
       "cpu": 3000000000,
-      "com": 82929784,
-      "bb": 1059337893
+      "com": 120820729,
+      "bb": 944255178
     },
     "724": {
       "type": "parallel_homogeneous",
       "cpu": 5000000000,
-      "com": 106896760,
-      "bb": 1013911577
+      "com": 116766826,
+      "bb": 1362331700
     },
     "725": {
       "type": "parallel_homogeneous",
       "cpu": 5000000000,
-      "com": 82697774,
-      "bb": 1339660829
+      "com": 106669044,
+      "bb": 994622969
     },
     "726": {
       "type": "parallel_homogeneous",
       "cpu": 3000000000,
-      "com": 66832499,
-      "bb": 1142271874
+      "com": 116579796,
+      "bb": 1197690494
     },
     "727": {
       "type": "parallel_homogeneous",
       "cpu": 3000000000,
-      "com": 80940829,
-      "bb": 1284102554
+      "com": 94407580,
+      "bb": 1193105450
     },
     "728": {
       "type": "parallel_homogeneous",
       "cpu": 3000000000,
-      "com": 106168707,
-      "bb": 1138374656
+      "com": 129972176,
+      "bb": 1272044157
     },
     "729": {
       "type": "parallel_homogeneous",
       "cpu": 8000000000,
       "com": 0,
-      "bb": 848748149
+      "bb": 1066923115
     },
     "730": {
       "type": "parallel_homogeneous",
       "cpu": 10000000000,
-      "com": 111271688,
-      "bb": 993692308
+      "com": 119539488,
+      "bb": 777756249
     },
     "731": {
       "type": "parallel_homogeneous",
       "cpu": 9000000000,
-      "com": 110780115,
-      "bb": 1108171255
+      "com": 108731259,
+      "bb": 952576207
     },
     "732": {
       "type": "parallel_homogeneous",
       "cpu": 11000000000,
       "com": 0,
-      "bb": 815105277
+      "bb": 1021729368
     },
     "733": {
       "type": "parallel_homogeneous",
       "cpu": 2000000000,
-      "com": 104755462,
-      "bb": 988058464
+      "com": 83655370,
+      "bb": 1184787292
     },
     "734": {
       "type": "parallel_homogeneous",
       "cpu": 2000000000,
-      "com": 97651729,
-      "bb": 833731350
+      "com": 51409438,
+      "bb": 735369377
     },
     "735": {
       "type": "parallel_homogeneous",
       "cpu": 2000000000,
-      "com": 88317167,
-      "bb": 666890370
+      "com": 87073032,
+      "bb": 1158332144
     },
     "736": {
       "type": "parallel_homogeneous",
       "cpu": 3000000000,
-      "com": 91096514,
-      "bb": 893099082
+      "com": 93455199,
+      "bb": 854149955
     },
     "737": {
       "type": "parallel_homogeneous",
       "cpu": 6000000000,
-      "com": 71642039,
-      "bb": 644472745
+      "com": 101828905,
+      "bb": 1035467326
     },
     "738": {
       "type": "parallel_homogeneous",
       "cpu": 5000000000,
-      "com": 103118803,
-      "bb": 935995831
+      "com": 85787546,
+      "bb": 1022776849
     },
     "739": {
       "type": "parallel_homogeneous",
       "cpu": 7000000000,
-      "com": 63306597,
-      "bb": 560326951
+      "com": 91993376,
+      "bb": 1159557879
     },
     "740": {
       "type": "parallel_homogeneous",
       "cpu": 9000000000,
-      "com": 86953793,
-      "bb": 907240888
+      "com": 69224998,
+      "bb": 1331058889
     },
     "741": {
       "type": "parallel_homogeneous",
       "cpu": 34480000000000,
-      "com": 109880703,
-      "bb": 1066476014
+      "com": 111977286,
+      "bb": 960775977
     },
     "742": {
       "type": "parallel_homogeneous",
       "cpu": 8370000000000,
-      "com": 82194978,
-      "bb": 1152081274
+      "com": 99673519,
+      "bb": 892367936
     },
     "743": {
       "type": "parallel_homogeneous",
       "cpu": 31657000000000,
-      "com": 81777338,
-      "bb": 855151128
+      "com": 146172790,
+      "bb": 786243424
     },
     "744": {
       "type": "parallel_homogeneous",
       "cpu": 12000000000,
-      "com": 71047987,
-      "bb": 697977576
+      "com": 91329331,
+      "bb": 861233064
     },
     "745": {
       "type": "parallel_homogeneous",
       "cpu": 27000000000,
-      "com": 98735401,
-      "bb": 931768229
+      "com": 63396700,
+      "bb": 719966087
     },
     "746": {
       "type": "parallel_homogeneous",
       "cpu": 191000000000,
-      "com": 102687105,
-      "bb": 1212773385
+      "com": 87114418,
+      "bb": 813311661
     },
     "747": {
       "type": "parallel_homogeneous",
       "cpu": 17000000000,
-      "com": 96539122,
-      "bb": 889171269
+      "com": 104301613,
+      "bb": 812763093
     },
     "748": {
       "type": "parallel_homogeneous",
       "cpu": 24000000000,
-      "com": 78368738,
-      "bb": 866334567
+      "com": 94752373,
+      "bb": 1164400628
     },
     "749": {
       "type": "parallel_homogeneous",
       "cpu": 78000000000,
       "com": 0,
-      "bb": 1035688566
+      "bb": 957912421
     },
     "750": {
       "type": "parallel_homogeneous",
       "cpu": 14000000000,
-      "com": 134738670,
-      "bb": 1147440098
+      "com": 116203143,
+      "bb": 1462676790
     },
     "751": {
       "type": "parallel_homogeneous",
       "cpu": 26000000000,
-      "com": 106282531,
-      "bb": 877862082
+      "com": 105538859,
+      "bb": 659287403
     },
     "752": {
       "type": "parallel_homogeneous",
       "cpu": 195000000000,
-      "com": 104338922,
-      "bb": 1333312717
+      "com": 100391841,
+      "bb": 1071134791
     },
     "753": {
       "type": "parallel_homogeneous",
       "cpu": 11000000000,
       "com": 0,
-      "bb": 1185700664
+      "bb": 1266307378
     },
     "754": {
       "type": "parallel_homogeneous",
       "cpu": 33000000000,
-      "com": 71953988,
-      "bb": 1157456952
+      "com": 105649987,
+      "bb": 1220309818
     },
     "755": {
       "type": "parallel_homogeneous",
       "cpu": 14000000000,
-      "com": 113021110,
-      "bb": 601775584
+      "com": 73854186,
+      "bb": 1258948819
     },
     "756": {
       "type": "parallel_homogeneous",
       "cpu": 13000000000,
-      "com": 86417668,
-      "bb": 896517412
+      "com": 104778058,
+      "bb": 1004444645
     },
     "757": {
       "type": "parallel_homogeneous",
       "cpu": 28000000000,
-      "com": 92616617,
-      "bb": 848906283
+      "com": 143837091,
+      "bb": 895031917
     },
     "758": {
       "type": "parallel_homogeneous",
       "cpu": 324000000000,
       "com": 0,
-      "bb": 712980395
+      "bb": 1151251933
     },
     "759": {
       "type": "parallel_homogeneous",
       "cpu": 17000000000,
       "com": 0,
-      "bb": 829961786
+      "bb": 768258383
     },
     "760": {
       "type": "parallel_homogeneous",
       "cpu": 832000000000,
-      "com": 96304388,
-      "bb": 1330225271
+      "com": 132917400,
+      "bb": 1125131598
     },
     "761": {
       "type": "parallel_homogeneous",
       "cpu": 14000000000,
-      "com": 88374626,
-      "bb": 984691539
+      "com": 88647482,
+      "bb": 1226211070
     },
     "762": {
       "type": "parallel_homogeneous",
       "cpu": 196000000000,
-      "com": 104779869,
-      "bb": 1139326835
+      "com": 125769200,
+      "bb": 894905693
     },
     "763": {
       "type": "parallel_homogeneous",
       "cpu": 175000000000,
-      "com": 93459782,
-      "bb": 1079065554
+      "com": 96774316,
+      "bb": 894934834
     },
     "764": {
       "type": "parallel_homogeneous",
       "cpu": 780000000000,
-      "com": 75074293,
-      "bb": 821821954
+      "com": 117935184,
+      "bb": 1292248220
     },
     "765": {
       "type": "parallel_homogeneous",
       "cpu": 232000000000,
-      "com": 86869903,
-      "bb": 1284922483
+      "com": 93942206,
+      "bb": 1248267660
     },
     "766": {
       "type": "parallel_homogeneous",
       "cpu": 35000000000,
-      "com": 120038756,
-      "bb": 638191856
+      "com": 107590401,
+      "bb": 1134304186
     },
     "767": {
       "type": "parallel_homogeneous",
       "cpu": 1165000000000,
-      "com": 96876813,
-      "bb": 898614120
+      "com": 103219792,
+      "bb": 1106405465
     },
     "768": {
       "type": "parallel_homogeneous",
       "cpu": 3068000000000,
-      "com": 119056790,
-      "bb": 926804327
+      "com": 52622903,
+      "bb": 1075460225
     },
     "769": {
       "type": "parallel_homogeneous",
       "cpu": 3054000000000,
-      "com": 114691017,
-      "bb": 1048874305
+      "com": 95720275,
+      "bb": 1315276765
     },
     "770": {
       "type": "parallel_homogeneous",
       "cpu": 976000000000,
       "com": 0,
-      "bb": 790246097
+      "bb": 1040978512
     },
     "771": {
       "type": "parallel_homogeneous",
       "cpu": 452000000000,
-      "com": 91840758,
-      "bb": 1266679240
+      "com": 71309328,
+      "bb": 954863295
     },
     "772": {
       "type": "parallel_homogeneous",
       "cpu": 130000000000,
-      "com": 111096210,
-      "bb": 892272317
+      "com": 97267298,
+      "bb": 676619460
     },
     "773": {
       "type": "parallel_homogeneous",
       "cpu": 13978000000000,
       "com": 0,
-      "bb": 1320320977
+      "bb": 1087444411
     },
     "774": {
       "type": "parallel_homogeneous",
       "cpu": 52000000000,
-      "com": 115786195,
-      "bb": 938460163
+      "com": 90523959,
+      "bb": 1238993510
     },
     "775": {
       "type": "parallel_homogeneous",
       "cpu": 10578000000000,
-      "com": 104245620,
-      "bb": 771701388
+      "com": 93500548,
+      "bb": 1060008148
     },
     "776": {
       "type": "parallel_homogeneous",
       "cpu": 191000000000,
-      "com": 103668184,
-      "bb": 921628125
+      "com": 85492286,
+      "bb": 1118427574
     },
     "777": {
       "type": "parallel_homogeneous",
       "cpu": 155000000000,
       "com": 0,
-      "bb": 959231347
+      "bb": 1182994658
     },
     "778": {
       "type": "parallel_homogeneous",
       "cpu": 8467000000000,
-      "com": 93205325,
-      "bb": 1133033795
+      "com": 96772478,
+      "bb": 711054378
     },
     "779": {
       "type": "parallel_homogeneous",
       "cpu": 19000000000,
-      "com": 57572574,
-      "bb": 1108238211
+      "com": 119091881,
+      "bb": 832333913
     },
     "780": {
       "type": "parallel_homogeneous",
       "cpu": 21000000000,
-      "com": 128001834,
-      "bb": 1165784882
+      "com": 123550787,
+      "bb": 940681314
     },
     "781": {
       "type": "parallel_homogeneous",
       "cpu": 19000000000,
-      "com": 89550080,
-      "bb": 1132454971
+      "com": 78194524,
+      "bb": 994683752
     },
     "782": {
       "type": "parallel_homogeneous",
       "cpu": 53000000000,
-      "com": 115313734,
-      "bb": 854903414
+      "com": 110897833,
+      "bb": 867067739
     },
     "783": {
       "type": "parallel_homogeneous",
       "cpu": 12000000000,
-      "com": 147860944,
-      "bb": 1019838495
+      "com": 66183455,
+      "bb": 855634653
     },
     "784": {
       "type": "parallel_homogeneous",
       "cpu": 16000000000,
       "com": 0,
-      "bb": 958917131
+      "bb": 1093207629
     },
     "785": {
       "type": "parallel_homogeneous",
       "cpu": 13000000000,
       "com": 0,
-      "bb": 1118548020
+      "bb": 1158482893
     },
     "786": {
       "type": "parallel_homogeneous",
       "cpu": 12000000000,
-      "com": 99404935,
-      "bb": 1096008006
+      "com": 117360384,
+      "bb": 1171886345
     },
     "787": {
       "type": "parallel_homogeneous",
       "cpu": 644000000000,
       "com": 0,
-      "bb": 934423428
+      "bb": 1067095237
     },
     "788": {
       "type": "parallel_homogeneous",
       "cpu": 31000000000,
-      "com": 54027764,
-      "bb": 808452287
+      "com": 64391771,
+      "bb": 1308669891
     },
     "789": {
       "type": "parallel_homogeneous",
       "cpu": 14000000000,
-      "com": 120135374,
-      "bb": 517696946
+      "com": 53137535,
+      "bb": 818483072
     },
     "790": {
       "type": "parallel_homogeneous",
       "cpu": 36070000000000,
-      "com": 120310150,
-      "bb": 928059040
+      "com": 113014512,
+      "bb": 1476193625
     },
     "791": {
       "type": "parallel_homogeneous",
       "cpu": 5356000000000,
-      "com": 76897155,
-      "bb": 922205906
+      "com": 86002763,
+      "bb": 661832191
     },
     "792": {
       "type": "parallel_homogeneous",
       "cpu": 246000000000,
       "com": 0,
-      "bb": 952521602
+      "bb": 1154887465
     },
     "793": {
       "type": "parallel_homogeneous",
       "cpu": 1530000000000,
-      "com": 114597645,
-      "bb": 945846734
+      "com": 74405826,
+      "bb": 1013220658
     },
     "794": {
       "type": "parallel_homogeneous",
       "cpu": 1322000000000,
-      "com": 63405880,
-      "bb": 977010456
+      "com": 107239909,
+      "bb": 985147148
     },
     "795": {
       "type": "parallel_homogeneous",
       "cpu": 1702000000000,
-      "com": 105892204,
-      "bb": 665202091
+      "com": 94775274,
+      "bb": 1262945742
     },
     "796": {
       "type": "parallel_homogeneous",
       "cpu": 68000000000,
       "com": 0,
-      "bb": 1146993349
+      "bb": 860595755
     },
     "797": {
       "type": "parallel_homogeneous",
       "cpu": 43889000000000,
-      "com": 89061267,
-      "bb": 846618125
+      "com": 65380445,
+      "bb": 928840912
     },
     "798": {
       "type": "parallel_homogeneous",
       "cpu": 14866000000000,
-      "com": 95031861,
-      "bb": 1093183894
+      "com": 77901356,
+      "bb": 933677367
     },
     "799": {
       "type": "parallel_homogeneous",
       "cpu": 520000000000,
-      "com": 60314284,
-      "bb": 870012038
+      "com": 113697066,
+      "bb": 646693958
     },
     "800": {
       "type": "parallel_homogeneous",
       "cpu": 32000000000,
-      "com": 77043799,
-      "bb": 1448732430
+      "com": 107599210,
+      "bb": 1176983583
     },
     "801": {
       "type": "parallel_homogeneous",
       "cpu": 5341000000000,
-      "com": 68934619,
-      "bb": 926835140
+      "com": 114060534,
+      "bb": 977972762
     },
     "802": {
       "type": "parallel_homogeneous",
       "cpu": 16000000000,
-      "com": 83053583,
-      "bb": 610053246
+      "com": 90225627,
+      "bb": 969963991
     },
     "803": {
       "type": "parallel_homogeneous",
       "cpu": 2058000000000,
-      "com": 90688004,
-      "bb": 977117398
+      "com": 124865513,
+      "bb": 909833173
     },
     "804": {
       "type": "parallel_homogeneous",
       "cpu": 15000000000,
-      "com": 121067339,
-      "bb": 1326359112
+      "com": 102310220,
+      "bb": 813111878
     },
     "805": {
       "type": "parallel_homogeneous",
       "cpu": 34000000000,
-      "com": 100039780,
-      "bb": 1044255457
+      "com": 107385008,
+      "bb": 943660960
     },
     "806": {
       "type": "parallel_homogeneous",
       "cpu": 17000000000,
-      "com": 123106612,
-      "bb": 1202544870
+      "com": 99110758,
+      "bb": 1211944090
     },
     "807": {
       "type": "parallel_homogeneous",
       "cpu": 927000000000,
-      "com": 64817648,
-      "bb": 784514453
+      "com": 117729248,
+      "bb": 1058997596
     },
     "808": {
       "type": "parallel_homogeneous",
       "cpu": 43000000000,
-      "com": 119155198,
-      "bb": 734832224
+      "com": 129272247,
+      "bb": 1127431298
     },
     "809": {
       "type": "parallel_homogeneous",
       "cpu": 711000000000,
-      "com": 128920092,
-      "bb": 912144496
+      "com": 97791335,
+      "bb": 968579556
     },
     "810": {
       "type": "parallel_homogeneous",
       "cpu": 4000000000,
-      "com": 105622629,
-      "bb": 530361233
+      "com": 100316696,
+      "bb": 1093255038
     },
     "811": {
       "type": "parallel_homogeneous",
       "cpu": 3000000000,
-      "com": 119622477,
-      "bb": 938083121
+      "com": 136644283,
+      "bb": 1064720756
     },
     "812": {
       "type": "parallel_homogeneous",
       "cpu": 30000000000,
-      "com": 129515158,
-      "bb": 1449886400
+      "com": 113050052,
+      "bb": 1184986426
     },
     "813": {
       "type": "parallel_homogeneous",
       "cpu": 32000000000,
-      "com": 79833047,
-      "bb": 896934944
+      "com": 111769806,
+      "bb": 1014656489
     },
     "814": {
       "type": "parallel_homogeneous",
       "cpu": 172000000000,
-      "com": 119723048,
-      "bb": 850979079
+      "com": 83945783,
+      "bb": 867437323
     },
     "815": {
       "type": "parallel_homogeneous",
       "cpu": 116000000000,
-      "com": 101954650,
-      "bb": 1250768113
+      "com": 109923739,
+      "bb": 652630183
     },
     "816": {
       "type": "parallel_homogeneous",
       "cpu": 580000000000,
-      "com": 99305709,
-      "bb": 774957748
+      "com": 102626131,
+      "bb": 1121432091
     },
     "817": {
       "type": "parallel_homogeneous",
       "cpu": 511000000000,
-      "com": 118802295,
-      "bb": 1230274248
+      "com": 105772166,
+      "bb": 945446624
     },
     "818": {
       "type": "parallel_homogeneous",
       "cpu": 576000000000,
-      "com": 109494780,
-      "bb": 1054797633
+      "com": 82644647,
+      "bb": 725098127
     },
     "819": {
       "type": "parallel_homogeneous",
       "cpu": 234000000000,
-      "com": 88637972,
-      "bb": 746744671
+      "com": 114000336,
+      "bb": 904248604
     },
     "820": {
       "type": "parallel_homogeneous",
       "cpu": 12000000000,
-      "com": 116028327,
-      "bb": 963097981
+      "com": 120091288,
+      "bb": 1008753108
     },
     "821": {
       "type": "parallel_homogeneous",
       "cpu": 83000000000,
-      "com": 102542257,
-      "bb": 810248523
+      "com": 115988901,
+      "bb": 956532300
     },
     "822": {
       "type": "parallel_homogeneous",
       "cpu": 163000000000,
-      "com": 80357426,
-      "bb": 992117127
+      "com": 65188494,
+      "bb": 643725536
     },
     "823": {
       "type": "parallel_homogeneous",
       "cpu": 10000000000,
-      "com": 91385852,
-      "bb": 674815143
+      "com": 94577942,
+      "bb": 1095205596
     },
     "824": {
       "type": "parallel_homogeneous",
       "cpu": 14000000000,
-      "com": 74728877,
-      "bb": 1250738037
+      "com": 81831775,
+      "bb": 897157332
     },
     "825": {
       "type": "parallel_homogeneous",
       "cpu": 5382000000000,
-      "com": 105266077,
-      "bb": 1212294000
+      "com": 84900662,
+      "bb": 941775180
     },
     "826": {
       "type": "parallel_homogeneous",
       "cpu": 5383000000000,
-      "com": 98111210,
-      "bb": 1346468476
+      "com": 95243956,
+      "bb": 825598432
     },
     "827": {
       "type": "parallel_homogeneous",
       "cpu": 12000000000,
-      "com": 80411337,
-      "bb": 1252207815
+      "com": 113329195,
+      "bb": 1060981954
     },
     "828": {
       "type": "parallel_homogeneous",
       "cpu": 29000000000,
-      "com": 88162209,
-      "bb": 1048240067
+      "com": 92520820,
+      "bb": 929292675
     },
     "829": {
       "type": "parallel_homogeneous",
       "cpu": 38000000000,
-      "com": 108058076,
-      "bb": 1156475621
+      "com": 108471148,
+      "bb": 904460838
     },
     "830": {
       "type": "parallel_homogeneous",
       "cpu": 49000000000,
-      "com": 81774864,
-      "bb": 1015619919
+      "com": 118990004,
+      "bb": 965155310
     },
     "831": {
       "type": "parallel_homogeneous",
       "cpu": 171000000000,
-      "com": 68153790,
-      "bb": 1245994262
+      "com": 95761106,
+      "bb": 861291081
     },
     "832": {
       "type": "parallel_homogeneous",
       "cpu": 3000000000,
-      "com": 132780560,
-      "bb": 874325820
+      "com": 85876154,
+      "bb": 364220753
     },
     "833": {
       "type": "parallel_homogeneous",
       "cpu": 177000000000,
-      "com": 103803690,
-      "bb": 592723846
+      "com": 94923537,
+      "bb": 950967491
     },
     "834": {
       "type": "parallel_homogeneous",
       "cpu": 38000000000,
-      "com": 148717474,
-      "bb": 1250642808
+      "com": 99205904,
+      "bb": 1083963957
     },
     "835": {
       "type": "parallel_homogeneous",
       "cpu": 29000000000,
-      "com": 129200247,
-      "bb": 883083997
+      "com": 94025067,
+      "bb": 994057200
     },
     "836": {
       "type": "parallel_homogeneous",
       "cpu": 148000000000,
-      "com": 106999609,
-      "bb": 1238758651
+      "com": 78770746,
+      "bb": 1167710779
     },
     "837": {
       "type": "parallel_homogeneous",
       "cpu": 194000000000,
-      "com": 91685327,
-      "bb": 1218723938
+      "com": 107790710,
+      "bb": 724451936
     },
     "838": {
       "type": "parallel_homogeneous",
       "cpu": 44000000000,
-      "com": 103169848,
-      "bb": 934570412
+      "com": 112217436,
+      "bb": 902623123
     },
     "839": {
       "type": "parallel_homogeneous",
       "cpu": 132000000000,
-      "com": 100289445,
-      "bb": 1135854814
+      "com": 88073763,
+      "bb": 1069903479
     },
     "840": {
       "type": "parallel_homogeneous",
       "cpu": 192000000000,
-      "com": 104580320,
-      "bb": 1000160602
+      "com": 95804910,
+      "bb": 1039980509
     },
     "841": {
       "type": "parallel_homogeneous",
       "cpu": 130000000000,
-      "com": 108292791,
-      "bb": 1083101198
+      "com": 137911790,
+      "bb": 919852615
     },
     "842": {
       "type": "parallel_homogeneous",
       "cpu": 26000000000,
-      "com": 85168514,
-      "bb": 1283397747
+      "com": 131287067,
+      "bb": 922098012
     },
     "843": {
       "type": "parallel_homogeneous",
       "cpu": 27000000000,
-      "com": 118130093,
-      "bb": 934966240
+      "com": 90334321,
+      "bb": 1334136515
     },
     "844": {
       "type": "parallel_homogeneous",
       "cpu": 116000000000,
-      "com": 117742029,
-      "bb": 1097569240
+      "com": 137651581,
+      "bb": 940479140
     },
     "845": {
       "type": "parallel_homogeneous",
       "cpu": 556000000000,
-      "com": 96464238,
-      "bb": 1043342926
+      "com": 82716608,
+      "bb": 876123742
     },
     "846": {
       "type": "parallel_homogeneous",
       "cpu": 13000000000,
-      "com": 94249412,
-      "bb": 835852278
+      "com": 61050775,
+      "bb": 778502478
     },
     "847": {
       "type": "parallel_homogeneous",
       "cpu": 141000000000,
-      "com": 68166809,
-      "bb": 1201721246
+      "com": 108482806,
+      "bb": 1059704366
     },
     "848": {
       "type": "parallel_homogeneous",
       "cpu": 144000000000,
-      "com": 96809138,
-      "bb": 1009114542
+      "com": 93050473,
+      "bb": 615894329
     },
     "849": {
       "type": "parallel_homogeneous",
       "cpu": 775000000000,
-      "com": 94033732,
-      "bb": 732778844
+      "com": 88572692,
+      "bb": 1233421403
     },
     "850": {
       "type": "parallel_homogeneous",
       "cpu": 923000000000,
-      "com": 108592489,
-      "bb": 1239041240
+      "com": 71526945,
+      "bb": 938962346
     },
     "851": {
       "type": "parallel_homogeneous",
       "cpu": 12000000000,
-      "com": 106013777,
-      "bb": 700696096
+      "com": 81832083,
+      "bb": 1011738346
     },
     "852": {
       "type": "parallel_homogeneous",
       "cpu": 10000000000,
-      "com": 73888494,
-      "bb": 976266625
+      "com": 77656066,
+      "bb": 900740052
     },
     "853": {
       "type": "parallel_homogeneous",
       "cpu": 1244000000000,
-      "com": 128697360,
-      "bb": 952556879
+      "com": 124057822,
+      "bb": 1348401982
     },
     "854": {
       "type": "parallel_homogeneous",
       "cpu": 82000000000,
       "com": 0,
-      "bb": 1019221704
+      "bb": 1031103711
     },
     "855": {
       "type": "parallel_homogeneous",
       "cpu": 53348000000000,
-      "com": 113025159,
-      "bb": 1001611654
+      "com": 95126018,
+      "bb": 1094859778
     },
     "856": {
       "type": "parallel_homogeneous",
       "cpu": 14047000000000,
       "com": 0,
-      "bb": 1004438084
+      "bb": 1004993787
     },
     "857": {
       "type": "parallel_homogeneous",
       "cpu": 854000000000,
       "com": 0,
-      "bb": 1145710936
+      "bb": 776755110
     },
     "858": {
       "type": "parallel_homogeneous",
       "cpu": 36000000000,
       "com": 0,
-      "bb": 1093955107
+      "bb": 1240162389
     },
     "859": {
       "type": "parallel_homogeneous",
       "cpu": 57000000000,
-      "com": 146386510,
-      "bb": 1151326579
+      "com": 107037130,
+      "bb": 1033644552
     },
     "860": {
       "type": "parallel_homogeneous",
       "cpu": 29000000000,
-      "com": 98886018,
-      "bb": 758318156
+      "com": 123712631,
+      "bb": 999533998
     },
     "861": {
       "type": "parallel_homogeneous",
       "cpu": 10000000000,
-      "com": 80287302,
-      "bb": 834825929
+      "com": 103382348,
+      "bb": 954339387
     },
     "862": {
       "type": "parallel_homogeneous",
       "cpu": 11000000000,
-      "com": 101606058,
-      "bb": 731205296
+      "com": 87660167,
+      "bb": 950600530
     },
     "863": {
       "type": "parallel_homogeneous",
       "cpu": 9000000000,
-      "com": 84269515,
-      "bb": 922916674
+      "com": 99264412,
+      "bb": 1299567224
     },
     "864": {
       "type": "parallel_homogeneous",
       "cpu": 10000000000,
-      "com": 69495989,
-      "bb": 844031226
+      "com": 71721376,
+      "bb": 1174061643
     },
     "865": {
       "type": "parallel_homogeneous",
       "cpu": 3399000000000,
-      "com": 129928669,
-      "bb": 888602390
+      "com": 107209178,
+      "bb": 868581501
     },
     "866": {
       "type": "parallel_homogeneous",
       "cpu": 3423000000000,
-      "com": 65535681,
-      "bb": 858955636
+      "com": 139476923,
+      "bb": 1080579622
     },
     "867": {
       "type": "parallel_homogeneous",
       "cpu": 3412000000000,
-      "com": 88322612,
-      "bb": 1060879691
+      "com": 87701642,
+      "bb": 1180574857
     },
     "868": {
       "type": "parallel_homogeneous",
       "cpu": 14348000000000,
       "com": 0,
-      "bb": 676860105
+      "bb": 242450876
     },
     "869": {
       "type": "parallel_homogeneous",
       "cpu": 3284000000000,
       "com": 0,
-      "bb": 863218284
+      "bb": 935667413
     },
     "870": {
       "type": "parallel_homogeneous",
       "cpu": 14099000000000,
       "com": 0,
-      "bb": 948862750
+      "bb": 811775464
     },
     "871": {
       "type": "parallel_homogeneous",
       "cpu": 8994000000000,
       "com": 0,
-      "bb": 929986323
+      "bb": 1354868105
     },
     "872": {
       "type": "parallel_homogeneous",
       "cpu": 11691000000000,
-      "com": 100580608,
-      "bb": 835591469
+      "com": 78019853,
+      "bb": 1274453697
     },
     "873": {
       "type": "parallel_homogeneous",
       "cpu": 34858000000000,
-      "com": 110764830,
-      "bb": 838143314
+      "com": 78430528,
+      "bb": 734999838
     },
     "874": {
       "type": "parallel_homogeneous",
       "cpu": 130000000000,
-      "com": 93192146,
-      "bb": 1105705706
+      "com": 113935145,
+      "bb": 971033645
     },
     "875": {
       "type": "parallel_homogeneous",
       "cpu": 4860000000000,
       "com": 0,
-      "bb": 812449434
+      "bb": 940502934
     },
     "876": {
       "type": "parallel_homogeneous",
       "cpu": 16000000000,
-      "com": 124775426,
-      "bb": 506806171
+      "com": 125582279,
+      "bb": 929321848
     },
     "877": {
       "type": "parallel_homogeneous",
       "cpu": 4078000000000,
-      "com": 73179258,
-      "bb": 1276522875
+      "com": 66183156,
+      "bb": 1013903393
     },
     "878": {
       "type": "parallel_homogeneous",
       "cpu": 47714000000000,
-      "com": 88244945,
-      "bb": 986737075
+      "com": 93167383,
+      "bb": 1040498533
     },
     "879": {
       "type": "parallel_homogeneous",
       "cpu": 14000000000,
-      "com": 122586352,
-      "bb": 1164887676
+      "com": 84780747,
+      "bb": 1074285494
     },
     "880": {
       "type": "parallel_homogeneous",
       "cpu": 25726000000000,
-      "com": 100560177,
-      "bb": 869061274
+      "com": 91685653,
+      "bb": 1203662169
     },
     "881": {
       "type": "parallel_homogeneous",
       "cpu": 15291000000000,
-      "com": 108939661,
-      "bb": 945508046
+      "com": 78120920,
+      "bb": 601032128
     },
     "882": {
       "type": "parallel_homogeneous",
       "cpu": 14374000000000,
-      "com": 65228714,
-      "bb": 906492407
+      "com": 108716226,
+      "bb": 911438448
     },
     "883": {
       "type": "parallel_homogeneous",
       "cpu": 6031000000000,
-      "com": 86616772,
-      "bb": 1165343517
+      "com": 112866596,
+      "bb": 786220105
     },
     "884": {
       "type": "parallel_homogeneous",
       "cpu": 12928000000000,
-      "com": 121731819,
-      "bb": 701892201
+      "com": 110460061,
+      "bb": 878505941
     },
     "885": {
       "type": "parallel_homogeneous",
       "cpu": 14303000000000,
-      "com": 86402336,
-      "bb": 1153198132
+      "com": 79404843,
+      "bb": 922112294
     },
     "886": {
       "type": "parallel_homogeneous",
       "cpu": 1508000000000,
       "com": 0,
-      "bb": 574952492
+      "bb": 1139707157
     },
     "887": {
       "type": "parallel_homogeneous",
       "cpu": 9000000000000,
       "com": 0,
-      "bb": 659779581
+      "bb": 631252125
     },
     "888": {
       "type": "parallel_homogeneous",
       "cpu": 379000000000,
       "com": 0,
-      "bb": 1591302826
+      "bb": 1051833222
     },
     "889": {
       "type": "parallel_homogeneous",
       "cpu": 40329000000000,
-      "com": 102375045,
-      "bb": 920519644
+      "com": 99852434,
+      "bb": 1500514370
     },
     "890": {
       "type": "parallel_homogeneous",
       "cpu": 14927000000000,
       "com": 0,
-      "bb": 1501603302
+      "bb": 1193575879
     },
     "891": {
       "type": "parallel_homogeneous",
       "cpu": 53327000000000,
-      "com": 97854587,
-      "bb": 1142897264
+      "com": 79743768,
+      "bb": 1474770683
     },
     "892": {
       "type": "parallel_homogeneous",
       "cpu": 215331000000000,
-      "com": 144950168,
-      "bb": 602531275
+      "com": 109944089,
+      "bb": 1375821367
     },
     "893": {
       "type": "parallel_homogeneous",
       "cpu": 3088000000000,
-      "com": 96722543,
-      "bb": 802560598
+      "com": 116806077,
+      "bb": 721847936
     },
     "894": {
       "type": "parallel_homogeneous",
       "cpu": 29000000000,
-      "com": 75392760,
-      "bb": 1032220712
+      "com": 100829572,
+      "bb": 1046232979
     },
     "895": {
       "type": "parallel_homogeneous",
       "cpu": 23000000000,
       "com": 0,
-      "bb": 1341149479
+      "bb": 1141758808
     },
     "896": {
       "type": "parallel_homogeneous",
       "cpu": 30000000000,
-      "com": 88623211,
-      "bb": 1115160862
+      "com": 129407524,
+      "bb": 1047602557
     },
     "897": {
       "type": "parallel_homogeneous",
       "cpu": 36000000000,
-      "com": 102864932,
-      "bb": 798152787
+      "com": 114883192,
+      "bb": 1207828637
     },
     "898": {
       "type": "parallel_homogeneous",
       "cpu": 30000000000,
-      "com": 97526546,
-      "bb": 772740747
+      "com": 79481778,
+      "bb": 632453519
     },
     "899": {
       "type": "parallel_homogeneous",
       "cpu": 61000000000,
-      "com": 80166455,
-      "bb": 1033684759
+      "com": 98826649,
+      "bb": 669120581
     },
     "900": {
       "type": "parallel_homogeneous",
       "cpu": 32000000000,
-      "com": 102946021,
-      "bb": 963906228
+      "com": 130223493,
+      "bb": 1072577810
     },
     "901": {
       "type": "parallel_homogeneous",
       "cpu": 21454000000000,
-      "com": 123069688,
-      "bb": 975284434
+      "com": 79578517,
+      "bb": 754609960
     },
     "902": {
       "type": "parallel_homogeneous",
       "cpu": 3444000000000,
-      "com": 126075113,
-      "bb": 1058268143
+      "com": 90338141,
+      "bb": 829899355
     },
     "903": {
       "type": "parallel_homogeneous",
       "cpu": 3453000000000,
-      "com": 126319460,
-      "bb": 1197115388
+      "com": 86435706,
+      "bb": 960103828
     },
     "904": {
       "type": "parallel_homogeneous",
       "cpu": 3348000000000,
-      "com": 66510910,
-      "bb": 1180433425
+      "com": 99156000,
+      "bb": 988729064
     },
     "905": {
       "type": "parallel_homogeneous",
       "cpu": 8064000000000,
       "com": 0,
-      "bb": 688875728
+      "bb": 879647666
     },
     "906": {
       "type": "parallel_homogeneous",
       "cpu": 215000000000,
       "com": 0,
-      "bb": 979699506
+      "bb": 1012770188
     },
     "907": {
       "type": "parallel_homogeneous",
       "cpu": 26000000000,
-      "com": 68916041,
-      "bb": 995646332
+      "com": 93734706,
+      "bb": 1108597475
     },
     "908": {
       "type": "parallel_homogeneous",
       "cpu": 5000000000,
-      "com": 117520995,
-      "bb": 1151262212
+      "com": 98268300,
+      "bb": 920758169
     },
     "909": {
       "type": "parallel_homogeneous",
       "cpu": 310000000000,
-      "com": 126401879,
-      "bb": 1030271001
+      "com": 97613726,
+      "bb": 992172218
     },
     "910": {
       "type": "parallel_homogeneous",
       "cpu": 11000000000,
       "com": 0,
-      "bb": 1057642017
+      "bb": 1077029314
     },
     "911": {
       "type": "parallel_homogeneous",
       "cpu": 7000000000,
       "com": 0,
-      "bb": 1048176663
+      "bb": 759865717
     },
     "912": {
       "type": "parallel_homogeneous",
       "cpu": 851000000000,
       "com": 0,
-      "bb": 641844191
+      "bb": 794072882
     },
     "913": {
       "type": "parallel_homogeneous",
       "cpu": 8732000000000,
       "com": 0,
-      "bb": 1116367999
+      "bb": 984624017
     },
     "914": {
       "type": "parallel_homogeneous",
       "cpu": 76000000000,
-      "com": 103078181,
-      "bb": 1200631159
+      "com": 79991357,
+      "bb": 1283994081
     },
     "915": {
       "type": "parallel_homogeneous",
       "cpu": 18494000000000,
       "com": 0,
-      "bb": 966667326
+      "bb": 850242451
     },
     "916": {
       "type": "parallel_homogeneous",
       "cpu": 18536000000000,
       "com": 0,
-      "bb": 1302860266
+      "bb": 1125037433
     },
     "917": {
       "type": "parallel_homogeneous",
       "cpu": 18485000000000,
       "com": 0,
-      "bb": 1029255393
+      "bb": 1153153300
     },
     "918": {
       "type": "parallel_homogeneous",
       "cpu": 9149000000000,
-      "com": 94889652,
-      "bb": 792433931
+      "com": 86486811,
+      "bb": 814391942
     },
     "919": {
       "type": "parallel_homogeneous",
       "cpu": 11495000000000,
-      "com": 99041548,
-      "bb": 1171828586
+      "com": 109728145,
+      "bb": 1092035866
     },
     "920": {
       "type": "parallel_homogeneous",
       "cpu": 29000000000,
       "com": 0,
-      "bb": 1117951413
+      "bb": 1297605604
     },
     "921": {
       "type": "parallel_homogeneous",
       "cpu": 3573000000000,
-      "com": 115424809,
-      "bb": 1165839987
+      "com": 83239656,
+      "bb": 1084751004
     },
     "922": {
       "type": "parallel_homogeneous",
       "cpu": 887000000000,
-      "com": 75807032,
-      "bb": 1072515386
+      "com": 119171382,
+      "bb": 1237248947
     },
     "923": {
       "type": "parallel_homogeneous",
       "cpu": 14000000000,
-      "com": 126910009,
-      "bb": 1019597457
+      "com": 129451799,
+      "bb": 974614795
     },
     "924": {
       "type": "parallel_homogeneous",
       "cpu": 877000000000,
       "com": 0,
-      "bb": 817450455
+      "bb": 1204665186
     },
     "925": {
       "type": "parallel_homogeneous",
       "cpu": 8000000000,
-      "com": 118471896,
-      "bb": 1056759906
+      "com": 128423563,
+      "bb": 1025778994
     },
     "926": {
       "type": "parallel_homogeneous",
       "cpu": 54000000000,
       "com": 0,
-      "bb": 1225966257
+      "bb": 755839060
     },
     "927": {
       "type": "parallel_homogeneous",
       "cpu": 56000000000,
-      "com": 87817596,
-      "bb": 899426180
+      "com": 151931972,
+      "bb": 606810334
     },
     "928": {
       "type": "parallel_homogeneous",
       "cpu": 54000000000,
-      "com": 105086643,
-      "bb": 920027139
+      "com": 69523053,
+      "bb": 827350417
     },
     "929": {
       "type": "parallel_homogeneous",
       "cpu": 60000000000,
-      "com": 89916143,
-      "bb": 1097794199
+      "com": 103540157,
+      "bb": 981134001
     },
     "930": {
       "type": "parallel_homogeneous",
       "cpu": 53000000000,
-      "com": 116019641,
-      "bb": 766581600
+      "com": 119477977,
+      "bb": 944824556
     },
     "931": {
       "type": "parallel_homogeneous",
       "cpu": 54000000000,
-      "com": 77478264,
-      "bb": 1164900988
+      "com": 117131869,
+      "bb": 1029378330
     },
     "932": {
       "type": "parallel_homogeneous",
       "cpu": 55000000000,
-      "com": 158750817,
-      "bb": 698391564
+      "com": 132147529,
+      "bb": 1183068375
     },
     "933": {
       "type": "parallel_homogeneous",
       "cpu": 57000000000,
-      "com": 98672481,
-      "bb": 1392492731
+      "com": 82245643,
+      "bb": 1092406237
     },
     "934": {
       "type": "parallel_homogeneous",
       "cpu": 284000000000,
-      "com": 65405515,
-      "bb": 1062242609
+      "com": 69354937,
+      "bb": 1021442346
     },
     "935": {
       "type": "parallel_homogeneous",
       "cpu": 2084000000000,
-      "com": 102353884,
-      "bb": 1169928040
+      "com": 110910850,
+      "bb": 1075362072
     },
     "936": {
       "type": "parallel_homogeneous",
       "cpu": 4348000000000,
-      "com": 91733323,
-      "bb": 781133567
+      "com": 68582572,
+      "bb": 1047844566
     },
     "937": {
       "type": "parallel_homogeneous",
       "cpu": 2916000000000,
-      "com": 100955529,
-      "bb": 855287811
+      "com": 111617072,
+      "bb": 856185458
     },
     "938": {
       "type": "parallel_homogeneous",
       "cpu": 3484000000000,
-      "com": 93608777,
-      "bb": 1078712826
+      "com": 77468495,
+      "bb": 1049403307
     },
     "939": {
       "type": "parallel_homogeneous",
       "cpu": 4432000000000,
-      "com": 116669207,
-      "bb": 1281832473
+      "com": 104088087,
+      "bb": 843462415
     },
     "940": {
       "type": "parallel_homogeneous",
       "cpu": 859000000000,
-      "com": 125816814,
-      "bb": 1125843274
+      "com": 118022124,
+      "bb": 667753701
     },
     "941": {
       "type": "parallel_homogeneous",
       "cpu": 8129000000000,
       "com": 0,
-      "bb": 828096000
+      "bb": 994758310
     },
     "942": {
       "type": "parallel_homogeneous",
       "cpu": 18308000000000,
       "com": 0,
-      "bb": 993606438
+      "bb": 1155010623
     },
     "943": {
       "type": "parallel_homogeneous",
       "cpu": 8767000000000,
-      "com": 122645346,
-      "bb": 975422098
+      "com": 114946526,
+      "bb": 784755603
     },
     "944": {
       "type": "parallel_homogeneous",
       "cpu": 9751000000000,
-      "com": 112887139,
-      "bb": 936668580
+      "com": 88738188,
+      "bb": 1201798915
     },
     "945": {
       "type": "parallel_homogeneous",
       "cpu": 18409000000000,
       "com": 0,
-      "bb": 862822410
+      "bb": 901140191
     },
     "946": {
       "type": "parallel_homogeneous",
       "cpu": 10000000000,
-      "com": 77243002,
-      "bb": 660503758
+      "com": 105931934,
+      "bb": 781661340
     },
     "947": {
       "type": "parallel_homogeneous",
       "cpu": 15000000000,
-      "com": 93545031,
-      "bb": 938876404
+      "com": 97569182,
+      "bb": 1200602431
     },
     "948": {
       "type": "parallel_homogeneous",
       "cpu": 15000000000,
-      "com": 102175118,
-      "bb": 808305676
+      "com": 90726652,
+      "bb": 1019089817
     },
     "949": {
       "type": "parallel_homogeneous",
       "cpu": 15000000000,
-      "com": 90612643,
-      "bb": 284498499
+      "com": 81053392,
+      "bb": 1175670212
     },
     "950": {
       "type": "parallel_homogeneous",
       "cpu": 9000000000,
-      "com": 133391725,
-      "bb": 991197565
+      "com": 93195411,
+      "bb": 1005259330
     },
     "951": {
       "type": "parallel_homogeneous",
       "cpu": 12000000000,
-      "com": 116000120,
-      "bb": 1433837324
+      "com": 130243307,
+      "bb": 980115542
     },
     "952": {
       "type": "parallel_homogeneous",
       "cpu": 15000000000,
-      "com": 93666333,
-      "bb": 964610461
+      "com": 100824230,
+      "bb": 1080535587
     },
     "953": {
       "type": "parallel_homogeneous",
       "cpu": 5000000000,
-      "com": 114250317,
-      "bb": 888355207
+      "com": 122740127,
+      "bb": 1321121186
     },
     "954": {
       "type": "parallel_homogeneous",
       "cpu": 16000000000,
-      "com": 99722936,
-      "bb": 1015950491
+      "com": 111117085,
+      "bb": 1094113301
     },
     "955": {
       "type": "parallel_homogeneous",
       "cpu": 7000000000,
-      "com": 121947638,
-      "bb": 1105863637
+      "com": 111942175,
+      "bb": 1124942536
     },
     "956": {
       "type": "parallel_homogeneous",
       "cpu": 15000000000,
-      "com": 87352847,
-      "bb": 1081311532
+      "com": 84281093,
+      "bb": 888997559
     },
     "957": {
       "type": "parallel_homogeneous",
       "cpu": 13000000000,
-      "com": 105790811,
-      "bb": 1129692261
+      "com": 81849553,
+      "bb": 1317754243
     },
     "958": {
       "type": "parallel_homogeneous",
       "cpu": 4000000000,
-      "com": 80302427,
-      "bb": 966159064
+      "com": 131121936,
+      "bb": 1552908318
     },
     "959": {
       "type": "parallel_homogeneous",
       "cpu": 14000000000,
-      "com": 121848214,
-      "bb": 906326037
+      "com": 70830674,
+      "bb": 535699191
     },
     "960": {
       "type": "parallel_homogeneous",
       "cpu": 13081000000000,
       "com": 0,
-      "bb": 575251620
+      "bb": 904894147
     },
     "961": {
       "type": "parallel_homogeneous",
       "cpu": 8031000000000,
-      "com": 90032349,
-      "bb": 1089998514
+      "com": 69955860,
+      "bb": 1389430018
     },
     "962": {
       "type": "parallel_homogeneous",
       "cpu": 14161000000000,
-      "com": 129481246,
-      "bb": 1078133823
+      "com": 130450523,
+      "bb": 1015886195
     },
     "963": {
       "type": "parallel_homogeneous",
       "cpu": 144000000000,
-      "com": 95310997,
-      "bb": 663178164
+      "com": 91155393,
+      "bb": 946429677
     },
     "964": {
       "type": "parallel_homogeneous",
       "cpu": 52757000000000,
-      "com": 130032094,
-      "bb": 744802385
+      "com": 97611561,
+      "bb": 1058130730
     },
     "965": {
       "type": "parallel_homogeneous",
       "cpu": 52743000000000,
-      "com": 83519128,
-      "bb": 388023663
+      "com": 69561082,
+      "bb": 879822927
     },
     "966": {
       "type": "parallel_homogeneous",
       "cpu": 14065000000000,
       "com": 0,
-      "bb": 1048112030
+      "bb": 1086221507
     },
     "967": {
       "type": "parallel_homogeneous",
       "cpu": 19749000000000,
-      "com": 89449657,
-      "bb": 1164741927
+      "com": 80727712,
+      "bb": 846764193
     },
     "968": {
       "type": "parallel_homogeneous",
       "cpu": 3299000000000,
-      "com": 121697107,
-      "bb": 943345405
+      "com": 95095900,
+      "bb": 1344917265
     },
     "969": {
       "type": "parallel_homogeneous",
       "cpu": 14308000000000,
-      "com": 97152044,
-      "bb": 1004466615
+      "com": 110384790,
+      "bb": 774895057
     },
     "970": {
       "type": "parallel_homogeneous",
       "cpu": 4417000000000,
-      "com": 113862128,
-      "bb": 739449706
+      "com": 90099373,
+      "bb": 717291173
     },
     "971": {
       "type": "parallel_homogeneous",
       "cpu": 23947000000000,
-      "com": 62568419,
-      "bb": 1150573509
+      "com": 94722145,
+      "bb": 1013305218
     },
     "972": {
       "type": "parallel_homogeneous",
       "cpu": 51000000000,
       "com": 0,
-      "bb": 623801258
+      "bb": 826043098
     },
     "973": {
       "type": "parallel_homogeneous",
       "cpu": 186000000000,
-      "com": 94955766,
-      "bb": 1021601934
+      "com": 83384019,
+      "bb": 733327059
     },
     "974": {
       "type": "parallel_homogeneous",
       "cpu": 187000000000,
-      "com": 82157220,
-      "bb": 938756147
+      "com": 117686182,
+      "bb": 943975576
     },
     "975": {
       "type": "parallel_homogeneous",
       "cpu": 185000000000,
-      "com": 128051345,
-      "bb": 1151788110
+      "com": 108874144,
+      "bb": 974553162
     },
     "976": {
       "type": "parallel_homogeneous",
       "cpu": 184000000000,
-      "com": 114944712,
-      "bb": 1084258310
+      "com": 121414144,
+      "bb": 1210460071
     },
     "977": {
       "type": "parallel_homogeneous",
       "cpu": 192000000000,
-      "com": 94357947,
-      "bb": 1065852910
+      "com": 99625300,
+      "bb": 970977237
     },
     "978": {
       "type": "parallel_homogeneous",
       "cpu": 13000000000,
       "com": 0,
-      "bb": 880652720
+      "bb": 1567627273
     },
     "979": {
       "type": "parallel_homogeneous",
       "cpu": 18549000000000,
       "com": 0,
-      "bb": 973053938
+      "bb": 1325974005
     },
     "980": {
       "type": "parallel_homogeneous",
       "cpu": 180000000000,
       "com": 0,
-      "bb": 1000614645
+      "bb": 1436092282
     },
     "981": {
       "type": "parallel_homogeneous",
       "cpu": 176000000000,
-      "com": 59635816,
-      "bb": 706189095
+      "com": 91907027,
+      "bb": 1117922346
     },
     "982": {
       "type": "parallel_homogeneous",
       "cpu": 185000000000,
-      "com": 89980295,
-      "bb": 891436384
+      "com": 86254514,
+      "bb": 520805639
     },
     "983": {
       "type": "parallel_homogeneous",
       "cpu": 193000000000,
-      "com": 136855012,
-      "bb": 970831673
+      "com": 121378278,
+      "bb": 753562791
     },
     "984": {
       "type": "parallel_homogeneous",
       "cpu": 185000000000,
-      "com": 79797187,
-      "bb": 1063459410
+      "com": 107082445,
+      "bb": 928511007
     },
     "985": {
       "type": "parallel_homogeneous",
       "cpu": 180000000000,
-      "com": 117905677,
-      "bb": 1376237937
+      "com": 123267790,
+      "bb": 1205908543
     },
     "986": {
       "type": "parallel_homogeneous",
       "cpu": 18399000000000,
       "com": 0,
-      "bb": 1076845687
+      "bb": 944110133
     },
     "987": {
       "type": "parallel_homogeneous",
       "cpu": 18278000000000,
       "com": 0,
-      "bb": 1184931277
+      "bb": 998864436
     },
     "988": {
       "type": "parallel_homogeneous",
       "cpu": 825000000000,
-      "com": 59092360,
-      "bb": 1170337143
+      "com": 123716206,
+      "bb": 1130833240
     },
     "989": {
       "type": "parallel_homogeneous",
       "cpu": 33461000000000,
       "com": 0,
-      "bb": 970461728
+      "bb": 1088449198
     },
     "990": {
       "type": "parallel_homogeneous",
       "cpu": 5074000000000,
-      "com": 76780372,
-      "bb": 659561386
+      "com": 116599158,
+      "bb": 843645472
     },
     "991": {
       "type": "parallel_homogeneous",
       "cpu": 8000000000,
       "com": 0,
-      "bb": 941076541
+      "bb": 1169159064
     },
     "992": {
       "type": "parallel_homogeneous",
       "cpu": 855000000000,
-      "com": 83313351,
-      "bb": 1065813680
+      "com": 98826013,
+      "bb": 798805242
     },
     "993": {
       "type": "parallel_homogeneous",
       "cpu": 10000000000,
       "com": 0,
-      "bb": 954971963
+      "bb": 1286268226
     },
     "994": {
       "type": "parallel_homogeneous",
       "cpu": 870000000000,
       "com": 0,
-      "bb": 1158946132
+      "bb": 785474667
     },
     "995": {
       "type": "parallel_homogeneous",
       "cpu": 2000000000,
-      "com": 96922760,
-      "bb": 1000951515
+      "com": 126049196,
+      "bb": 1218552676
     },
     "996": {
       "type": "parallel_homogeneous",
       "cpu": 8115000000000,
       "com": 0,
-      "bb": 719516803
+      "bb": 1008193458
     },
     "997": {
       "type": "parallel_homogeneous",
       "cpu": 3000000000,
-      "com": 91582872,
-      "bb": 1091778392
+      "com": 79260621,
+      "bb": 1010450330
     },
     "998": {
       "type": "parallel_homogeneous",
       "cpu": 34834000000000,
-      "com": 123951370,
-      "bb": 1161699946
+      "com": 143766356,
+      "bb": 724291253
     },
     "999": {
       "type": "parallel_homogeneous",
       "cpu": 152000000000,
-      "com": 76004844,
-      "bb": 891421502
+      "com": 73970738,
+      "bb": 984672564
     },
     "1000": {
       "type": "parallel_homogeneous",
       "cpu": 16000000000,
-      "com": 110013156,
-      "bb": 983181976
+      "com": 98447514,
+      "bb": 1184135638
     },
     "1001": {
       "type": "parallel_homogeneous",
       "cpu": 12000000000,
-      "com": 89191156,
-      "bb": 897018374
+      "com": 126882635,
+      "bb": 983331273
     },
     "1002": {
       "type": "parallel_homogeneous",
       "cpu": 57000000000,
-      "com": 92991191,
-      "bb": 726675460
+      "com": 91486708,
+      "bb": 874744961
     },
     "1003": {
       "type": "parallel_homogeneous",
       "cpu": 9027000000000,
-      "com": 136307044,
-      "bb": 1296032910
+      "com": 111069163,
+      "bb": 901466461
     },
     "1004": {
       "type": "parallel_homogeneous",
       "cpu": 7347000000000,
-      "com": 111071814,
-      "bb": 1103884718
+      "com": 121984002,
+      "bb": 1049435115
     },
     "1005": {
       "type": "parallel_homogeneous",
       "cpu": 11816000000000,
-      "com": 112796602,
-      "bb": 667030437
+      "com": 92475677,
+      "bb": 1216380618
     },
     "1006": {
       "type": "parallel_homogeneous",
       "cpu": 13426000000000,
-      "com": 84417089,
-      "bb": 1014711868
+      "com": 91124395,
+      "bb": 1079081998
     },
     "1007": {
       "type": "parallel_homogeneous",
       "cpu": 13387000000000,
-      "com": 97729504,
-      "bb": 669383072
+      "com": 64495456,
+      "bb": 1034948653
     },
     "1008": {
       "type": "parallel_homogeneous",
       "cpu": 42000000000,
       "com": 0,
-      "bb": 985158599
+      "bb": 1064748148
     },
     "1009": {
       "type": "parallel_homogeneous",
       "cpu": 29000000000,
-      "com": 66111260,
-      "bb": 687769027
+      "com": 98073396,
+      "bb": 1129776677
     },
     "1010": {
       "type": "parallel_homogeneous",
       "cpu": 30000000000,
-      "com": 118478079,
-      "bb": 840746439
+      "com": 58736494,
+      "bb": 1150034674
     },
     "1011": {
       "type": "parallel_homogeneous",
       "cpu": 2648000000000,
       "com": 0,
-      "bb": 1037552411
+      "bb": 1409057577
     },
     "1012": {
       "type": "parallel_homogeneous",
       "cpu": 3000000000,
-      "com": 79472852,
-      "bb": 1152285102
+      "com": 51493908,
+      "bb": 792357028
     },
     "1013": {
       "type": "parallel_homogeneous",
       "cpu": 18256000000000,
       "com": 0,
-      "bb": 992225488
+      "bb": 599531004
     },
     "1014": {
       "type": "parallel_homogeneous",
       "cpu": 18087000000000,
       "com": 0,
-      "bb": 1284772225
+      "bb": 1396299459
     }
   }
 }
