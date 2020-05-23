@@ -1,4 +1,4 @@
-num_jobs: null  # Number of jobs to generate
+num_jobs: 1000  # Limit for the number of jobs to generate (null for no limit)
 time_distribution_lambda: 0
 time_distribution_k: 0
 expected_log_num_nodes: 0

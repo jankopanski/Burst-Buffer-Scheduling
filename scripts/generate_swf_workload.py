@@ -49,13 +49,18 @@ model = WorkloadModel(workload_config, platform)
 jobs = []
 profiles = {}
 
+num_jobs = 0
 with open(args.input_file) as input_file:
     for line in input_file:
+        if model.num_jobs and num_jobs == model.num_jobs:
+            break
+
         line = line.strip()
         if line.startswith(';'):
             continue
         swf_record = [int(x) for x in line.split()]
         job = SWFJob(swf_record)
+        num_jobs += 1
 
         profile_id = str(job.job_number)
         computations = job.run_time * platform.cpu_speed
@@ -69,5 +74,5 @@ with open(args.input_file) as input_file:
         profiles[profile_id] = model.generate_profile(computations, communication, burst_buffer)
 
 name = splitext(basename(args.input_file))[0]
-description = ''
+description = '{} jobs'.format(num_jobs)
 model.save_workload(args.output_file, name, description, platform.nb_res, jobs, profiles)
