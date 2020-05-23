@@ -1,4 +1,3 @@
-import sys
 from collections import Counter
 from typing import Optional, List, Dict
 from tqdm import tqdm
@@ -10,6 +9,7 @@ from batsim.sched.scheduler import Scheduler
 from batsim.sched.algorithms.utils import consecutive_resources_filter, generate_resources_filter
 
 from burstbuffer.storage_resource import StorageResource
+from burstbuffer.model import read_config, Platform
 
 
 # Convention
@@ -19,18 +19,20 @@ from burstbuffer.storage_resource import StorageResource
 # node_ids are sorted by Batsim lexicographically.
 class AllocOnlyScheduler(Scheduler):
     """Only allocates burst buffers without executing any data transfers to burst buffers."""
-    BURST_BUFFER_CAPACITY_GB = 5
-    NUM_GROUPS, NUM_CHASSIS, NUM_ROUTERS, NUM_NODES_PER_ROUTER = 3, 2, 3, 2
-    BURST_BUFFER_CAPACITY_BYTES = BURST_BUFFER_CAPACITY_GB * 10 ** 9
-    NUM_NODES = NUM_GROUPS * NUM_CHASSIS * NUM_ROUTERS * NUM_NODES_PER_ROUTER
-    NUM_BURST_BUFFERS = NUM_GROUPS * NUM_CHASSIS
 
-    def __init__(self, options={}):
+    def __init__(self, options):
         super().__init__(options=options)
-        # Turns off Scheduler object logging.
-        # To Turn off Batsim object logging a flag -v 'warn' needs to be passed to the launcher.
-        # self._logger._logger.setLevel('WARNING')
+        if options['progress_bar']:
+            # To Turn off Batsim object logging a flag -v 'warn' needs to be passed to the launcher.
+            # Turns off Scheduler object logging to display a progress bar.
+            self._logger._logger.setLevel('WARNING')
+            self.disable_progress_bar = False
+        else:
+            self.disable_progress_bar = True
         self._event_logger._logger.setLevel('WARNING')
+
+        platform_config = read_config(options['platform'])
+        self.platform = Platform(platform_config)
 
         self._pfs_id: int
         self._burst_buffers = Resources()
@@ -42,8 +44,10 @@ class AllocOnlyScheduler(Scheduler):
     def on_init(self):
         self._print_node_mapping()
         # Storage machines are all burst buffers hosts plus pfs host.
-        assert len(self.machines['storage']) - 1 == self.NUM_BURST_BUFFERS
-        assert len(self.machines['storage']) - 1 + len(self.machines['compute']) == self.NUM_NODES
+        assert self.platform.num_burst_buffers == len(self.machines['storage']) - 1
+        assert self.platform.num_nodes == \
+            len(self.machines['storage']) - 1 + len(self.machines['compute'])
+
         for storage_resource in self.machines['storage']:
             if storage_resource['name'] == 'pfs':
                 self._pfs_id = storage_resource['id']
@@ -53,7 +57,8 @@ class AllocOnlyScheduler(Scheduler):
                     id=storage_resource['id'],
                     name=storage_resource['name'],
                     resources_list=self._burst_buffers,
-                    capacity_bytes=self.BURST_BUFFER_CAPACITY_BYTES))
+                    capacity_bytes=self.platform.burst_buffer_capacity
+                ))
 
         self._create_ordered_compute_resource_ids()
         self._create_burst_buffer_proximity()
@@ -62,17 +67,17 @@ class AllocOnlyScheduler(Scheduler):
         # Assume also that the number of job profiles equal to the number of static jobs.
         num_all_jobs = sum(len(workload_profiles) for workload_profiles
                            in self._batsim.profiles.values())
-        self.pbar = tqdm(total=num_all_jobs, file=sys.stdout, smoothing=0)
+        self.progress_bar = tqdm(total=num_all_jobs, smoothing=0, disable=self.disable_progress_bar)
 
     def on_job_submission(self, job):
         self._validate_job(job)
 
     def on_job_completion(self, job):
         self._free_burst_buffers(job)
-        self.pbar.update()
+        self.progress_bar.update()
 
     def on_simulation_ends(self):
-        self.pbar.close()
+        self.progress_bar.close()
 
     def schedule(self):
         raise NotImplementedError
@@ -109,12 +114,13 @@ class AllocOnlyScheduler(Scheduler):
         # Allocate compute and storage resources for reserved jobs in the future.
         temporary_allocations = []
         for job in reserved_jobs:
-            start_time, assigned_compute_resources = self.resources.compute.find_with_earliest_start_time(
-                job,
-                allow_future_allocations=True,
-                filter=consecutive_resources_filter,
-                time=self.time
-            )
+            start_time, assigned_compute_resources = \
+                self.resources.compute.find_with_earliest_start_time(
+                    job,
+                    allow_future_allocations=True,
+                    filter=consecutive_resources_filter,
+                    time=self.time
+                )
             end_time = start_time + job.requested_time
             assert assigned_compute_resources
             assigned_burst_buffers = self._find_sufficient_burst_buffers(
@@ -191,7 +197,7 @@ class AllocOnlyScheduler(Scheduler):
             burst_buffer = self._burst_buffers[burst_buffer_id]
             requested_space = count * job.profile.bb
             burst_buffer.allocate(start, end, requested_space, job)
-        self._burst_buffer_allocations[job.id] = burst_buffer_id_counter.keys()
+        self._burst_buffer_allocations[job.id] = list(burst_buffer_id_counter.keys())
 
     def _free_burst_buffers(self, job):
         for burst_buffer_id in self._burst_buffer_allocations[job.id]:
@@ -204,12 +210,12 @@ class AllocOnlyScheduler(Scheduler):
             job.reject("Too few resources available in the system (overall)")
             return False
         # Requested space for a single node must fit within single burst buffer.
-        if job.profile.bb > self.BURST_BUFFER_CAPACITY_BYTES:
+        if job.profile.bb > self.platform.burst_buffer_capacity:
             job.reject('Too much requested burst buffer space for a single node.')
             return False
         # Number of how many times job.profile.bb could fit as a whole in total burst buffer
         # space.
-        if job.requested_resources > (self.BURST_BUFFER_CAPACITY_BYTES // job.profile.bb) * \
+        if job.requested_resources > (self.platform.burst_buffer_capacity // job.profile.bb) * \
                 len(self._burst_buffers):
             job.reject('Too much total requested burst buffer space.')
             return False
@@ -218,8 +224,8 @@ class AllocOnlyScheduler(Scheduler):
     def _create_ordered_compute_resource_ids(self):
         """Creates a list of compute resource ids ordered according to Dragonfly topology."""
         self._ordered_compute_resource_ids = []
-        num_nodes_in_chassis = self.NUM_ROUTERS * self.NUM_NODES_PER_ROUTER
-        for node_id in range(self.NUM_NODES):
+        num_nodes_in_chassis = self.platform.num_routers * self.platform.num_nodes_per_router
+        for node_id in range(self.platform.num_nodes):
             if node_id % num_nodes_in_chassis == 0:
                 # This is a storage node
                 continue
@@ -228,15 +234,16 @@ class AllocOnlyScheduler(Scheduler):
                 if curr_node_id == node_id:
                     self._ordered_compute_resource_ids.append(compute_resource.id)
                     break
-        assert len(self._ordered_compute_resource_ids) == self.NUM_NODES - self.NUM_BURST_BUFFERS
+        assert len(self._ordered_compute_resource_ids) == \
+           self.platform.num_nodes - self.platform.num_burst_buffers
 
     def _create_burst_buffer_proximity(self):
         """Compute resource id to burst buffer id proximity mapping for the Dragonfly topology."""
         self._burst_buffer_proximity = {compute.id: [[], [], []] for compute in
                                         self.resources.compute}
         # Assume that there is one burst buffer node in every chassis
-        num_nodes_in_chassis = self.NUM_ROUTERS * self.NUM_NODES_PER_ROUTER
-        num_nodes_in_group = num_nodes_in_chassis * self.NUM_CHASSIS
+        num_nodes_in_chassis = self.platform.num_routers * self.platform.num_nodes_per_router
+        num_nodes_in_group = num_nodes_in_chassis * self.platform.num_chassis
         burst_buffer_node_id_to_id = {self.get_node_id(bb.name): bb.id for bb in
                                       self._burst_buffers}
         assert all([bb_node_id % num_nodes_in_chassis == 0 for bb_node_id in

@@ -3,3 +3,7 @@ nb_res: 30  # Number of compute resources
 cpu_speed: 1  # GFLOPS
 bandwidth: 125  # MBps
 burst_buffer_capacity: 5  # GB
+num_groups: 3
+num_chassis: 2
+num_routers: 3
+num_nodes_per_router: 2
