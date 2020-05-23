@@ -1,3 +1,4 @@
+# Dragonfly cluster with 30 compute nodes and 6 storage nodes (one in each chassis).
 topology: 'dragonfly'
 nb_res: 30  # Number of compute resources
 cpu_speed: 1  # GFLOPS

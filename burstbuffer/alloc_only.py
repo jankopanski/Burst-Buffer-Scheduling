@@ -62,7 +62,7 @@ class AllocOnlyScheduler(Scheduler):
 
         self._create_ordered_compute_resource_ids()
         self._create_burst_buffer_proximity()
-        self._resource_filter = self._create_resource_filter()
+        # self._resource_filter = self._create_resource_filter()
 
         # Assume also that the number of job profiles equal to the number of static jobs.
         num_all_jobs = sum(len(workload_profiles) for workload_profiles
@@ -152,7 +152,7 @@ class AllocOnlyScheduler(Scheduler):
     def _find_all_resources(self, job: Job):
         """Returns (assigned_compute_resources, assigned_storage_resources) or None."""
         assigned_compute_resources = self.resources.compute.find_sufficient_resources_for_job(
-            job, filter=self._resource_filter)
+            job, filter=consecutive_resources_filter)
         if assigned_compute_resources:
             assigned_burst_buffers = self._find_sufficient_burst_buffers(
                 assigned_compute_resources,
@@ -286,9 +286,9 @@ class AllocOnlyScheduler(Scheduler):
             next_id = self._ordered_compute_resource_ids[(idx + 1) % n]
             return r.id == prev_id or r.id == next_id
 
-        consecutive_resources_filter = generate_resources_filter(
+        bb_consecutive_resources_filter = generate_resources_filter(
             [bb_filter_func_consecutive_resources], [])
-        return consecutive_resources_filter
+        return bb_consecutive_resources_filter
 
     def _print_node_mapping(self):
         for node in self.machines['compute']:
