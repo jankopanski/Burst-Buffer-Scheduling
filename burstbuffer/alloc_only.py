@@ -1,12 +1,13 @@
 from collections import Counter
-from typing import Optional, List, Dict
+from typing import Optional, List, Dict, Callable
 from tqdm import tqdm
 
-from batsim.sched.resource import Resources
+from batsim.sched.resource import Resources, Resource
 from batsim.sched.alloc import Allocation
 from batsim.sched.job import Job
 from batsim.sched.scheduler import Scheduler
 from batsim.sched.algorithms.utils import consecutive_resources_filter, generate_resources_filter
+from procset import ProcSet
 
 from burstbuffer.storage_resource import StorageResource
 from burstbuffer.model import read_config, Platform
@@ -62,7 +63,8 @@ class AllocOnlyScheduler(Scheduler):
 
         self._create_ordered_compute_resource_ids()
         self._create_burst_buffer_proximity()
-        # self._resource_filter = self._create_resource_filter()
+        # self._resource_filter = consecutive_resources_filter
+        self._resource_filter = self._create_resource_filter()
 
         # Assume also that the number of job profiles equal to the number of static jobs.
         num_all_jobs = sum(len(workload_profiles) for workload_profiles
@@ -76,7 +78,7 @@ class AllocOnlyScheduler(Scheduler):
         self._free_burst_buffers(job)
         self.progress_bar.update()
 
-    def on_simulation_ends(self):
+    def on_end(self):
         self.progress_bar.close()
 
     def schedule(self):
@@ -118,11 +120,11 @@ class AllocOnlyScheduler(Scheduler):
                 self.resources.compute.find_with_earliest_start_time(
                     job,
                     allow_future_allocations=True,
-                    filter=consecutive_resources_filter,
+                    filter=self._resource_filter,
                     time=self.time
                 )
-            end_time = start_time + job.requested_time
             assert assigned_compute_resources
+            end_time = start_time + job.requested_time
             assigned_burst_buffers = self._find_sufficient_burst_buffers(
                 assigned_compute_resources,
                 start_time,
@@ -152,7 +154,7 @@ class AllocOnlyScheduler(Scheduler):
     def _find_all_resources(self, job: Job):
         """Returns (assigned_compute_resources, assigned_storage_resources) or None."""
         assigned_compute_resources = self.resources.compute.find_sufficient_resources_for_job(
-            job, filter=consecutive_resources_filter)
+            job, filter=self._resource_filter)
         if assigned_compute_resources:
             assigned_burst_buffers = self._find_sufficient_burst_buffers(
                 assigned_compute_resources,
@@ -269,6 +271,55 @@ class AllocOnlyScheduler(Scheduler):
                      set(self._burst_buffer_proximity[compute_resource.id][1]))
 
     def _create_resource_filter(self):
+        # Based on do_filter function from generate_resources_filter in algorithms/utils.py
+        def do_filter(
+                resources: List[Resource],
+                job: Job,
+                current_time: float,
+                max_entries: int,
+                min_entries: int,
+                **kwargs):
+            assert len(resources) >= min_entries
+
+            available_resources = {res.id for res in resources}
+            indices = [index for index, res_id in enumerate(self._ordered_compute_resource_ids)
+                       if res_id in available_resources]
+            interval_set = ProcSet(*indices)
+            decreasing_intervals = list(reversed(sorted(
+                (len(interval), interval) for interval in interval_set.intervals())))
+
+            # Find a single continuous interval fitting all requested resources.
+            minimal_fitting_interval = None
+            for interval_len, interval in decreasing_intervals:
+                if interval_len >= min_entries:
+                    minimal_fitting_interval = interval
+                else:
+                    break
+
+            if minimal_fitting_interval:
+                result_set = ProcSet(minimal_fitting_interval)[:min_entries]
+                pass
+            else:
+                # Take largest continuous intervals until sufficient number of resources is found.
+                result_set = ProcSet()
+                for interval_len, interval in decreasing_intervals:
+                    if len(result_set) + interval_len >= min_entries:
+                        result_set.insert(*ProcSet(interval)[:min_entries-len(result_set)])
+                        break
+                    else:
+                        result_set.insert(interval)
+            assert len(result_set) == min_entries
+
+            # Map back from indices to resources
+            filtered_ids = {self._ordered_compute_resource_ids[index] for index in result_set}
+            filtered_resources = [res for res in resources if res.id in filtered_ids]
+            assert len(filtered_resources) == min_entries
+            return filtered_resources
+
+        return do_filter
+
+    def _create_resource_filter_from_generator(self):
+        # Doesn't work due to a false assumption in generate_resources_filter.
         def bb_filter_func_consecutive_resources(
                 current_time,
                 job,
@@ -280,10 +331,10 @@ class AllocOnlyScheduler(Scheduler):
             if not current_result:
                 return True
             last_id = current_result[-1].id
-            idx = self._ordered_compute_resource_ids.index(last_id)
+            index = self._ordered_compute_resource_ids.index(last_id)
             n = len(self._ordered_compute_resource_ids)
-            prev_id = self._ordered_compute_resource_ids[(idx - 1) % n]
-            next_id = self._ordered_compute_resource_ids[(idx + 1) % n]
+            prev_id = self._ordered_compute_resource_ids[(index - 1) % n]
+            next_id = self._ordered_compute_resource_ids[(index + 1) % n]
             return r.id == prev_id or r.id == next_id
 
         bb_consecutive_resources_filter = generate_resources_filter(
