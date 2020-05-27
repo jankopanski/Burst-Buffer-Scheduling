@@ -18,7 +18,7 @@ if [[ "$OSTYPE" == "linux-gnu" ]]; then
     -u $user_id:$group_id \
     -v $PWD:/data \
     oarteam/batsim:3.1.0 \
-    -q -e output/out \
+    -q \
     "$@"
 elif [[ "$OSTYPE" == "darwin"* ]]; then
   set -x; docker run --rm \
@@ -27,7 +27,7 @@ elif [[ "$OSTYPE" == "darwin"* ]]; then
     -v $PWD:/data \
     oarteam/batsim:3.1.0 \
     -s tcp://host.docker.internal:28000 \
-    -q -e output/out \
+    -q \
     "$@"
 else
   echo "OS not supported"

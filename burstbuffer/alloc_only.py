@@ -42,6 +42,10 @@ class AllocOnlyScheduler(Scheduler):
         self._burst_buffer_proximity: Dict[int, List[List[int]]]
         self._ordered_compute_resource_ids: List[int]
 
+        self.filler_not_enough_compute_resource_count = 0
+        self.filler_not_enough_burst_buffer_count = 0
+        self.backfill_not_enough_burst_buffer_count = 0
+
     def on_init(self):
         self._print_node_mapping()
         # Storage machines are all burst buffers hosts plus pfs host.
@@ -64,7 +68,8 @@ class AllocOnlyScheduler(Scheduler):
         self._create_ordered_compute_resource_ids()
         self._create_burst_buffer_proximity()
         # self._resource_filter = consecutive_resources_filter
-        self._resource_filter = self._create_resource_filter()
+        # self._resource_filter = self._create_resource_filter()
+        self._resource_filter = None
 
         # Assume also that the number of job profiles equal to the number of static jobs.
         num_all_jobs = sum(len(workload_profiles) for workload_profiles
@@ -80,6 +85,12 @@ class AllocOnlyScheduler(Scheduler):
 
     def on_end(self):
         self.progress_bar.close()
+        print('# filler job schedulings with insufficient compute resources: {}'.format(
+            self.filler_not_enough_compute_resource_count))
+        print('# filler job schedulings with insufficient burst buffers: {}'.format(
+            self.filler_not_enough_burst_buffer_count))
+        print('# backfill job schedulings with insufficient burst buffers: {}'.format(
+            self.backfill_not_enough_burst_buffer_count))
 
     def schedule(self):
         raise NotImplementedError
@@ -132,6 +143,8 @@ class AllocOnlyScheduler(Scheduler):
                 job.profile.bb)
             if assigned_burst_buffers is None:
                 break
+            else:
+                self.backfill_not_enough_burst_buffer_count += 1
             compute_allocation = Allocation(start_time,
                                             resources=assigned_compute_resources,
                                             job=job)
@@ -163,6 +176,10 @@ class AllocOnlyScheduler(Scheduler):
                 requested_space=job.profile.bb)
             if assigned_burst_buffers:
                 return assigned_compute_resources, assigned_burst_buffers
+            else:
+                self.filler_not_enough_burst_buffer_count += 1
+        else:
+            self.filler_not_enough_compute_resource_count += 1
         return None
 
     def _find_sufficient_burst_buffers(self,

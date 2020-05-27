@@ -50,6 +50,7 @@ jobs = []
 profiles = {}
 
 num_jobs = 0
+first_submit_time = None
 with open(args.input_file) as input_file:
     for line in input_file:
         if model.num_jobs and num_jobs == model.num_jobs:
@@ -62,12 +63,18 @@ with open(args.input_file) as input_file:
         job = SWFJob(swf_record)
         num_jobs += 1
 
+        # Ignore time before first submitted job.
+        if not first_submit_time:
+            # -1 to match pybatsim scheduler time update.
+            first_submit_time = job.submit_time - 1
+        submit_time = job.submit_time - first_submit_time
+
         profile_id = str(job.job_number)
         computations = job.run_time * platform.cpu_speed
         communication = 0 if job.requested_processors == 1 else model.generate_communication()
         burst_buffer = model.generate_burst_buffer()
         jobs.append(model.generate_job(job.job_number,
-                                       job.submit_time,
+                                       submit_time,
                                        job.requested_time,
                                        job.requested_processors,
                                        profile_id))
