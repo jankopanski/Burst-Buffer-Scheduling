@@ -153,7 +153,11 @@ class AllocOnlyScheduler(Scheduler):
                 end_time,
                 job.profile.bb)
 
-            if not assigned_burst_buffers:
+            if assigned_burst_buffers:
+                # What is the meaning of the flag self._allocated (active) of Allocation object?
+                # compute_allocation.allocate_all(self)
+                self._allocate_burst_buffers(start_time, end_time, assigned_burst_buffers, job)
+            else:
                 self.backfill_not_enough_burst_buffer_count += 1
                 if not self._allow_schedule_without_burst_buffer:
                     break
@@ -161,9 +165,6 @@ class AllocOnlyScheduler(Scheduler):
             compute_allocation = Allocation(start_time,
                                             resources=assigned_compute_resources,
                                             job=job)
-            # What is the meaning of the flag self._allocated (active) of Allocation object?
-            # compute_allocation.allocate_all(self)
-            self._allocate_burst_buffers(start_time, end_time, assigned_burst_buffers, job)
             temporary_allocations.append(compute_allocation)
 
         # Allocation for reserved jobs was successful.
@@ -233,10 +234,12 @@ class AllocOnlyScheduler(Scheduler):
         self._burst_buffer_allocations[job.id] = list(burst_buffer_id_counter.keys())
 
     def _free_burst_buffers(self, job):
-        for burst_buffer_id in self._burst_buffer_allocations[job.id]:
-            burst_buffer = self._burst_buffers[burst_buffer_id]
-            burst_buffer.free(job)
-        del self._burst_buffer_allocations[job.id]
+        assert job.id in self._burst_buffer_allocations or self._allow_schedule_without_burst_buffer
+        if job.id in self._burst_buffer_allocations:
+            for burst_buffer_id in self._burst_buffer_allocations[job.id]:
+                burst_buffer = self._burst_buffers[burst_buffer_id]
+                burst_buffer.free(job)
+            del self._burst_buffer_allocations[job.id]
 
     def _validate_job(self, job: Job) -> bool:
         if job.requested_resources > len(self.resources.compute):
