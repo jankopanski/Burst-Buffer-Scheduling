@@ -1,5 +1,6 @@
 {
   "platform": "platforms/dragonfly.yaml",
   "progress_bar": false,
-  "backfill": 1
+  "allow_schedule_without_burst_buffer": false,
+  "backfilling_reservation_depth": 1
 }

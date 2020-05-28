@@ -34,6 +34,8 @@ class AllocOnlyScheduler(Scheduler):
 
         platform_config = read_config(options['platform'])
         self.platform = Platform(platform_config)
+        self._allow_schedule_without_burst_buffer = \
+            bool(options['allow_schedule_without_burst_buffer'])
 
         self._pfs_id: int
         self._burst_buffers = Resources()
@@ -67,9 +69,10 @@ class AllocOnlyScheduler(Scheduler):
 
         self._create_ordered_compute_resource_ids()
         self._create_burst_buffer_proximity()
+
         # self._resource_filter = consecutive_resources_filter
-        # self._resource_filter = self._create_resource_filter()
-        self._resource_filter = None
+        self._resource_filter = self._create_resource_filter()
+        # self._resource_filter = None
 
         # Assume also that the number of job profiles equal to the number of static jobs.
         num_all_jobs = sum(len(workload_profiles) for workload_profiles
@@ -103,15 +106,23 @@ class AllocOnlyScheduler(Scheduler):
             if not job.runnable:
                 self._logger.info('Job {} is not runnable', job.id)
                 continue
+
+            was_job_scheduled = False
             assigned_resources = self._find_all_resources(job)
             if assigned_resources:
                 assigned_compute_resources, assigned_burst_buffers = assigned_resources
-                self._allocate_burst_buffers(self.time,
-                                             self.time + job.requested_time,
-                                             assigned_burst_buffers,
-                                             job)
-                job.schedule(assigned_compute_resources)
-            elif abort_on_first_nonfitting:
+                if assigned_burst_buffers:
+                    self._allocate_burst_buffers(self.time,
+                                                 self.time + job.requested_time,
+                                                 assigned_burst_buffers,
+                                                 job)
+                    job.schedule(assigned_compute_resources)
+                    was_job_scheduled = True
+                elif self._allow_schedule_without_burst_buffer:
+                    job.schedule(assigned_compute_resources)
+                    was_job_scheduled = True
+
+            if not was_job_scheduled and abort_on_first_nonfitting:
                 break
 
     def _backfill_schedule(self, backfilling_reservation_depth=1):
@@ -141,10 +152,12 @@ class AllocOnlyScheduler(Scheduler):
                 start_time,
                 end_time,
                 job.profile.bb)
-            if assigned_burst_buffers is None:
-                break
-            else:
+
+            if not assigned_burst_buffers:
                 self.backfill_not_enough_burst_buffer_count += 1
+                if not self._allow_schedule_without_burst_buffer:
+                    break
+
             compute_allocation = Allocation(start_time,
                                             resources=assigned_compute_resources,
                                             job=job)
@@ -174,10 +187,11 @@ class AllocOnlyScheduler(Scheduler):
                 start_time=self.time,
                 end_time=self.time+job.requested_time,
                 requested_space=job.profile.bb)
-            if assigned_burst_buffers:
-                return assigned_compute_resources, assigned_burst_buffers
-            else:
+            if not assigned_burst_buffers:
                 self.filler_not_enough_burst_buffer_count += 1
+            # assigned_burst_buffers may be None here, which means that no sufficient burst buffer
+            # was assigned.
+            return assigned_compute_resources, assigned_burst_buffers
         else:
             self.filler_not_enough_compute_resource_count += 1
         return None
