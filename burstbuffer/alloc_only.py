@@ -39,7 +39,7 @@ class AllocOnlyScheduler(Scheduler):
 
         self._pfs_id: int
         self._burst_buffers = Resources()
-        self._burst_buffer_allocations: Dict[int, List[int]] = {}  # job.id -> burst_buffer_ids
+        self._burst_buffer_allocations: Dict[int, List[int]] = {}  # job.id -> [burst_buffer_ids]
         # compute_node_id -> [chassis_bb_id, group_bb_id, all_bb_id]
         self._burst_buffer_proximity: Dict[int, List[List[int]]]
         self._ordered_compute_resource_ids: List[int]
@@ -138,38 +138,55 @@ class AllocOnlyScheduler(Scheduler):
         # Allocate compute and storage resources for reserved jobs in the future.
         temporary_allocations = []
         for job in reserved_jobs:
-            start_time, assigned_compute_resources = \
-                self.resources.compute.find_with_earliest_start_time(
-                    job,
-                    allow_future_allocations=True,
-                    filter=self._resource_filter,
-                    time=self.time
-                )
-            assert assigned_compute_resources
-            end_time = start_time + job.requested_time
-            assigned_burst_buffers = self._find_sufficient_burst_buffers(
-                assigned_compute_resources,
-                start_time,
-                end_time,
-                job.profile.bb)
+            # Current time at the beginning.
+            # TODO: add epsilon to end times of burst buffer allocations. Intervals in burst
+            #  buffer allocation tree are open from the right side. For compute resources they
+            #  might be closed.
+            allocation_end_times = [self.time] + self._get_burst_buffer_allocation_end_times()
 
-            if assigned_burst_buffers:
-                # What is the meaning of the flag self._allocated (active) of Allocation object?
-                # compute_allocation.allocate_all(self)
-                self._allocate_burst_buffers(start_time, end_time, assigned_burst_buffers, job)
-            else:
-                self.backfill_not_enough_burst_buffer_count += 1
-                if not self._allow_schedule_without_burst_buffer:
+            for time_point in allocation_end_times:
+                # Find earliest compute resources for a given starting point in time.
+                start_time, assigned_compute_resources = \
+                    self.resources.compute.find_with_earliest_start_time(
+                        job,
+                        allow_future_allocations=True,
+                        filter=self._resource_filter,
+                        time=time_point
+                    )
+                assert assigned_compute_resources, 'Not found enough compute resources.'
+                end_time = start_time + job.requested_time
+
+                # Check if for a given time interval there are sufficient burst buffer resources.
+                assigned_burst_buffers = self._find_sufficient_burst_buffers(
+                    assigned_compute_resources,
+                    start_time,
+                    end_time,
+                    job.profile.bb)
+
+                if assigned_burst_buffers:
+                    # What is the meaning of the flag self._allocated (active) of Allocation object?
+                    # compute_allocation.allocate_all(self)
+                    self._allocate_burst_buffers(start_time, end_time, assigned_burst_buffers, job)
+                    compute_allocation = Allocation(start_time,
+                                                    resources=assigned_compute_resources,
+                                                    job=job)
+                    temporary_allocations.append(compute_allocation)
+                    break
+                elif self._allow_schedule_without_burst_buffer:
+                    self.backfill_not_enough_burst_buffer_count += 1
+                    compute_allocation = Allocation(start_time,
+                                                    resources=assigned_compute_resources,
+                                                    job=job)
+                    temporary_allocations.append(compute_allocation)
                     break
 
-            compute_allocation = Allocation(start_time,
-                                            resources=assigned_compute_resources,
-                                            job=job)
-            temporary_allocations.append(compute_allocation)
+            # After initial filtering of jobs on submission it should be always possible to find
+            # enough burst buffers at some point in time.
+            assert assigned_burst_buffers, 'Not found enough burst buffer resources.'
 
         # Allocation for reserved jobs was successful.
-        if len(temporary_allocations) == len(reserved_jobs):
-            self._filler_schedule(jobs=remaining_jobs, abort_on_first_nonfitting=False)
+        assert len(temporary_allocations) == len(reserved_jobs)
+        self._filler_schedule(jobs=remaining_jobs, abort_on_first_nonfitting=False)
 
         for compute_allocation in temporary_allocations:
             job = compute_allocation.job
@@ -177,6 +194,16 @@ class AllocOnlyScheduler(Scheduler):
             compute_allocation.remove_all_resources()
             # Necessary when allocate_all() was called.
             # compute_allocation.free()
+
+    def _get_burst_buffer_allocation_end_times(self):
+        """
+        Helper function for backfilling.
+        Returns a sorted list over end times of all allocations of all burst buffers.
+        """
+        alloc_end_times = set()
+        for storage_resource in self._burst_buffers:
+            alloc_end_times |= storage_resource.get_allocation_end_times()
+        return sorted(alloc_end_times)
 
     def _find_all_resources(self, job: Job):
         """Returns (assigned_compute_resources, assigned_storage_resources) or None."""

@@ -54,3 +54,6 @@ class StorageResource(Resource):
     def find_first_time_to_fit_job(self, job, time=None,
                                    future_reservation=False):
         raise NotImplementedError('Later')
+
+    def get_allocation_end_times(self):
+        return set(interval.end for interval in self._job_allocations.values())
