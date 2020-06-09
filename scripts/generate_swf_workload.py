@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
-from os.path import basename, splitext
+# ./scripts/generate_swf_workload.py platforms/dragonfly96.yaml workloads/swf.yaml workloads/swf/KTH-SP2-1996-2.1-cln.swf workloads/KTH-SP2-1996-2.1-cln-1000-1.json
+
 from argparse import ArgumentParser
+from os.path import basename, splitext
+from typing import Optional
 
 from batsim.sched.workloads.models.generator import JobModelData
 
@@ -33,6 +36,14 @@ class SWFJob(JobModelData):
         kwargs = {name: value for name, value in zip(self.FIELDS, swf_record)}
         super().__init__(**kwargs)
 
+    @staticmethod
+    def parse_line(line) -> Optional['SWFJob']:
+        line = line.strip()
+        if line.startswith(';'):
+            return None
+        swf_record = [int(x) for x in line.split()]
+        return SWFJob(swf_record)
+
 
 parser = ArgumentParser()
 parser.add_argument('platform_config_file', help='yaml')
@@ -48,26 +59,28 @@ model = WorkloadModel(workload_config, platform)
 
 jobs = []
 profiles = {}
+first_job_number = None
+last_job_number = None
 
-num_jobs = 0
 first_submit_time = None
 with open(args.input_file) as input_file:
     for line in input_file:
-        if model.num_jobs and num_jobs == model.num_jobs:
+        # Check if enough jobs were already processed
+        if model.num_jobs and len(jobs) == model.num_jobs:
             break
 
-        line = line.strip()
-        if line.startswith(';'):
+        job = SWFJob.parse_line(line)
+        if not job or job.job_number < workload_config['from_job_number']:
             continue
-        swf_record = [int(x) for x in line.split()]
-        job = SWFJob(swf_record)
-        num_jobs += 1
 
         # Ignore time before first submitted job.
         if not first_submit_time:
-            # -1 to match pybatsim scheduler time update.
+            # -1 to match pybatsim scheduler time update. Pybatsim crashes without it.
+            # Could be a smaller epsilon.
             first_submit_time = job.submit_time - 1
+            first_job_number = job.job_number
         submit_time = job.submit_time - first_submit_time
+        last_job_number = job.job_number
 
         profile_id = str(job.job_number)
         computations = job.run_time * platform.cpu_speed
@@ -81,5 +94,6 @@ with open(args.input_file) as input_file:
         profiles[profile_id] = model.generate_profile(computations, communication, burst_buffer)
 
 name = splitext(basename(args.input_file))[0]
-description = '{} jobs'.format(num_jobs)
+description = '{} jobs from swf job number {} to {} inclusive'.format(
+    len(jobs), first_job_number, last_job_number)
 model.save_workload(args.output_file, name, description, platform.nb_res, jobs, profiles)

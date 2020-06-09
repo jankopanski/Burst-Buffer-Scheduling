@@ -10,13 +10,14 @@ from batsim.cmds.launcher import main
 
 Params = namedtuple('Params', ['prefix', 'scheduler', 'depth'])
 
-batsim_template_cmd = \
-    ('./run_batsim_docker.sh '
-     '-p platforms/dragonfly96.xml '
-     '-w workloads/{workload} '
-     '-r node_0,node_9,node_18,node_27,node_36,node_45,'
-     'node_54,node_63,node_72,node_81,node_90,node_99:storage '
-     '-e output/{output_dir}/{prefix}')
+batsim_template_cmd = (
+    './run_batsim_docker.sh '
+    '-p platforms/dragonfly96.xml '
+    '-w workloads/{workload} '
+    '-r node_0,node_9,node_18,node_27,node_36,node_45,'
+    'node_54,node_63,node_72,node_81,node_90,node_99:storage '
+    '-e output/{output_dir}/{prefix}'
+)
 
 ####################################################################################################
 output_dir = 'test'
@@ -59,5 +60,6 @@ for workload in workloads:
                 sys.argv[0],
                 '-v', 'warn',
                 os.path.join('burstbuffer', policy.scheduler),
-                '-o', json.dumps(scheduler_options)]
+                '-o', json.dumps(scheduler_options)
+            ]
             main()

@@ -49,7 +49,9 @@ class AllocOnlyScheduler(Scheduler):
         self.backfill_not_enough_burst_buffer_count = 0
 
     def on_init(self):
-        self._print_node_mapping()
+        # TODO: add a switch option
+        # self._print_node_mapping()
+
         # Storage machines are all burst buffers hosts plus pfs host.
         assert self.platform.num_burst_buffers == len(self.machines['storage']) - 1
         assert self.platform.num_nodes == \
