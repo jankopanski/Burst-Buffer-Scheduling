@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# ./scripts/run_experiments.py
 import os
 import sys
 import json
@@ -20,10 +21,14 @@ batsim_template_cmd = (
 )
 
 ####################################################################################################
-output_dir = 'test'
+output_dir = 'KTH-1000-workloads'
 
 workloads = [
-    'KTH-SP2-1996-2.1-cln-1000.json',
+    'KTH-SP2-1996-2.1-cln-1000-1.json',
+    'KTH-SP2-1996-2.1-cln-1000-2.json',
+    'KTH-SP2-1996-2.1-cln-1000-3.json',
+    'KTH-SP2-1996-2.1-cln-1000-4.json',
+    'KTH-SP2-1996-2.1-cln-1000-5.json',
 ]
 
 policies = [
@@ -45,10 +50,12 @@ if os.path.basename(os.getcwd()) == 'scripts':
     os.chdir('..')
 os.makedirs(os.path.join('output', output_dir), exist_ok=True)
 
-for workload in workloads:
+for i, workload in enumerate(workloads, 1):
     for policy in policies:
+        files_prefix = 'workload-{}_{}'.format(i, policy.prefix)
         batsim_cmd = batsim_template_cmd.format(
-            workload=workload, output_dir=output_dir, prefix=policy.prefix)
+            workload=workload, output_dir=output_dir, prefix=files_prefix)
+
         with Popen(batsim_cmd.split()):
             scheduler_options = {
                 'platform': 'platforms/dragonfly96.yaml',
