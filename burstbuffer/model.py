@@ -92,6 +92,12 @@ class WorkloadModel:
                                self.stddev_burst_buffer_per_node),
                          self.platform.burst_buffer_capacity))
 
+    def generate_burst_buffer_increasing_std(self, num_nodes) -> int:
+        return round(min(gauss(
+            self.expected_burst_buffer_per_node,
+            self.stddev_burst_buffer_per_node * (1 + num_nodes / self.platform.num_nodes)),
+            self.platform.burst_buffer_capacity))
+
     def estimate_running_time(self, num_nodes: int, computations: int, communication: int) -> float:
         return max(computations / self.platform.cpu_speed,
                    num_nodes * communication / self.platform.bandwidth)

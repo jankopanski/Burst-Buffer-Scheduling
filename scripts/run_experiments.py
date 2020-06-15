@@ -21,14 +21,14 @@ batsim_template_cmd = (
 )
 
 ####################################################################################################
-output_dir = 'KTH-1000-workloads'
+output_dir = 'KTH-1000-workloads-std'
 
 workloads = [
-    'KTH-SP2-1996-2.1-cln-1000-1.json',
-    'KTH-SP2-1996-2.1-cln-1000-2.json',
-    'KTH-SP2-1996-2.1-cln-1000-3.json',
-    'KTH-SP2-1996-2.1-cln-1000-4.json',
-    'KTH-SP2-1996-2.1-cln-1000-5.json',
+    'KTH-SP2-1996-2.1-cln-std-1000-1.json',
+    'KTH-SP2-1996-2.1-cln-std-1000-2.json',
+    'KTH-SP2-1996-2.1-cln-std-1000-3.json',
+    'KTH-SP2-1996-2.1-cln-std-1000-4.json',
+    'KTH-SP2-1996-2.1-cln-std-1000-5.json',
 ]
 
 policies = [

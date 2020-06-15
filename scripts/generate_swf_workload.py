@@ -85,7 +85,8 @@ with open(args.input_file) as input_file:
         profile_id = str(job.job_number)
         computations = job.run_time * platform.cpu_speed
         communication = 0 if job.requested_processors == 1 else model.generate_communication()
-        burst_buffer = model.generate_burst_buffer()
+        # burst_buffer = model.generate_burst_buffer()
+        burst_buffer = model.generate_burst_buffer_increasing_std(job.requested_processors)
         jobs.append(model.generate_job(job.job_number,
                                        submit_time,
                                        job.requested_time,
