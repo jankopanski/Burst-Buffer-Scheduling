@@ -3,46 +3,9 @@
 
 from argparse import ArgumentParser
 from os.path import basename, splitext
-from typing import Optional
-
-from batsim.sched.workloads.models.generator import JobModelData
 
 from burstbuffer.model import Platform, WorkloadModel, read_config
-
-
-class SWFJob(JobModelData):
-    FIELDS = [
-        "job_number",
-        "submit_time",
-        "wait_time",
-        "run_time",
-        "used_processors",
-        "average_cpu_time",
-        "used_memory",
-        "requested_processors",
-        "requested_time",
-        "requested_memory",
-        "completed",
-        "user_id",
-        "group_id",
-        "application",
-        "queue",
-        "partition",
-        "preceding_job",
-        "think_time",
-    ]
-
-    def __init__(self, swf_record):
-        kwargs = {name: value for name, value in zip(self.FIELDS, swf_record)}
-        super().__init__(**kwargs)
-
-    @staticmethod
-    def parse_line(line) -> Optional['SWFJob']:
-        line = line.strip()
-        if line.startswith(';'):
-            return None
-        swf_record = [int(x) for x in line.split()]
-        return SWFJob(swf_record)
+from burstbuffer.swf import SWFJob
 
 
 parser = ArgumentParser()
