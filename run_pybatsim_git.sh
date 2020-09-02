@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-[ ! -d "pybatsim" ] && git clone https://gitlab.inria.fr/batsim/pybatsim.git
+#[ ! -d "pybatsim" ] && git clone https://gitlab.inria.fr/batsim/pybatsim.git
 
 # ./run_pybatsim_git.sh burstbuffer/fcfsAllocOnlyScheduler.py platforms/dragonfly.yaml
 

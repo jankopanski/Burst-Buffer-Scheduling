@@ -1,0 +1,3 @@
+[submodule "pybatsim"]
+	path = pybatsim
+	url = https://github.com/jankopanski/pybatsim.git
