@@ -18,7 +18,6 @@ class TestScheduler(Scheduler):
         super().__init__(options=options)
         # self._logger._logger.setLevel('WARNING')
         self._event_logger._logger.setLevel('WARNING')
-        self.num_submitted = 0
 
     def on_init(self):
         for storage_resource in self.machines['storage']:
@@ -39,24 +38,34 @@ class TestScheduler(Scheduler):
 
     def on_job_submission(self, job):
         if not job.is_dynamic_job:
-            requested_resources = job.requested_resources
             walltime = 3
-            # profile1 = Profiles.ParallelHomogeneous(cpu=10**9, com=0, bb=0)
-            # job.submit_sub_job(requested_resources, walltime, profile1)
-            profile1 = Profiles.DataStaging(size=10 ** 8)
+
+            # About 0.4 s
+            profile1 = Profiles.DataStaging(size=5*10**8)
             job.submit_sub_job(2, walltime, profile1)
+
             profile2 = Profiles.ParallelHomogeneous(cpu=2*10**9, com=0, bb=0)
-            job.submit_sub_job(requested_resources, walltime, profile2)
-            self.num_submitted += 2
+            job.submit_sub_job(job.requested_resources, walltime, profile2)
+
+            # Test for double submission of the same profile
+            # profile3 = Profiles.ParallelHomogeneous(cpu=2 * 10 ** 9, com=0, bb=0)
+            # job.submit_sub_job(job.requested_resources, walltime, profile2)
+
+            # That much I/O is sent to every allocated compute node
+            profile3 = Profiles.ParallelPFS(size_read=5*10**8, size_write=10**8)
+            job.submit_sub_job(job.requested_resources, walltime, profile3)
 
     def on_job_completion(self, job):
-        next_job = job.parent_job.sub_jobs.runnable.first
+        next_job: Job = job.parent_job.sub_jobs.runnable.first
         if next_job:
             new_allocation = Allocation(
                 start_time=self.time,
                 walltime=job.allocation.walltime - (self.time - job.allocation.start_time),
                 resources=job.parent_job.assigned_compute_resources
             )
+            if next_job.profile.type == Profiles.ParallelPFS.type:
+                next_job._batsim_job.storage_mapping = {'pfs': self._pfs.id}
+                new_allocation.add_resource(self._pfs)
             next_job.schedule(new_allocation)
         print('completed ', job.id)
         # job.allocation.remove_all_resources()
@@ -69,6 +78,7 @@ class TestScheduler(Scheduler):
         pass
 
     def schedule(self):
+        # TODO: add a flag to only once send the registration finished message
         if self._batsim.no_more_static_jobs:
             print('end of static jobs')
             self.notify_registration_finished()
