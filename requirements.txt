@@ -1,0 +1,12 @@
+joblib~=0.15.1
+docopt~=0.6.2
+procset~=1.0
+pyzmq~=19.0.0
+pandas~=0.25.3
+redis~=3.4.1
+sortedcontainers~=2.1.0
+setuptools~=45.2.0
+yaml~=0.2.4
+pyyaml~=5.3.1
+intervaltree~=3.0.2
+tqdm~=4.42.1
