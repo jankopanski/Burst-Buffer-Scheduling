@@ -4,12 +4,7 @@ from batsim.sched.job import Job
 from batsim.sched.alloc import Allocation
 from procset import ProcSet
 
-from .storage_resource import StorageResource
-
-
-class StorageAllocation(Allocation):
-    def __len__(self):
-        return len(self.special_resources)
+from .storage import StorageResource, StorageAllocation
 
 
 class TestScheduler(Scheduler):

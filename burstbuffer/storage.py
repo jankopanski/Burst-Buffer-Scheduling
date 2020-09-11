@@ -4,6 +4,13 @@ from intervaltree import Interval, IntervalTree
 from batsim.sched.resource import Resource, Resources
 from batsim.sched.job import Job
 from batsim.sched.scheduler import Scheduler
+from batsim.sched.alloc import Allocation
+
+
+class StorageAllocation(Allocation):
+    """This class is introduce only to make DataStaging profile work."""
+    def __len__(self):
+        return len(self.special_resources)
 
 
 class StorageResource(Resource):

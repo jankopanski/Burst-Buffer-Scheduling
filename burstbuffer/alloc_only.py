@@ -9,7 +9,7 @@ from batsim.sched.scheduler import Scheduler
 from batsim.sched.algorithms.utils import consecutive_resources_filter, generate_resources_filter
 from procset import ProcSet
 
-from burstbuffer.storage_resource import StorageResource
+from burstbuffer.storage import StorageResource
 from burstbuffer.model import read_config, Platform
 
 
@@ -272,7 +272,7 @@ class AllocOnlyScheduler(Scheduler):
 
     def _validate_job(self, job: Job) -> bool:
         if job.requested_resources > len(self.resources.compute):
-            job.reject("Too few resources available in the system (overall)")
+            job.reject('Too few resources available in the system (overall)')
             return False
         # Requested space for a single node must fit within single burst buffer.
         if job.profile.bb > self.platform.burst_buffer_capacity:
