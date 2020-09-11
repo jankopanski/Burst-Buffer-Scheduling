@@ -1,3 +1,5 @@
+# docker run --rm --net host -u 501:20 -v /Users/jankopanski/master2/Burst-Buffer-Scheduling:/data oarteam/batsim:4.0.0 -s tcp://host.docker.internal:28000 -p platforms/dragonfly96.xml -w workloads/generated_two_nodes.json -r node_0,node_9,node_18,node_27,node_36,node_45,node_54,node_63,node_72,node_81,node_90,node_99:storage -e output/out --enable-dynamic-jobs --acknowledge-dynamic-jobs
+
 from batsim.sched.scheduler import Scheduler
 from batsim.sched.profiles import Profiles
 from batsim.sched.job import Job
