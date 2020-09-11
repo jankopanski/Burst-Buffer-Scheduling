@@ -1,16 +1,17 @@
 from collections import Counter
-from typing import Optional, List, Dict, Callable
+from typing import Optional, List, Dict, Callable, Tuple
 from tqdm import tqdm
 
-from batsim.sched.resource import Resources, Resource
+from batsim.sched.resource import Resources, Resource, ComputeResource
 from batsim.sched.alloc import Allocation
 from batsim.sched.job import Job
 from batsim.sched.scheduler import Scheduler
-from batsim.sched.algorithms.utils import consecutive_resources_filter, generate_resources_filter
+from batsim.sched.algorithms.utils import generate_resources_filter
 from procset import ProcSet
 
-from burstbuffer.storage import StorageResource
-from burstbuffer.model import read_config, Platform
+from .types import *
+from .storage import StorageResource
+from .model import read_config, Platform
 
 
 # Convention
@@ -19,7 +20,17 @@ from burstbuffer.model import read_config, Platform
 # There exists a mapping between ids and node_ids.
 # node_ids are sorted by Batsim lexicographically.
 class AllocOnlyScheduler(Scheduler):
-    """Only allocates burst buffers without executing any data transfers to burst buffers."""
+    """
+    Only allocates burst buffers without executing any data transfers to burst buffers.
+    """
+
+    # compute_node_id -> [chassis_bb_id, group_bb_id, all_bb_id]
+    _burst_buffers: Resources
+    _burst_buffer_allocations: Dict[JobId, List[StorageResourceId]]
+    _burst_buffer_proximity: Dict[ComputeResourceId, List[List[StorageResourceId]]]
+    _ordered_compute_resource_ids: List[ComputeResourceId]
+    _progress_bar: tqdm
+    pfs: StorageResource
 
     def __init__(self, options):
         super().__init__(options=options)
@@ -27,22 +38,21 @@ class AllocOnlyScheduler(Scheduler):
             # To Turn off Batsim object logging a flag -v 'warn' needs to be passed to the launcher.
             # Turns off Scheduler object logging to display a progress bar.
             self._logger._logger.setLevel('WARNING')
-            self.disable_progress_bar = False
+            self._disable_progress_bar = False
         else:
-            self.disable_progress_bar = True
+            self._disable_progress_bar = True
         self._event_logger._logger.setLevel('WARNING')
 
+        # Platform configuration
         platform_config = read_config(options['platform'])
         self.platform = Platform(platform_config)
         self._allow_schedule_without_burst_buffer = \
             bool(options['allow_schedule_without_burst_buffer'])
 
-        self._pfs_id: int
+        # Resource initialisation
         self._burst_buffers = Resources()
-        self._burst_buffer_allocations: Dict[int, List[int]] = {}  # job.id -> [burst_buffer_ids]
-        # compute_node_id -> [chassis_bb_id, group_bb_id, all_bb_id]
-        self._burst_buffer_proximity: Dict[int, List[List[int]]]
-        self._ordered_compute_resource_ids: List[int]
+        # job.id -> [burst_buffer_ids]
+        self._burst_buffer_allocations = {}
 
         self.filler_not_enough_compute_resource_count = 0
         self.filler_not_enough_burst_buffer_count = 0
@@ -55,11 +65,16 @@ class AllocOnlyScheduler(Scheduler):
         # Storage machines are all burst buffers hosts plus pfs host.
         assert self.platform.num_burst_buffers == len(self.machines['storage']) - 1
         assert self.platform.num_nodes == \
-            len(self.machines['storage']) - 1 + len(self.machines['compute'])
+               len(self.machines['storage']) - 1 + len(self.machines['compute'])
 
         for storage_resource in self.machines['storage']:
             if storage_resource['name'] == 'pfs':
-                self._pfs_id = storage_resource['id']
+                self.pfs = StorageResource(
+                    scheduler=self,
+                    id=storage_resource["id"],
+                    name=storage_resource["name"],
+                    resources_list=self.resources
+                )
             else:
                 self._burst_buffers.add(StorageResource(
                     self,
@@ -72,24 +87,25 @@ class AllocOnlyScheduler(Scheduler):
         self._create_ordered_compute_resource_ids()
         self._create_burst_buffer_proximity()
 
+        # self._resource_filter = None
         # self._resource_filter = consecutive_resources_filter
         self._resource_filter = self._create_resource_filter()
-        # self._resource_filter = None
 
         # Assume also that the number of job profiles equal to the number of static jobs.
         num_all_jobs = sum(len(workload_profiles) for workload_profiles
                            in self._batsim.profiles.values())
-        self.progress_bar = tqdm(total=num_all_jobs, smoothing=0, disable=self.disable_progress_bar)
+        self._progress_bar = tqdm(total=num_all_jobs, smoothing=0,
+                                  disable=self._disable_progress_bar)
 
     def on_job_submission(self, job):
         self._validate_job(job)
 
     def on_job_completion(self, job):
         self._free_burst_buffers(job)
-        self.progress_bar.update()
+        self._progress_bar.update()
 
     def on_end(self):
-        self.progress_bar.close()
+        self._progress_bar.close()
         print('# filler job schedulings with insufficient compute resources: {}'.format(
             self.filler_not_enough_compute_resource_count))
         print('# filler job schedulings with insufficient burst buffers: {}'.format(
@@ -146,6 +162,7 @@ class AllocOnlyScheduler(Scheduler):
             #  might be closed.
             allocation_end_times = [self.time] + self._get_burst_buffer_allocation_end_times()
 
+            assigned_burst_buffers = None
             for time_point in allocation_end_times:
                 # Find earliest compute resources for a given starting point in time.
                 start_time, assigned_compute_resources = \
@@ -197,7 +214,7 @@ class AllocOnlyScheduler(Scheduler):
             # Necessary when allocate_all() was called.
             # compute_allocation.free()
 
-    def _get_burst_buffer_allocation_end_times(self):
+    def _get_burst_buffer_allocation_end_times(self) -> List[float]:
         """
         Helper function for backfilling.
         Returns a sorted list over end times of all allocations of all burst buffers.
@@ -207,7 +224,8 @@ class AllocOnlyScheduler(Scheduler):
             alloc_end_times |= storage_resource.get_allocation_end_times()
         return sorted(alloc_end_times)
 
-    def _find_all_resources(self, job: Job):
+    def _find_all_resources(self, job: Job) -> \
+            Optional[Tuple[List[ComputeResource], Dict[ComputeResourceId, StorageResourceId]]]:
         """Returns (assigned_compute_resources, assigned_storage_resources) or None."""
         assigned_compute_resources = self.resources.compute.find_sufficient_resources_for_job(
             job, filter=self._resource_filter)
@@ -215,7 +233,7 @@ class AllocOnlyScheduler(Scheduler):
             assigned_burst_buffers = self._find_sufficient_burst_buffers(
                 assigned_compute_resources,
                 start_time=self.time,
-                end_time=self.time+job.requested_time,
+                end_time=self.time + job.requested_time,
                 requested_space=job.profile.bb)
             if not assigned_burst_buffers:
                 self.filler_not_enough_burst_buffer_count += 1
@@ -226,11 +244,13 @@ class AllocOnlyScheduler(Scheduler):
             self.filler_not_enough_compute_resource_count += 1
         return None
 
-    def _find_sufficient_burst_buffers(self,
-                                       assigned_compute_resources: Resources,
-                                       start_time: float,
-                                       end_time: float,
-                                       requested_space: int) -> Optional[Dict[int, int]]:
+    def _find_sufficient_burst_buffers(
+            self,
+            assigned_compute_resources: Resources,
+            start_time: float,
+            end_time: float,
+            requested_space: int
+    ) -> Optional[Dict[ComputeResourceId, StorageResourceId]]:
         """Returns a mapping compute_resource_id -> burst_buffer_id."""
         assigned_burst_buffers = {}
         available_space = {burst_buffer.id: burst_buffer.available_space(start_time, end_time)
@@ -250,11 +270,13 @@ class AllocOnlyScheduler(Scheduler):
             return assigned_burst_buffers
         return None
 
-    def _allocate_burst_buffers(self,
-                                start: float,
-                                end: float,
-                                assigned_burst_buffers: Dict[int, int],
-                                job: Job):
+    def _allocate_burst_buffers(
+            self,
+            start: float,
+            end: float,
+            assigned_burst_buffers: Dict[int, int],
+            job: Job
+    ):
         burst_buffer_id_counter = Counter(assigned_burst_buffers.values())
         for burst_buffer_id, count in burst_buffer_id_counter.items():
             burst_buffer = self._burst_buffers[burst_buffer_id]
@@ -300,7 +322,7 @@ class AllocOnlyScheduler(Scheduler):
                     self._ordered_compute_resource_ids.append(compute_resource.id)
                     break
         assert len(self._ordered_compute_resource_ids) == \
-           self.platform.num_nodes - self.platform.num_burst_buffers
+               self.platform.num_nodes - self.platform.num_burst_buffers
 
     def _create_burst_buffer_proximity(self):
         """Compute resource id to burst buffer id proximity mapping for the Dragonfly topology."""
@@ -333,7 +355,7 @@ class AllocOnlyScheduler(Scheduler):
                      set(self._burst_buffer_proximity[compute_resource.id][0]) -
                      set(self._burst_buffer_proximity[compute_resource.id][1]))
 
-    def _create_resource_filter(self):
+    def _create_resource_filter(self) -> Callable[..., List[Resource]]:
         # Based on do_filter function from generate_resources_filter in algorithms/utils.py
         def do_filter(
                 resources: List[Resource],
@@ -341,7 +363,8 @@ class AllocOnlyScheduler(Scheduler):
                 current_time: float,
                 max_entries: int,
                 min_entries: int,
-                **kwargs):
+                **kwargs
+        ):
             assert len(resources) >= min_entries
 
             available_resources = {res.id for res in resources}
@@ -367,7 +390,7 @@ class AllocOnlyScheduler(Scheduler):
                 result_set = ProcSet()
                 for interval_len, interval in decreasing_intervals:
                     if len(result_set) + interval_len >= min_entries:
-                        result_set.insert(*ProcSet(interval)[:min_entries-len(result_set)])
+                        result_set.insert(*ProcSet(interval)[:min_entries - len(result_set)])
                         break
                     else:
                         result_set.insert(interval)
@@ -411,8 +434,8 @@ class AllocOnlyScheduler(Scheduler):
             print('storage node: {} -> {}'.format(node['name'], node['id']))
 
     @staticmethod
-    def get_node_id(node_name):
+    def get_node_id(node_name: ResourceName):
         """Gets platform node id from the name in the platform file.
         For 'node_42' will return 42.
         """
-        return int(node_name.split('_')[-1])
+        return ResourceId(int(node_name.split('_')[-1]))
