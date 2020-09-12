@@ -2,6 +2,7 @@ from collections import Counter
 from typing import Optional, List, Dict, Callable, Tuple
 from tqdm import tqdm
 
+from batsim.batsim import Batsim
 from batsim.sched.resource import Resources, Resource, ComputeResource
 from batsim.sched.alloc import Allocation
 from batsim.sched.job import Job
@@ -24,6 +25,7 @@ class AllocOnlyScheduler(Scheduler):
     Only allocates burst buffers without executing any data transfers to burst buffers.
     """
 
+    _batsim: Batsim
     # compute_node_id -> [chassis_bb_id, group_bb_id, all_bb_id]
     _burst_buffers: Resources
     _burst_buffer_allocations: Dict[JobId, List[StorageResourceId]]
