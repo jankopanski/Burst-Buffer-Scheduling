@@ -10,11 +10,11 @@ from .storage import StorageResource, StorageAllocation
 
 
 class TestScheduler(Scheduler):
-
     def __init__(self, options):
         super().__init__(options=options)
         # self._logger._logger.setLevel('WARNING')
         self._event_logger._logger.setLevel('WARNING')
+        self._registration_finished = False
 
     def on_init(self):
         for storage_resource in self.machines['storage']:
@@ -50,7 +50,25 @@ class TestScheduler(Scheduler):
 
             # That much I/O is sent to every allocated compute node
             profile3 = Profiles.ParallelPFS(size_read=5*10**8, size_write=10**8)
-            job.submit_sub_job(job.requested_resources, walltime, profile3)
+            job.submit_sub_job(job.requested_resources, -1, profile3)
+
+            for sub_job_description in job.sub_jobs_workload.jobs:
+                batsim_job = self._batsim.jobs[sub_job_description.id]
+
+                # Manually set sub_job as in BaseBatsimScheduler.onJobSubmission();
+                sub_job = Job(
+                    number=self._scheduler._next_job_number,
+                    batsim_job=batsim_job,
+                    scheduler=self,
+                    jobs_list=self.jobs
+                )
+                self._scheduler._jobmap[batsim_job.id] = sub_job
+                self._scheduler._next_job_number += 1
+
+                self.jobs.add(sub_job)
+
+                sub_job_description.job = sub_job
+                sub_job._workload_description = job.sub_jobs_workload
 
     def on_job_completion(self, job):
         next_job: Job = job.parent_job.sub_jobs.runnable.first
@@ -76,13 +94,15 @@ class TestScheduler(Scheduler):
 
     def schedule(self):
         # TODO: add a flag to only once send the registration finished message
-        if self._batsim.no_more_static_jobs:
+        if not self._registration_finished and self._batsim.no_more_static_jobs:
             print('end of static jobs')
             self.notify_registration_finished()
+            self._registration_finished = True
         self.high_level_sub_job()
         # self.high_level_new_dynamic_job_registration()
 
     def high_level_sub_job(self):
+        # Requires only --enable-dynamic-jobs
         for job in self.jobs.static_job.runnable:
             for sub_job in job.sub_jobs:
                 assigned_compute_resources = \
