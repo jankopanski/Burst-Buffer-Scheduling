@@ -129,14 +129,15 @@ class AllocOnlyScheduler(Scheduler):
                 continue
 
             was_job_scheduled = False
-            assigned_resources = self._find_all_resources(job)
-            if assigned_resources:
-                assigned_compute_resources, assigned_burst_buffers = assigned_resources
+            assigned_compute_resources, assigned_burst_buffers = self._find_all_resources(job)
+            if assigned_compute_resources:
                 if assigned_burst_buffers:
-                    self._allocate_burst_buffers(self.time,
-                                                 self.time + job.requested_time,
-                                                 assigned_burst_buffers,
-                                                 job)
+                    self._allocate_burst_buffers(
+                        start=self.time,
+                        end=self.time + job.requested_time,
+                        assigned_burst_buffers=assigned_burst_buffers,
+                        job=job
+                    )
                     job.schedule(assigned_compute_resources)
                     was_job_scheduled = True
                 elif self._allow_schedule_without_burst_buffer:
@@ -180,10 +181,7 @@ class AllocOnlyScheduler(Scheduler):
 
                 # Check if for a given time interval there are sufficient burst buffer resources.
                 assigned_burst_buffers = self._find_sufficient_burst_buffers(
-                    assigned_compute_resources,
-                    start_time,
-                    end_time,
-                    job.profile.bb)
+                    assigned_compute_resources, start_time, end_time, job.profile.bb)
 
                 if assigned_burst_buffers:
                     # What is the meaning of the flag self._allocated (active) of Allocation object?
@@ -227,9 +225,9 @@ class AllocOnlyScheduler(Scheduler):
             alloc_end_times |= storage_resource.get_allocation_end_times()
         return sorted(alloc_end_times)
 
-    def _find_all_resources(self, job: Job) -> \
-            Optional[Tuple[List[ComputeResource], Dict[ComputeResourceId, StorageResourceId]]]:
-        """Returns (assigned_compute_resources, assigned_storage_resources) or None."""
+    def _find_all_resources(self, job: Job) -> Tuple[
+            Optional[List[ComputeResource]], Optional[Dict[ComputeResource, StorageResource]]]:
+        """Returns (assigned_compute_resources, assigned_storage_resources)."""
         assigned_compute_resources = self.resources.compute.find_sufficient_resources_for_job(
             job, filter=self._resource_filter)
         if assigned_compute_resources:
@@ -245,7 +243,7 @@ class AllocOnlyScheduler(Scheduler):
             return assigned_compute_resources, assigned_burst_buffers
         else:
             self.filler_not_enough_compute_resource_count += 1
-        return None
+        return None, None
 
     def _find_sufficient_burst_buffers(
             self,
@@ -253,8 +251,8 @@ class AllocOnlyScheduler(Scheduler):
             start_time: float,
             end_time: float,
             requested_space: int
-    ) -> Optional[Dict[ComputeResourceId, StorageResourceId]]:
-        """Returns a mapping compute_resource_id -> burst_buffer_id."""
+    ) -> Optional[Dict[ComputeResource, StorageResource]]:
+        """Returns a mapping compute_resource -> burst_buffer."""
         assigned_burst_buffers = {}
         available_space = {burst_buffer.id: burst_buffer.available_space(start_time, end_time)
                            for burst_buffer in self._burst_buffers}
@@ -266,7 +264,8 @@ class AllocOnlyScheduler(Scheduler):
                 for burst_buffer_id in burst_buffer_proximity_layer:
                     if available_space[burst_buffer_id] >= requested_space:
                         available_space[burst_buffer_id] -= requested_space
-                        assigned_burst_buffers[compute_resource.id] = burst_buffer_id
+                        burst_buffer = self._burst_buffers[burst_buffer_id]
+                        assigned_burst_buffers[compute_resource] = burst_buffer
                         was_burst_buffer_assigned = True
                         break
         if len(assigned_burst_buffers) == len(assigned_compute_resources):
@@ -277,10 +276,11 @@ class AllocOnlyScheduler(Scheduler):
             self,
             start: float,
             end: float,
-            assigned_burst_buffers: Dict[int, int],
+            assigned_burst_buffers: Dict[ComputeResource, StorageResource],
             job: Job
     ):
-        burst_buffer_id_counter = Counter(assigned_burst_buffers.values())
+        burst_buffer_id_counter = Counter(burst_buffer.id for burst_buffer
+                                          in assigned_burst_buffers.values())
         for burst_buffer_id, count in burst_buffer_id_counter.items():
             burst_buffer = self._burst_buffers[burst_buffer_id]
             requested_space = count * job.profile.bb
