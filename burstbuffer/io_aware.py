@@ -1,11 +1,10 @@
-from typing import List, Dict, Optional
+from typing import List, Dict
 from enum import Enum
 
 from batsim.batsim import Job as BatsimJob
 from batsim.sched import Profiles, Allocation, ComputeResource, Job
 from procset import ProcSet
 
-from .types import *
 from .alloc_only import AllocOnlyScheduler
 from .storage import StorageResource, StorageAllocation
 
@@ -51,7 +50,7 @@ class IOAwareScheduler(AllocOnlyScheduler):
         static_job: StaticJob = job.parent_job
 
         if job.profile.type == Profiles.DataStaging.type:
-            if len(job.sub_jobs.running) == 0:
+            if len(static_job.sub_jobs.completed) == len(static_job.sub_jobs.submitted):
                 # All stage-in jobs finished
                 if static_job.phase == JobPhase.STAGE_IN:
                     if not all(stage_in_job.success for stage_in_job in static_job.sub_jobs):
@@ -82,7 +81,7 @@ class IOAwareScheduler(AllocOnlyScheduler):
                     static_job.phase = JobPhase.RUNNING
 
                 # All stage-out jobs finished
-                if static_job.phase == JobPhase.STAGE_OUT:
+                elif static_job.phase == JobPhase.STAGE_OUT:
                     self._increase_num_completed_jobs()
                     self._free_burst_buffers(static_job)
                     static_job.phase = JobPhase.COMPLETED
@@ -102,7 +101,7 @@ class IOAwareScheduler(AllocOnlyScheduler):
             stage_out_profile = Profiles.DataStaging(size=job.profile.bb)
             for _ in range(static_job.requested_resources):
                 static_job.submit_sub_job(2, new_walltime, stage_out_profile)
-            self._create_sub_job_objects(job)
+            self._create_sub_job_objects(static_job)
 
             # Schedule stage-out jobs
             for stage_out_job, storage_resource in zip(static_job.sub_jobs.runnable,
@@ -139,6 +138,8 @@ class IOAwareScheduler(AllocOnlyScheduler):
         assert assigned_burst_buffers
         static_job.assigned_compute_resources = assigned_compute_resources
         static_job.assigned_burst_buffers = assigned_burst_buffers
+        self._allocate_burst_buffers(self.time, self.time + static_job.requested_time,
+                                     assigned_burst_buffers, static_job)
 
         # Schedule all stage-in jobs
         assert len(static_job.sub_jobs) == len(assigned_burst_buffers.values())
@@ -184,7 +185,9 @@ class IOAwareScheduler(AllocOnlyScheduler):
         Must be called after a sequence of job.submit_sub_job() calls if --acknowledge-dynamic-jobs
         flag is not specified for Batsim simulator.
         """
-        for sub_job_description in job.sub_jobs_workload.unsubmitted_jobs:
+        for sub_job_description in job.sub_jobs_workload:
+            if sub_job_description.job:
+                continue
             batsim_job: BatsimJob = self._batsim.jobs[sub_job_description.id]
 
             # Manually set sub_job; based on BaseBatsimScheduler.onJobSubmission()
