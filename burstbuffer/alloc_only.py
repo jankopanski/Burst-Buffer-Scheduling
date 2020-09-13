@@ -30,9 +30,10 @@ class AllocOnlyScheduler(Scheduler):
     _burst_buffers: Resources
     _burst_buffer_allocations: Dict[JobId, List[StorageResourceId]]
     _burst_buffer_proximity: Dict[ComputeResourceId, List[List[StorageResourceId]]]
+    _num_all_jobs: int
     _ordered_compute_resource_ids: List[ComputeResourceId]
     _progress_bar: tqdm
-    pfs: StorageResource
+    _pfs: StorageResource
 
     def __init__(self, options):
         super().__init__(options=options)
@@ -71,7 +72,7 @@ class AllocOnlyScheduler(Scheduler):
 
         for storage_resource in self.machines['storage']:
             if storage_resource['name'] == 'pfs':
-                self.pfs = StorageResource(
+                self._pfs = StorageResource(
                     scheduler=self,
                     id=storage_resource["id"],
                     name=storage_resource["name"],
@@ -94,9 +95,9 @@ class AllocOnlyScheduler(Scheduler):
         self._resource_filter = self._create_resource_filter()
 
         # Assume also that the number of job profiles equal to the number of static jobs.
-        num_all_jobs = sum(len(workload_profiles) for workload_profiles
-                           in self._batsim.profiles.values())
-        self._progress_bar = tqdm(total=num_all_jobs, smoothing=0,
+        self._num_all_jobs = sum(len(workload_profiles) for workload_profiles
+                                 in self._batsim.profiles.values())
+        self._progress_bar = tqdm(total=self._num_all_jobs, smoothing=0,
                                   disable=self._disable_progress_bar)
 
     def on_job_submission(self, job):
