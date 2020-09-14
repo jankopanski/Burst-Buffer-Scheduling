@@ -39,6 +39,7 @@ class IOAwareScheduler(AllocOnlyScheduler):
     def on_job_submission(self, job: StaticJob):
         assert not job.is_dynamic_job
         assert job.profile.type == Profiles.ParallelHomogeneous.type
+        job.comment = job.profile.bb
         if not self._validate_job(job):
             self._increase_num_completed_jobs()
             return
@@ -46,7 +47,7 @@ class IOAwareScheduler(AllocOnlyScheduler):
 
         job.num_compute_phases = max(round(job.profile.cpu / self._target_compute_phase_length), 1)
         job.compute_phase_size = job.profile.cpu / job.num_compute_phases
-        job.io_phase_size = self._io_phase_factor * job.profile.bb
+        job.io_phase_size = int(self._io_phase_factor * job.profile.bb)
         job.completed_compute_phases = 0
 
         stage_in_profile = Profiles.DataStaging(size=job.profile.bb)
