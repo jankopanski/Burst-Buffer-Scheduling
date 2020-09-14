@@ -7,6 +7,7 @@ from procset import ProcSet
 
 from .alloc_only import AllocOnlyScheduler
 from .storage import StorageResource, StorageAllocation
+from .model import GFLOPS
 
 
 class JobPhase(Enum):
@@ -22,12 +23,18 @@ class StaticJob(Job):
     phase: JobPhase
     assigned_compute_resources: List[ComputeResource]
     assigned_burst_buffers: Dict[ComputeResource, StorageResource]
+    num_compute_phases: int
+    compute_phase_length: int
+    io_phase_length: int
+    completed_compute_phases: int
 
 
 class IOAwareScheduler(AllocOnlyScheduler):
     def __init__(self, options):
         super().__init__(options)
         self._num_completed_jobs = 0
+        self._target_compute_phase_length = 6 * GFLOPS
+        self._io_phase_factor = 0.5
 
     def on_job_submission(self, job: StaticJob):
         assert not job.is_dynamic_job
@@ -36,6 +43,11 @@ class IOAwareScheduler(AllocOnlyScheduler):
             self._increase_num_completed_jobs()
             return
         # job.__class__ = StaticJob
+
+        job.num_compute_phases = max(round(job.profile.cpu / self._target_compute_phase_length), 1)
+        job.compute_phase_length = job.profile.cpu / job.num_compute_phases
+        job.io_phase_length = self._io_phase_factor * job.profile.bb
+        job.completed_compute_phases = 0
 
         stage_in_profile = Profiles.DataStaging(size=job.profile.bb)
         for _ in range(job.requested_resources):
@@ -63,7 +75,7 @@ class IOAwareScheduler(AllocOnlyScheduler):
                     new_walltime = job.allocation.walltime - (self.time - job.allocation.start_time)
                     assert new_walltime > 0
                     parallel_homogeneous_profile = Profiles.ParallelHomogeneous(
-                        cpu=static_job.profile.cpu,
+                        cpu=static_job.compute_phase_length,
                         com=static_job.profile.com,
                     )
                     static_job.submit_sub_job(static_job.requested_resources, new_walltime,
@@ -95,25 +107,46 @@ class IOAwareScheduler(AllocOnlyScheduler):
                 static_job.phase = JobPhase.COMPLETED
                 return
 
-            # Register stage-out jobs
-            new_walltime = job.allocation.walltime - (self.time - job.allocation.start_time)
-            assert new_walltime > 0
-            stage_out_profile = Profiles.DataStaging(size=job.profile.bb)
-            for _ in range(static_job.requested_resources):
-                static_job.submit_sub_job(2, new_walltime, stage_out_profile)
-            self._create_sub_job_objects(static_job)
+            static_job.completed_compute_phases += 1
+            if static_job.completed_compute_phases == static_job.num_compute_phases:
+                # Register stage-out jobs
+                new_walltime = job.allocation.walltime - (self.time - job.allocation.start_time)
+                assert new_walltime > 0
+                stage_out_profile = Profiles.DataStaging(size=job.profile.bb)
+                for _ in range(static_job.requested_resources):
+                    static_job.submit_sub_job(2, new_walltime, stage_out_profile)
+                self._create_sub_job_objects(static_job)
 
-            # Schedule stage-out jobs
-            for stage_out_job, storage_resource in zip(static_job.sub_jobs.runnable,
-                                                       static_job.assigned_burst_buffers.values()):
-                self._schedule_data_staging(
-                    job=stage_out_job,
-                    source=storage_resource,
-                    destination=self._pfs,
-                    walltime=new_walltime
+                # Schedule stage-out jobs
+                for stage_out_job, storage_resource in zip(
+                        static_job.sub_jobs.runnable, static_job.assigned_burst_buffers.values()):
+                    self._schedule_data_staging(
+                        job=stage_out_job,
+                        source=storage_resource,
+                        destination=self._pfs,
+                        walltime=new_walltime
+                    )
+                static_job.phase = JobPhase.STAGE_OUT
+
+            else:
+                new_walltime = job.allocation.walltime - (self.time - job.allocation.start_time)
+                assert new_walltime > 0
+                parallel_homogeneous_profile = Profiles.ParallelHomogeneous(
+                    cpu=static_job.compute_phase_length,
+                    com=static_job.profile.com,
                 )
+                static_job.submit_sub_job(static_job.requested_resources, new_walltime,
+                                          parallel_homogeneous_profile)
+                self._create_sub_job_objects(static_job)
 
-            static_job.phase = JobPhase.STAGE_OUT
+                # New job schedule
+                next_job: Job = static_job.sub_jobs.last
+                new_allocation = Allocation(
+                    start_time=self.time,
+                    walltime=new_walltime,
+                    resources=static_job.assigned_compute_resources
+                )
+                next_job.schedule(new_allocation)
 
         elif job.profile.type == Profiles.ParallelPFS.type:
             pass
