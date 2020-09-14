@@ -24,8 +24,8 @@ class StaticJob(Job):
     assigned_compute_resources: List[ComputeResource]
     assigned_burst_buffers: Dict[ComputeResource, StorageResource]
     num_compute_phases: int
-    compute_phase_length: int
-    io_phase_length: int
+    compute_phase_size: int
+    io_phase_size: int
     completed_compute_phases: int
 
 
@@ -45,8 +45,8 @@ class IOAwareScheduler(AllocOnlyScheduler):
         # job.__class__ = StaticJob
 
         job.num_compute_phases = max(round(job.profile.cpu / self._target_compute_phase_length), 1)
-        job.compute_phase_length = job.profile.cpu / job.num_compute_phases
-        job.io_phase_length = self._io_phase_factor * job.profile.bb
+        job.compute_phase_size = job.profile.cpu / job.num_compute_phases
+        job.io_phase_size = self._io_phase_factor * job.profile.bb
         job.completed_compute_phases = 0
 
         stage_in_profile = Profiles.DataStaging(size=job.profile.bb)
@@ -75,7 +75,7 @@ class IOAwareScheduler(AllocOnlyScheduler):
                     new_walltime = job.allocation.walltime - (self.time - job.allocation.start_time)
                     assert new_walltime > 0
                     parallel_homogeneous_profile = Profiles.ParallelHomogeneous(
-                        cpu=static_job.compute_phase_length,
+                        cpu=static_job.compute_phase_size,
                         com=static_job.profile.com,
                     )
                     static_job.submit_sub_job(static_job.requested_resources, new_walltime,
@@ -133,7 +133,7 @@ class IOAwareScheduler(AllocOnlyScheduler):
                 assert new_walltime > 0
                 parallel_pfs_profile = Profiles.ParallelPFS(
                     size_read=0,
-                    size_write=static_job.io_phase_length,
+                    size_write=static_job.io_phase_size,
                     storage='burstbuffer'
                 )
                 for _ in range(len(static_job.assigned_burst_buffers)):
@@ -156,10 +156,11 @@ class IOAwareScheduler(AllocOnlyScheduler):
 
         elif job.profile.type == Profiles.ParallelPFS.type:
             if len(static_job.sub_jobs.completed) == len(static_job.sub_jobs.submitted):
+                # Schedule next compute phase
                 new_walltime = job.allocation.walltime - (self.time - job.allocation.start_time)
                 assert new_walltime > 0
                 parallel_homogeneous_profile = Profiles.ParallelHomogeneous(
-                    cpu=static_job.compute_phase_length,
+                    cpu=static_job.compute_phase_size,
                     com=static_job.profile.com,
                 )
                 static_job.submit_sub_job(static_job.requested_resources, new_walltime,
@@ -174,6 +175,20 @@ class IOAwareScheduler(AllocOnlyScheduler):
                     resources=static_job.assigned_compute_resources
                 )
                 next_job.schedule(new_allocation)
+
+                # Trigger draining IO traffic from burst buffers to PFS
+                # This simulates moving a checkpoint from burst buffers to PFS
+                data_drain_profile = Profiles.DataStaging(static_job.io_phase_size)
+                for _ in range(len(static_job.assigned_burst_buffers)):
+                    static_job.submit_sub_job(2, -1, data_drain_profile)
+                self._create_sub_job_objects(static_job)
+                for data_drain_job, burst_buffer in zip(
+                        static_job.sub_jobs.runnable, static_job.assigned_burst_buffers.values()):
+                    self._schedule_data_staging(
+                        job=data_drain_job,
+                        source=burst_buffer,
+                        destination=self._pfs
+                    )
 
         else:
             assert False
