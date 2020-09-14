@@ -26,7 +26,7 @@ class StaticJob(Job):
     assigned_burst_buffers: Dict[ComputeResource, StorageResource]
     num_compute_phases: int
     compute_phase_size: int
-    io_phase_size: int
+    checkpoint_phase_size: int
     completed_compute_phases: int
 
 
@@ -35,7 +35,7 @@ class IOAwareScheduler(AllocOnlyScheduler):
         super().__init__(options)
         self._num_completed_jobs = 0
         self._target_compute_phase_length = 6 * GFLOPS
-        self._io_phase_factor = 0.5
+        self._checkpoint_phase_factor = 0.5
 
     def on_job_submission(self, static_job: StaticJob):
         assert not static_job.is_dynamic_job
@@ -51,10 +51,10 @@ class IOAwareScheduler(AllocOnlyScheduler):
         # job.__class__ = StaticJob
 
         static_job.num_compute_phases = max(
-            round(static_job.profile.cpu / self._target_compute_phase_length),
-            1)
+            round(static_job.profile.cpu / self._target_compute_phase_length), 1)
         static_job.compute_phase_size = static_job.profile.cpu / static_job.num_compute_phases
-        static_job.io_phase_size = int(self._io_phase_factor * static_job.profile.bb)
+        static_job.checkpoint_phase_size = int(
+            self._checkpoint_phase_factor * static_job.profile.bb)
         static_job.completed_compute_phases = 0
         static_job.phase = JobPhase.SUBMITTED
 
@@ -105,23 +105,6 @@ class IOAwareScheduler(AllocOnlyScheduler):
             if assigned_compute_resources and assigned_burst_buffers:
                 self._schedule_job(job, assigned_compute_resources, assigned_burst_buffers)
 
-    def _init_stage_in_phase(self, static_job: StaticJob):
-        stage_in_profile = Profiles.DataStaging(static_job.profile.bb)
-        for _ in range(static_job.requested_resources):
-            static_job.submit_sub_job(2, static_job.requested_time, stage_in_profile)
-        self._create_sub_job_objects(static_job)
-
-        # Schedule all stage-in jobs
-        assert len(static_job.sub_jobs) == len(static_job.assigned_burst_buffers.values())
-        for stage_in_job, storage_resource in zip(
-                static_job.sub_jobs, static_job.assigned_burst_buffers.values()):
-            self._schedule_data_staging(
-                job=stage_in_job,
-                source=self._pfs,
-                destination=storage_resource,
-                walltime=static_job.requested_time
-            )
-
     def _init_compute_phase(self, static_job: StaticJob, walltime: float):
         # New job registration
         parallel_homogeneous_profile = Profiles.ParallelHomogeneous(
@@ -145,7 +128,7 @@ class IOAwareScheduler(AllocOnlyScheduler):
     def _init_checkpoint_phase(self, static_job: StaticJob, walltime: float):
         parallel_pfs_profile = Profiles.ParallelPFS(
             size_read=0,
-            size_write=static_job.io_phase_size,
+            size_write=static_job.checkpoint_phase_size,
             storage='burstbuffer'
         )
         for _ in range(len(static_job.assigned_burst_buffers)):
@@ -167,39 +150,42 @@ class IOAwareScheduler(AllocOnlyScheduler):
                len(static_job.assigned_compute_resources)
         static_job.phase = JobPhase.CHECKPOINT
 
+    def _init_stage_in_phase(self, static_job: StaticJob):
+        self._init_data_staging(static_job, static_job.requested_time, static_job.profile.bb, False)
+        static_job.phase = JobPhase.STAGE_IN
+
     def _init_data_drain(self, static_job: StaticJob):
         # Trigger draining IO traffic from burst buffers to PFS
         # This simulates moving a checkpoint from burst buffers to PFS
-        data_drain_profile = Profiles.DataStaging(static_job.io_phase_size)
-        for _ in range(len(static_job.assigned_burst_buffers)):
-            static_job.submit_sub_job(2, -1, data_drain_profile)
-        self._create_sub_job_objects(static_job)
-        for data_drain_job, burst_buffer in zip(
-                static_job.sub_jobs.runnable, static_job.assigned_burst_buffers.values()):
-            self._schedule_data_staging(
-                job=data_drain_job,
-                source=burst_buffer,
-                destination=self._pfs
-            )
+        self._init_data_staging(static_job, -1, static_job.checkpoint_phase_size, True)
 
     def _init_stage_out_phase(self, static_job: StaticJob, walltime: float):
-        # Register stage-out jobs
-        stage_out_profile = Profiles.DataStaging(size=static_job.profile.bb)
+        self._init_data_staging(static_job, walltime, static_job.profile.bb, True)
+        static_job.phase = JobPhase.STAGE_OUT
+
+    def _init_data_staging(
+            self,
+            static_job: StaticJob,
+            walltime: float,
+            size: int,
+            direction_to_pfs=True
+    ):
+        # Register data staging jobs
+        data_staging_profile = Profiles.DataStaging(size)
         for _ in range(static_job.requested_resources):
-            static_job.submit_sub_job(2, walltime, stage_out_profile)
+            static_job.submit_sub_job(2, walltime, data_staging_profile)
         self._create_sub_job_objects(static_job)
 
-        # Schedule stage-out jobs
+        # Schedule data staging jobs
         assert len(static_job.sub_jobs.runnable) == len(static_job.assigned_burst_buffers)
-        for stage_out_job, burst_buffer in zip(
+        for data_staging_job, burst_buffer in zip(
                 static_job.sub_jobs.runnable, static_job.assigned_burst_buffers.values()):
             self._schedule_data_staging(
-                job=stage_out_job,
-                source=burst_buffer,
-                destination=self._pfs,
+                job=data_staging_job,
+                source=burst_buffer if direction_to_pfs else self._pfs,
+                destination=self._pfs if direction_to_pfs else burst_buffer,
                 walltime=walltime
             )
-        static_job.phase = JobPhase.STAGE_OUT
 
     def _schedule_job(
             self,
@@ -215,7 +201,6 @@ class IOAwareScheduler(AllocOnlyScheduler):
                                      assigned_burst_buffers, static_job)
         self._init_stage_in_phase(static_job)
         static_job.reject('Static job scheduled')
-        static_job.phase = JobPhase.STAGE_IN
 
     def _schedule_data_staging(
             self,
