@@ -68,7 +68,7 @@ class IOAwareScheduler(AllocOnlyScheduler):
                 if static_job.phase == JobPhase.STAGE_IN:
                     if all(stage_in_job.success for stage_in_job in static_job.sub_jobs):
                         # All stage-in jobs finished successfully
-                        self._init_compute_phase(static_job, job)
+                        self._init_compute_phase(static_job, self._remaining_walltime(job))
                     else:
                         # All stage-in jobs finished, but some run out of time
                         self._complete_job(static_job)
@@ -84,15 +84,15 @@ class IOAwareScheduler(AllocOnlyScheduler):
             if not job.success:
                 self._complete_job(static_job)
             elif static_job.completed_compute_phases == static_job.num_compute_phases:
-                self._init_stage_out_phase(static_job, job)
+                self._init_stage_out_phase(static_job, self._remaining_walltime(job))
             else:
-                self._init_checkpoint_phase(static_job, job)
+                self._init_checkpoint_phase(static_job, self._remaining_walltime(job))
 
         elif job.profile.type == Profiles.ParallelPFS.type:
             assert static_job.phase == JobPhase.CHECKPOINT
             if len(static_job.sub_jobs.completed) == len(static_job.sub_jobs.submitted):
                 # Schedule next compute phase
-                self._init_compute_phase(static_job, job)
+                self._init_compute_phase(static_job, self._remaining_walltime(job))
                 self._init_data_drain(static_job)
 
         else:
@@ -122,15 +122,13 @@ class IOAwareScheduler(AllocOnlyScheduler):
                 walltime=static_job.requested_time
             )
 
-    def _init_compute_phase(self, static_job: StaticJob, sub_job: Job):
-        new_walltime = sub_job.allocation.walltime - (self.time - sub_job.allocation.start_time)
-        assert new_walltime > 0
+    def _init_compute_phase(self, static_job: StaticJob, walltime: float):
         # New job registration
         parallel_homogeneous_profile = Profiles.ParallelHomogeneous(
             cpu=static_job.compute_phase_size,
             com=static_job.profile.com,
         )
-        static_job.submit_sub_job(static_job.requested_resources, new_walltime,
+        static_job.submit_sub_job(static_job.requested_resources, walltime,
                                   parallel_homogeneous_profile)
         self._create_sub_job_objects(static_job)
 
@@ -138,22 +136,20 @@ class IOAwareScheduler(AllocOnlyScheduler):
         next_job: Job = static_job.sub_jobs.last
         new_allocation = Allocation(
             start_time=self.time,
-            walltime=new_walltime,
+            walltime=walltime,
             resources=static_job.assigned_compute_resources
         )
         next_job.schedule(new_allocation)
         static_job.phase = JobPhase.COMPUTE
 
-    def _init_checkpoint_phase(self, static_job: StaticJob, sub_job: Job):
-        new_walltime = sub_job.allocation.walltime - (self.time - sub_job.allocation.start_time)
-        assert new_walltime > 0
+    def _init_checkpoint_phase(self, static_job: StaticJob, walltime: float):
         parallel_pfs_profile = Profiles.ParallelPFS(
             size_read=0,
             size_write=static_job.io_phase_size,
             storage='burstbuffer'
         )
         for _ in range(len(static_job.assigned_burst_buffers)):
-            static_job.submit_sub_job(1, new_walltime, parallel_pfs_profile)
+            static_job.submit_sub_job(1, walltime, parallel_pfs_profile)
         self._create_sub_job_objects(static_job)
 
         assert len(static_job.sub_jobs.runnable) == len(static_job.assigned_burst_buffers)
@@ -161,7 +157,7 @@ class IOAwareScheduler(AllocOnlyScheduler):
                 static_job.sub_jobs.runnable, static_job.assigned_burst_buffers.items()):
             new_allocation = Allocation(
                 start_time=self.time,
-                walltime=new_walltime,
+                walltime=walltime,
                 resources=[compute_resource, burst_buffer]
             )
             parallel_pfs_job._batsim_job.storage_mapping = {'burstbuffer': burst_buffer.id}
@@ -186,13 +182,11 @@ class IOAwareScheduler(AllocOnlyScheduler):
                 destination=self._pfs
             )
 
-    def _init_stage_out_phase(self, static_job: StaticJob, sub_job: Job):
+    def _init_stage_out_phase(self, static_job: StaticJob, walltime: float):
         # Register stage-out jobs
-        new_walltime = sub_job.allocation.walltime - (self.time - sub_job.allocation.start_time)
-        assert new_walltime > 0
         stage_out_profile = Profiles.DataStaging(size=static_job.profile.bb)
         for _ in range(static_job.requested_resources):
-            static_job.submit_sub_job(2, new_walltime, stage_out_profile)
+            static_job.submit_sub_job(2, walltime, stage_out_profile)
         self._create_sub_job_objects(static_job)
 
         # Schedule stage-out jobs
@@ -203,7 +197,7 @@ class IOAwareScheduler(AllocOnlyScheduler):
                 job=stage_out_job,
                 source=burst_buffer,
                 destination=self._pfs,
-                walltime=new_walltime
+                walltime=walltime
             )
         static_job.phase = JobPhase.STAGE_OUT
 
@@ -250,6 +244,12 @@ class IOAwareScheduler(AllocOnlyScheduler):
         self._free_burst_buffers(static_job)
         static_job.phase = JobPhase.COMPLETED
         self._increase_num_completed_jobs()
+
+    def _remaining_walltime(self, sub_job: Job):
+        assert sub_job.completed
+        new_walltime = sub_job.allocation.walltime - (self.time - sub_job.allocation.start_time)
+        assert new_walltime > 0
+        return new_walltime
 
     # TODO: could return Jobs object
     def _create_sub_job_objects(self, job: Job):
