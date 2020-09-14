@@ -55,8 +55,6 @@ class IOAwareScheduler(AllocOnlyScheduler):
             job.submit_sub_job(2, job.requested_time, stage_in_profile)
         self._create_sub_job_objects(job)
         job.phase = JobPhase.SUBMITTED
-        # job.stage_in_submitted = len(job.sub_jobs_workload.jobs)
-        # job.stage_in_completed = 0
 
     def on_job_completion(self, job: Job):
         assert job.is_dynamic_job
@@ -113,17 +111,18 @@ class IOAwareScheduler(AllocOnlyScheduler):
                 # Register stage-out jobs
                 new_walltime = job.allocation.walltime - (self.time - job.allocation.start_time)
                 assert new_walltime > 0
-                stage_out_profile = Profiles.DataStaging(size=job.profile.bb)
+                stage_out_profile = Profiles.DataStaging(size=static_job.profile.bb)
                 for _ in range(static_job.requested_resources):
                     static_job.submit_sub_job(2, new_walltime, stage_out_profile)
                 self._create_sub_job_objects(static_job)
 
                 # Schedule stage-out jobs
-                for stage_out_job, storage_resource in zip(
+                assert len(static_job.sub_jobs.runnable) == len(static_job.assigned_burst_buffers)
+                for stage_out_job, burst_buffer in zip(
                         static_job.sub_jobs.runnable, static_job.assigned_burst_buffers.values()):
                     self._schedule_data_staging(
                         job=stage_out_job,
-                        source=storage_resource,
+                        source=burst_buffer,
                         destination=self._pfs,
                         walltime=new_walltime
                     )
