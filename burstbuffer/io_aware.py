@@ -36,25 +36,31 @@ class IOAwareScheduler(AllocOnlyScheduler):
         self._target_compute_phase_length = 6 * GFLOPS
         self._io_phase_factor = 0.5
 
-    def on_job_submission(self, job: StaticJob):
-        assert not job.is_dynamic_job
-        assert job.profile.type == Profiles.ParallelHomogeneous.type
-        job.comment = job.profile.bb
-        if not self._validate_job(job):
+    def on_job_submission(self, static_job: StaticJob):
+        assert not static_job.is_dynamic_job
+        assert static_job.profile.type == Profiles.ParallelHomogeneous.type
+        static_job.comment = static_job.profile.bb
+        if not self._validate_job(static_job):
             self._increase_num_completed_jobs()
             return
+
+        # TODO: real runtime type of static_job is job.Job.
+        #  The type hint is set to StaticJob just for more convenient static type inference.
+        #  Perhaps the following type casting would be helpful for runtime debugging.
         # job.__class__ = StaticJob
 
-        job.num_compute_phases = max(round(job.profile.cpu / self._target_compute_phase_length), 1)
-        job.compute_phase_size = job.profile.cpu / job.num_compute_phases
-        job.io_phase_size = int(self._io_phase_factor * job.profile.bb)
-        job.completed_compute_phases = 0
+        static_job.num_compute_phases = max(
+            round(static_job.profile.cpu / self._target_compute_phase_length),
+            1)
+        static_job.compute_phase_size = static_job.profile.cpu / static_job.num_compute_phases
+        static_job.io_phase_size = int(self._io_phase_factor * static_job.profile.bb)
+        static_job.completed_compute_phases = 0
 
-        stage_in_profile = Profiles.DataStaging(size=job.profile.bb)
-        for _ in range(job.requested_resources):
-            job.submit_sub_job(2, job.requested_time, stage_in_profile)
-        self._create_sub_job_objects(job)
-        job.phase = JobPhase.SUBMITTED
+        stage_in_profile = Profiles.DataStaging(size=static_job.profile.bb)
+        for _ in range(static_job.requested_resources):
+            static_job.submit_sub_job(2, static_job.requested_time, stage_in_profile)
+        self._create_sub_job_objects(static_job)
+        static_job.phase = JobPhase.SUBMITTED
 
     def on_job_completion(self, job: Job):
         assert job.is_dynamic_job
@@ -257,6 +263,7 @@ class IOAwareScheduler(AllocOnlyScheduler):
         Must be called after a sequence of job.submit_sub_job() calls if --acknowledge-dynamic-jobs
         flag is not specified for Batsim simulator.
         """
+        assert job.parent_job is None
         for sub_job_description in job.sub_jobs_workload:
             if sub_job_description.job:
                 continue
