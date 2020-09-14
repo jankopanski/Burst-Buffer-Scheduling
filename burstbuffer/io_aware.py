@@ -131,6 +131,33 @@ class IOAwareScheduler(AllocOnlyScheduler):
             else:
                 new_walltime = job.allocation.walltime - (self.time - job.allocation.start_time)
                 assert new_walltime > 0
+                parallel_pfs_profile = Profiles.ParallelPFS(
+                    size_read=0,
+                    size_write=static_job.io_phase_length,
+                    storage='burstbuffer'
+                )
+                for _ in range(len(static_job.assigned_burst_buffers)):
+                    static_job.submit_sub_job(1, new_walltime, parallel_pfs_profile)
+                self._create_sub_job_objects(static_job)
+
+                assert len(static_job.sub_jobs.runnable) == len(static_job.assigned_burst_buffers)
+                for parallel_pfs_job, (compute_resource, burst_buffer) in zip(
+                        static_job.sub_jobs.runnable, static_job.assigned_burst_buffers.items()):
+                    new_allocation = Allocation(
+                        start_time=self.time,
+                        walltime=new_walltime,
+                        resources=[compute_resource, burst_buffer]
+                    )
+                    parallel_pfs_job._batsim_job.storage_mapping = {'burstbuffer': burst_buffer.id}
+                    parallel_pfs_job.schedule(new_allocation)
+                assert not static_job.sub_jobs.open
+                assert len(static_job.sub_jobs.running) == \
+                       len(static_job.assigned_compute_resources)
+
+        elif job.profile.type == Profiles.ParallelPFS.type:
+            if len(static_job.sub_jobs.completed) == len(static_job.sub_jobs.submitted):
+                new_walltime = job.allocation.walltime - (self.time - job.allocation.start_time)
+                assert new_walltime > 0
                 parallel_homogeneous_profile = Profiles.ParallelHomogeneous(
                     cpu=static_job.compute_phase_length,
                     com=static_job.profile.com,
@@ -147,9 +174,6 @@ class IOAwareScheduler(AllocOnlyScheduler):
                     resources=static_job.assigned_compute_resources
                 )
                 next_job.schedule(new_allocation)
-
-        elif job.profile.type == Profiles.ParallelPFS.type:
-            pass
 
         else:
             assert False
