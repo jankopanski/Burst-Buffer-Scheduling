@@ -35,7 +35,7 @@ class IOAwareScheduler(AllocOnlyScheduler):
         super().__init__(options)
         self._num_completed_jobs = 0
         # TODO: Change _target_compute_phase_length and _checkpoint_phase_factor to parameters.
-        self._target_compute_phase_length = 6 * GFLOPS
+        self._target_compute_phase_length = 100 * GFLOPS
         self._checkpoint_phase_factor = 0.5
 
     def on_job_submission(self, static_job: StaticJob):
@@ -62,6 +62,7 @@ class IOAwareScheduler(AllocOnlyScheduler):
     def on_job_completion(self, job: Job):
         assert job.is_dynamic_job
         static_job: StaticJob = job.parent_job
+        assert not static_job.sub_jobs.open
 
         if job.profile.type == Profiles.DataStaging.type:
             # TODO: do not check data drain jobs
@@ -98,6 +99,7 @@ class IOAwareScheduler(AllocOnlyScheduler):
 
         else:
             assert False
+        assert not static_job.sub_jobs.open
 
     def _remaining_walltime(self, sub_job: Job):
         assert sub_job.completed
@@ -129,8 +131,10 @@ class IOAwareScheduler(AllocOnlyScheduler):
                                   parallel_homogeneous_profile)
         self._create_sub_job_objects(static_job)
 
+        assert len(static_job.sub_jobs.runnable) == 1
         # New job schedule
         next_job: Job = static_job.sub_jobs.last
+        assert next_job.profile.type == Profiles.ParallelHomogeneous.type
         new_allocation = Allocation(
             start_time=self.time,
             walltime=walltime,
@@ -159,14 +163,12 @@ class IOAwareScheduler(AllocOnlyScheduler):
             )
             parallel_pfs_job._batsim_job.storage_mapping = {'burstbuffer': burst_buffer.id}
             parallel_pfs_job.schedule(new_allocation)
-        assert not static_job.sub_jobs.open
-        assert len(static_job.sub_jobs.running) == \
-               len(static_job.assigned_compute_resources)
         static_job.phase = JobPhase.CHECKPOINT
 
     def _init_stage_in_phase(self, static_job: StaticJob):
         self._init_data_staging(static_job, static_job.requested_time, static_job.profile.bb, False)
         static_job.phase = JobPhase.STAGE_IN
+        assert len(static_job.sub_jobs.running) == len(static_job.assigned_burst_buffers)
 
     def _init_data_drain(self, static_job: StaticJob):
         # Trigger draining IO traffic from burst buffers to PFS
@@ -224,6 +226,15 @@ class IOAwareScheduler(AllocOnlyScheduler):
         }
         self._batsim.execute_job(job._batsim_job)
 
+        # Copy from the Job.schedule() method; job.py:569
+        self.info(
+            "Scheduled job ({job})",
+            job=job,
+            type="job_scheduled")
+        job._scheduled = True
+        job._start_time = self.time
+        job._jobs_list.update_element(self)
+
     def schedule(self):
         jobs = self.jobs.static_job.runnable
         for job in jobs:
@@ -245,6 +256,7 @@ class IOAwareScheduler(AllocOnlyScheduler):
                                      assigned_burst_buffers, static_job)
         self._init_stage_in_phase(static_job)
         static_job.reject('Static job scheduled')
+        assert not static_job.sub_jobs.open
 
     # TODO: could return Jobs object
     def _create_sub_job_objects(self, job: Job):
