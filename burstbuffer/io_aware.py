@@ -34,6 +34,7 @@ class IOAwareScheduler(AllocOnlyScheduler):
     def __init__(self, options):
         super().__init__(options)
         self._num_completed_jobs = 0
+        # TODO: Change _target_compute_phase_length and _checkpoint_phase_factor to parameters.
         self._target_compute_phase_length = 6 * GFLOPS
         self._checkpoint_phase_factor = 0.5
 
@@ -98,15 +99,28 @@ class IOAwareScheduler(AllocOnlyScheduler):
         else:
             assert False
 
-    def schedule(self):
-        jobs = self.jobs.static_job.runnable
-        for job in jobs:
-            assigned_compute_resources, assigned_burst_buffers = self._find_all_resources(job)
-            if assigned_compute_resources and assigned_burst_buffers:
-                self._schedule_job(job, assigned_compute_resources, assigned_burst_buffers)
+    def _remaining_walltime(self, sub_job: Job):
+        assert sub_job.completed
+        new_walltime = sub_job.allocation.walltime - (self.time - sub_job.allocation.start_time)
+        assert new_walltime > 0
+        return new_walltime
+
+    def _complete_job(self, static_job: StaticJob):
+        self._free_burst_buffers(static_job)
+        static_job.phase = JobPhase.COMPLETED
+        self._increase_num_completed_jobs()
+
+    def _increase_num_completed_jobs(self):
+        self._num_completed_jobs += 1
+        self._progress_bar.update()
+        # Only static jobs count
+        if self._num_completed_jobs >= self._num_all_jobs:
+            assert self._batsim.no_more_static_jobs
+            self.notify_registration_finished()
 
     def _init_compute_phase(self, static_job: StaticJob, walltime: float):
         # New job registration
+        # This profile registration requires --enable-profile-reuse Batsim command line flag.
         parallel_homogeneous_profile = Profiles.ParallelHomogeneous(
             cpu=static_job.compute_phase_size,
             com=static_job.profile.com,
@@ -187,21 +201,6 @@ class IOAwareScheduler(AllocOnlyScheduler):
                 walltime=walltime
             )
 
-    def _schedule_job(
-            self,
-            static_job: StaticJob,
-            assigned_compute_resources: List[ComputeResource],
-            assigned_burst_buffers: Dict[ComputeResource, StorageResource]
-    ):
-        assert assigned_compute_resources
-        assert assigned_burst_buffers
-        static_job.assigned_compute_resources = assigned_compute_resources
-        static_job.assigned_burst_buffers = assigned_burst_buffers
-        self._allocate_burst_buffers(self.time, self.time + static_job.requested_time,
-                                     assigned_burst_buffers, static_job)
-        self._init_stage_in_phase(static_job)
-        static_job.reject('Static job scheduled')
-
     def _schedule_data_staging(
             self,
             job: Job,
@@ -225,16 +224,27 @@ class IOAwareScheduler(AllocOnlyScheduler):
         }
         self._batsim.execute_job(job._batsim_job)
 
-    def _complete_job(self, static_job: StaticJob):
-        self._free_burst_buffers(static_job)
-        static_job.phase = JobPhase.COMPLETED
-        self._increase_num_completed_jobs()
+    def schedule(self):
+        jobs = self.jobs.static_job.runnable
+        for job in jobs:
+            assigned_compute_resources, assigned_burst_buffers = self._find_all_resources(job)
+            if assigned_compute_resources and assigned_burst_buffers:
+                self._schedule_job(job, assigned_compute_resources, assigned_burst_buffers)
 
-    def _remaining_walltime(self, sub_job: Job):
-        assert sub_job.completed
-        new_walltime = sub_job.allocation.walltime - (self.time - sub_job.allocation.start_time)
-        assert new_walltime > 0
-        return new_walltime
+    def _schedule_job(
+            self,
+            static_job: StaticJob,
+            assigned_compute_resources: List[ComputeResource],
+            assigned_burst_buffers: Dict[ComputeResource, StorageResource]
+    ):
+        assert assigned_compute_resources
+        assert assigned_burst_buffers
+        static_job.assigned_compute_resources = assigned_compute_resources
+        static_job.assigned_burst_buffers = assigned_burst_buffers
+        self._allocate_burst_buffers(self.time, self.time + static_job.requested_time,
+                                     assigned_burst_buffers, static_job)
+        self._init_stage_in_phase(static_job)
+        static_job.reject('Static job scheduled')
 
     # TODO: could return Jobs object
     def _create_sub_job_objects(self, job: Job):
@@ -263,11 +273,3 @@ class IOAwareScheduler(AllocOnlyScheduler):
 
             sub_job_description.job = sub_job
             sub_job._workload_description = job.sub_jobs_workload
-
-    def _increase_num_completed_jobs(self):
-        self._num_completed_jobs += 1
-        self._progress_bar.update()
-        # Only static jobs count
-        if self._num_completed_jobs >= self._num_all_jobs:
-            assert self._batsim.no_more_static_jobs
-            self.notify_registration_finished()
