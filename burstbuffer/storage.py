@@ -1,10 +1,9 @@
 from typing import Dict
 
 from intervaltree import Interval, IntervalTree
-from batsim.sched.resource import Resource, Resources
-from batsim.sched.job import Job
-from batsim.sched.scheduler import Scheduler
-from batsim.sched.alloc import Allocation
+from batsim.sched import Resource, Resources, Allocation, Job, Scheduler
+
+from .types import JobId
 
 
 class StorageAllocation(Allocation):
@@ -24,7 +23,7 @@ class StorageResource(Resource):
         super().__init__(scheduler, name, id, resources_list,
                          resource_sharing=True)
         self._capacity = capacity_bytes
-        self._job_allocations: Dict[int, Interval] = {}  # job_id -> [(start, end, num_bytes)]
+        self._job_allocations: Dict[JobId, Interval] = {}  # job_id -> [(start, end, num_bytes)]
         self._interval_tree = IntervalTree()
 
     def available_space(self, start: float, end: float) -> int:
@@ -58,9 +57,8 @@ class StorageResource(Resource):
         self._interval_tree.remove(interval)
         del self._job_allocations[job.id]
 
-    def find_first_time_to_fit_job(self, job, time=None,
-                                   future_reservation=False):
-        raise NotImplementedError('Later')
+    def find_first_time_to_fit_job(self, job, time=None, future_reservation=False):
+        raise NotImplementedError
 
     def get_allocation_end_times(self):
         return set(interval.end for interval in self._job_allocations.values())
