@@ -24,6 +24,11 @@ class StaticJob(Job):
     phase: JobPhase
     assigned_compute_resources: List[ComputeResource]
     assigned_burst_buffers: Dict[ComputeResource, StorageResource]
+    # Data staging jobs do not reserve compute resources. To ensure exclusiveness of assigned
+    # compute resources additional temporary allocations must be created for the lifetime of
+    # stage-in, stage-out jobs and finished ParallelPfs jobs. These allocations will not be
+    # activated as they are not scheduled with any job to Batsim.
+    inactive_allocations: List[Allocation]
     num_compute_phases: int
     compute_phase_size: int
     checkpoint_phase_size: int
@@ -51,6 +56,7 @@ class IOAwareScheduler(AllocOnlyScheduler):
         #  Perhaps the following type casting would be helpful for runtime debugging.
         # job.__class__ = StaticJob
 
+        static_job.inactive_allocations = []
         static_job.num_compute_phases = max(
             round(static_job.profile.cpu / self._target_compute_phase_length), 1)
         static_job.compute_phase_size = static_job.profile.cpu / static_job.num_compute_phases
@@ -67,6 +73,8 @@ class IOAwareScheduler(AllocOnlyScheduler):
         if job.profile.type == Profiles.DataStaging.type:
             # TODO: do not check data drain jobs
             if len(static_job.sub_jobs.completed) == len(static_job.sub_jobs.submitted):
+                assert job.requested_time > 0, 'Data drain job should not meet the above condition'
+                IOAwareScheduler._free_inactive_allocations(static_job)
                 if static_job.phase == JobPhase.STAGE_IN:
                     if all(stage_in_job.success for stage_in_job in static_job.sub_jobs):
                         # All stage-in jobs finished successfully
@@ -93,9 +101,16 @@ class IOAwareScheduler(AllocOnlyScheduler):
         elif job.profile.type == Profiles.ParallelPFS.type:
             assert static_job.phase == JobPhase.CHECKPOINT
             if len(static_job.sub_jobs.completed) == len(static_job.sub_jobs.submitted):
+                IOAwareScheduler._free_inactive_allocations(static_job)
                 # Schedule next compute phase
                 self._init_compute_phase(static_job, self._remaining_walltime(job))
                 self._init_data_drain(static_job)
+            else:
+                static_job.inactive_allocations.append(Allocation(
+                    start_time=self.time,
+                    walltime=-1,
+                    resources=job.allocation.resources
+                ))
 
         else:
             assert False
@@ -108,6 +123,7 @@ class IOAwareScheduler(AllocOnlyScheduler):
         return new_walltime
 
     def _complete_job(self, static_job: StaticJob):
+        assert not static_job.inactive_allocations
         self._free_burst_buffers(static_job)
         static_job.phase = JobPhase.COMPLETED
         self._increase_num_completed_jobs()
@@ -121,6 +137,7 @@ class IOAwareScheduler(AllocOnlyScheduler):
             self.notify_registration_finished()
 
     def _init_compute_phase(self, static_job: StaticJob, walltime: float):
+        assert not static_job.inactive_allocations
         # New job registration
         # This profile registration requires --enable-profile-reuse Batsim command line flag.
         parallel_homogeneous_profile = Profiles.ParallelHomogeneous(
@@ -144,6 +161,7 @@ class IOAwareScheduler(AllocOnlyScheduler):
         static_job.phase = JobPhase.COMPUTE
 
     def _init_checkpoint_phase(self, static_job: StaticJob, walltime: float):
+        assert not static_job.inactive_allocations
         parallel_pfs_profile = Profiles.ParallelPFS(
             size_read=0,
             size_write=static_job.checkpoint_phase_size,
@@ -167,6 +185,11 @@ class IOAwareScheduler(AllocOnlyScheduler):
 
     def _init_stage_in_phase(self, static_job: StaticJob):
         self._init_data_staging(static_job, static_job.requested_time, static_job.profile.bb, False)
+        static_job.inactive_allocations.append(Allocation(
+            start_time=self.time,
+            walltime=-1,
+            resources=static_job.assigned_compute_resources
+        ))
         static_job.phase = JobPhase.STAGE_IN
         assert len(static_job.sub_jobs.running) == len(static_job.assigned_burst_buffers)
 
@@ -177,6 +200,11 @@ class IOAwareScheduler(AllocOnlyScheduler):
 
     def _init_stage_out_phase(self, static_job: StaticJob, walltime: float):
         self._init_data_staging(static_job, walltime, static_job.profile.bb, True)
+        static_job.inactive_allocations.append(Allocation(
+            start_time=self.time,
+            walltime=-1,
+            resources=static_job.assigned_compute_resources
+        ))
         static_job.phase = JobPhase.STAGE_OUT
 
     def _init_data_staging(
@@ -296,6 +324,13 @@ class IOAwareScheduler(AllocOnlyScheduler):
         assert not static_job.rejected
         previously_assigned_compute_resources = set()
         for job in self.jobs.static_job.rejected:
-            previously_assigned_compute_resources.update(job.assigned_compute_resources)
+            if job.phase != JobPhase.COMPLETED:
+                previously_assigned_compute_resources.update(job.assigned_compute_resources)
         return previously_assigned_compute_resources.isdisjoint(
             static_job.assigned_compute_resources)
+
+    @staticmethod
+    def _free_inactive_allocations(static_job: StaticJob):
+        for allocation in static_job.inactive_allocations:
+            allocation.remove_all_resources()
+        static_job.inactive_allocations.clear()
