@@ -46,11 +46,13 @@ class AllocOnlyScheduler(Scheduler):
             self._disable_progress_bar = True
         self._event_logger._logger.setLevel('WARNING')
 
-        # Platform configuration
+        # Platform configuration and other options from scheduler_options.json
         platform_config = read_config(options['platform'])
         self.platform = Platform(platform_config)
-        self._allow_schedule_without_burst_buffer = \
-            bool(options['allow_schedule_without_burst_buffer'])
+        self.algorithm = options['algorithm']
+        self.allow_schedule_without_burst_buffer = bool(
+            options['allow_schedule_without_burst_buffer'])
+        self.backfilling_reservation_depth = int(options['backfilling_reservation_depth'])
 
         # Resource initialisation
         self._burst_buffers = Resources()
@@ -119,43 +121,47 @@ class AllocOnlyScheduler(Scheduler):
     def schedule(self):
         raise NotImplementedError
 
-    def _filler_schedule(self, jobs=None, abort_on_first_nonfitting=True):
+    def schedule_job(
+            self,
+            job: Job,
+            assigned_compute_resources: List[ComputeResource],
+            assigned_burst_buffers: Dict[ComputeResource, StorageResource]
+    ):
+        assert assigned_compute_resources
+        if assigned_burst_buffers:
+            self._allocate_burst_buffers(
+                start=self.time,
+                end=self.time + job.requested_time,
+                assigned_burst_buffers=assigned_burst_buffers,
+                job=job
+            )
+        job.schedule(assigned_compute_resources)
+
+    def filler_schedule(self, jobs=None, abort_on_first_nonfitting=True):
         if jobs is None:
             jobs = self.jobs.runnable
 
         for job in jobs:
-            if not job.runnable:
-                self._logger.info('Job {} is not runnable', job.id)
-                continue
+            assert job.runnable
 
-            was_job_scheduled = False
             assigned_compute_resources, assigned_burst_buffers = self._find_all_resources(job)
-            if assigned_compute_resources:
-                if assigned_burst_buffers:
-                    self._allocate_burst_buffers(
-                        start=self.time,
-                        end=self.time + job.requested_time,
-                        assigned_burst_buffers=assigned_burst_buffers,
-                        job=job
-                    )
-                    job.schedule(assigned_compute_resources)
-                    was_job_scheduled = True
-                elif self._allow_schedule_without_burst_buffer:
-                    job.schedule(assigned_compute_resources)
-                    was_job_scheduled = True
+            if assigned_compute_resources and \
+                    (assigned_burst_buffers or self.allow_schedule_without_burst_buffer):
+                self.schedule_job(job, assigned_compute_resources, assigned_burst_buffers)
 
-            if not was_job_scheduled and abort_on_first_nonfitting:
+            if not job.scheduled and abort_on_first_nonfitting:
                 break
 
-    def _backfill_schedule(self, backfilling_reservation_depth=1):
-        self._filler_schedule()
+    def backfill_schedule(self, jobs=None, backfilling_reservation_depth=1):
+        self.filler_schedule(jobs)
+        jobs = jobs.runnable if jobs else self.jobs.runnable
 
-        if not self.jobs.open:
+        if not jobs.open:
             return
         assert len(self.jobs.open) == len(self.jobs.runnable), 'Jobs do not have any dependencies.'
 
-        reserved_jobs = self.jobs.runnable[:backfilling_reservation_depth]
-        remaining_jobs = self.jobs.runnable[backfilling_reservation_depth:]
+        reserved_jobs = jobs[:backfilling_reservation_depth]
+        remaining_jobs = jobs[backfilling_reservation_depth:]
 
         # Allocate compute and storage resources for reserved jobs in the future.
         temporary_allocations = []
@@ -192,7 +198,7 @@ class AllocOnlyScheduler(Scheduler):
                                                     job=job)
                     temporary_allocations.append(compute_allocation)
                     break
-                elif self._allow_schedule_without_burst_buffer:
+                elif self.allow_schedule_without_burst_buffer:
                     self.backfill_not_enough_burst_buffer_count += 1
                     compute_allocation = Allocation(start_time,
                                                     resources=assigned_compute_resources,
@@ -206,7 +212,7 @@ class AllocOnlyScheduler(Scheduler):
 
         # Allocation for reserved jobs was successful.
         assert len(temporary_allocations) == len(reserved_jobs)
-        self._filler_schedule(jobs=remaining_jobs, abort_on_first_nonfitting=False)
+        self.filler_schedule(jobs=remaining_jobs, abort_on_first_nonfitting=False)
 
         for compute_allocation in temporary_allocations:
             job = compute_allocation.job
@@ -288,7 +294,7 @@ class AllocOnlyScheduler(Scheduler):
         self._burst_buffer_allocations[job.id] = list(burst_buffer_id_counter.keys())
 
     def _free_burst_buffers(self, job):
-        assert job.id in self._burst_buffer_allocations or self._allow_schedule_without_burst_buffer
+        assert job.id in self._burst_buffer_allocations or self.allow_schedule_without_burst_buffer
         if job.id in self._burst_buffer_allocations:
             for burst_buffer_id in self._burst_buffer_allocations[job.id]:
                 burst_buffer = self._burst_buffers[burst_buffer_id]

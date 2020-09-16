@@ -40,7 +40,7 @@ class IOAwareScheduler(AllocOnlyScheduler):
         super().__init__(options)
         self._num_completed_jobs = 0
         # Allow scheduling only after a static job submission or completion
-        self._allow_schedule = False
+        self.allow_schedule = False
         # TODO: Change _target_compute_phase_length and _checkpoint_phase_factor to parameters.
         self._target_compute_phase_length = 100 * GFLOPS
         self._checkpoint_phase_factor = 0.5
@@ -66,13 +66,13 @@ class IOAwareScheduler(AllocOnlyScheduler):
             self._checkpoint_phase_factor * static_job.profile.bb)
         static_job.completed_compute_phases = 0
         static_job.phase = JobPhase.SUBMITTED
-        self._allow_schedule = True
+        self.allow_schedule = True
 
     def on_job_completion(self, job: Job):
         assert job.is_dynamic_job
         static_job: StaticJob = job.parent_job
         assert not static_job.sub_jobs.open
-        self._allow_schedule = False
+        self.allow_schedule = False
 
         if job.profile.type == Profiles.DataStaging.type:
             # TODO: do not check data drain jobs
@@ -131,7 +131,7 @@ class IOAwareScheduler(AllocOnlyScheduler):
         assert not static_job.inactive_allocations
         self._free_burst_buffers(static_job)
         static_job.phase = JobPhase.COMPLETED
-        self._allow_schedule = True
+        self.allow_schedule = True
         self._increase_num_completed_jobs()
 
     def _increase_num_completed_jobs(self):
@@ -271,19 +271,20 @@ class IOAwareScheduler(AllocOnlyScheduler):
 
     def schedule(self):
         """The most basic version of scheduling. FCFS without aborting."""
-        if self._allow_schedule:
+        if self.allow_schedule:
             jobs = self.jobs.static_job.runnable
             for job in jobs:
                 assigned_compute_resources, assigned_burst_buffers = self._find_all_resources(job)
                 if assigned_compute_resources and assigned_burst_buffers:
-                    self._schedule_job(job, assigned_compute_resources, assigned_burst_buffers)
+                    self.schedule_job(job, assigned_compute_resources, assigned_burst_buffers)
 
-    def _schedule_job(
+    def schedule_job(
             self,
             static_job: StaticJob,
             assigned_compute_resources: List[ComputeResource],
             assigned_burst_buffers: Dict[ComputeResource, StorageResource]
     ):
+        assert self.allow_schedule
         assert assigned_compute_resources
         assert assigned_burst_buffers
         static_job.assigned_compute_resources = assigned_compute_resources

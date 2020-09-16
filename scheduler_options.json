@@ -1,6 +1,7 @@
 {
-  "platform": "platforms/dragonfly.yaml",
+  "platform": "platforms/dragonfly96.yaml",
   "progress_bar": false,
+  "algorithm": "backfill",
   "allow_schedule_without_burst_buffer": false,
   "backfilling_reservation_depth": 1
 }
