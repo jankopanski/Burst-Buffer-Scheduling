@@ -252,6 +252,8 @@ class IOAwareScheduler(AllocOnlyScheduler):
         assert assigned_burst_buffers
         static_job.assigned_compute_resources = assigned_compute_resources
         static_job.assigned_burst_buffers = assigned_burst_buffers
+        assert self._exclusive_compute_resources(static_job)
+
         self._allocate_burst_buffers(self.time, self.time + static_job.requested_time,
                                      assigned_burst_buffers, static_job)
         self._init_stage_in_phase(static_job)
@@ -285,3 +287,15 @@ class IOAwareScheduler(AllocOnlyScheduler):
 
             sub_job_description.job = sub_job
             sub_job._workload_description = job.sub_jobs_workload
+
+    def _exclusive_compute_resources(self, static_job: StaticJob) -> bool:
+        """
+        Checks if newly scheduled job has exclusive compute resources with previously scheduled
+        jobs. Must be called before static_job.reject().
+        """
+        assert not static_job.rejected
+        previously_assigned_compute_resources = set()
+        for job in self.jobs.static_job.rejected:
+            previously_assigned_compute_resources.update(job.assigned_compute_resources)
+        return previously_assigned_compute_resources.isdisjoint(
+            static_job.assigned_compute_resources)
