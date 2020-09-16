@@ -97,7 +97,7 @@ class AllocOnlyScheduler(Scheduler):
         # Assume also that the number of job profiles equal to the number of static jobs.
         self._num_all_jobs = sum(len(workload_profiles) for workload_profiles
                                  in self._batsim.profiles.values())
-        self._progress_bar = tqdm(total=self._num_all_jobs, smoothing=0,
+        self._progress_bar = tqdm(total=self._num_all_jobs, smoothing=0.1,
                                   disable=self._disable_progress_bar)
 
     def on_job_submission(self, job):
