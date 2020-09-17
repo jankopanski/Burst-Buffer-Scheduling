@@ -331,10 +331,12 @@ class IOAwareScheduler(AllocOnlyScheduler):
         jobs. Must be called before static_job.reject().
         """
         assert not static_job.rejected
-        previously_assigned_compute_resources = set()
-        for job in self.jobs.static_job.rejected:
-            if job.phase != JobPhase.COMPLETED:
-                previously_assigned_compute_resources.update(job.assigned_compute_resources)
+        previously_assigned_compute_resources = set(
+            compute_resource
+            for job in self.jobs.static_job.rejected
+            if job.phase != JobPhase.COMPLETED
+            for compute_resource in job.assigned_compute_resources
+        )
         return previously_assigned_compute_resources.isdisjoint(
             static_job.assigned_compute_resources)
 
