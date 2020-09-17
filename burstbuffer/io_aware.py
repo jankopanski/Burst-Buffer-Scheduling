@@ -343,3 +343,13 @@ class IOAwareScheduler(AllocOnlyScheduler):
         for allocation in static_job.inactive_allocations:
             allocation.remove_all_resources()
         static_job.inactive_allocations.clear()
+
+    def _pre_schedule(self):
+        # Overwrite to avoid calling self.jobs.open on all jobs (including dynamic jobs which could
+        # go into thousands).
+        pass
+
+    def _post_schedule(self):
+        # Overwrite to avoid calling self.jobs.open on all jobs (including dynamic jobs which could
+        # go into thousands).
+        pass

@@ -154,12 +154,10 @@ class AllocOnlyScheduler(Scheduler):
 
     def backfill_schedule(self, jobs=None, backfilling_reservation_depth=1):
         self.filler_schedule(jobs)
-        jobs = jobs.runnable if jobs else self.jobs.runnable
 
+        jobs = jobs.runnable if jobs else self.jobs.runnable
         if not jobs.open:
             return
-        assert len(self.jobs.open) == len(self.jobs.runnable), 'Jobs do not have any dependencies.'
-
         reserved_jobs = jobs[:backfilling_reservation_depth]
         remaining_jobs = jobs[backfilling_reservation_depth:]
 
