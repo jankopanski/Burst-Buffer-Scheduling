@@ -3,5 +3,7 @@
   "progress_bar": false,
   "algorithm": "backfill",
   "allow_schedule_without_burst_buffer": false,
-  "backfilling_reservation_depth": 1
+  "backfilling_reservation_depth": 1,
+  "max_num_compute_phases": 10,
+  "target_compute_phase_size": 100
 }

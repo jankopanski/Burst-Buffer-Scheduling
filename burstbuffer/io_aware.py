@@ -48,7 +48,8 @@ class IOAwareScheduler(AllocOnlyScheduler):
         # Allow scheduling only after a static job submission or completion
         self.allow_schedule = False
         # TODO: Change _target_compute_phase_length and _checkpoint_phase_factor to parameters.
-        self._target_compute_phase_length = 100 * GFLOPS
+        self._max_num_compute_phases = int(options['max_num_compute_phases'])
+        self._target_compute_phase_size = int(options['target_compute_phase_size']) * GFLOPS
         self._checkpoint_phase_factor = 0.5
 
     def on_job_submission(self, static_job: StaticJob):
@@ -65,8 +66,9 @@ class IOAwareScheduler(AllocOnlyScheduler):
         static_job.__class__ = StaticJob
 
         static_job.inactive_allocations = []
-        static_job.num_compute_phases = max(
-            round(static_job.profile.cpu / self._target_compute_phase_length), 1)
+        static_job.num_compute_phases = min(
+            max(round(static_job.profile.cpu / self._target_compute_phase_size), 1),
+            self._max_num_compute_phases)
         static_job.compute_phase_size = static_job.profile.cpu / static_job.num_compute_phases
         static_job.checkpoint_phase_size = int(
             self._checkpoint_phase_factor * static_job.profile.bb)
@@ -195,6 +197,7 @@ class IOAwareScheduler(AllocOnlyScheduler):
             static_job.submit_sub_job(1, walltime, parallel_pfs_profile)
         self._create_sub_job_objects(static_job)
 
+        # Expensive assertion
         assert len(static_job.sub_jobs.runnable) == len(static_job.assigned_burst_buffers)
         for parallel_pfs_job, (compute_resource, burst_buffer) in zip(
                 static_job.sub_jobs.runnable, static_job.assigned_burst_buffers.items()):
@@ -310,16 +313,14 @@ class IOAwareScheduler(AllocOnlyScheduler):
         static_job.assigned_compute_resources = assigned_compute_resources
         static_job.assigned_burst_buffers = assigned_burst_buffers
 
-        assert static_job.phase is not None and static_job.phase == JobPhase.SUBMITTED
-        assert static_job.inactive_allocations is not None and \
-               len(static_job.inactive_allocations) == 0
-        assert static_job.num_compute_phases is not None and static_job.num_compute_phases > 0
-        assert static_job.compute_phase_size is not None and static_job.compute_phase_size > 0
-        assert static_job.checkpoint_phase_size is not None and static_job.checkpoint_phase_size > 0
-        assert static_job.completed_compute_phases is not None and \
-               static_job.completed_compute_phases == 0
-        assert static_job.submitted_sub_jobs is not None and static_job.submitted_sub_jobs == 0
-        assert static_job.completed_sub_jobs is not None and static_job.completed_sub_jobs == 0
+        assert static_job.phase == JobPhase.SUBMITTED
+        assert len(static_job.inactive_allocations) == 0
+        assert static_job.num_compute_phases > 0
+        assert static_job.compute_phase_size > 0
+        assert static_job.checkpoint_phase_size > 0
+        assert static_job.completed_compute_phases == 0
+        assert static_job.submitted_sub_jobs == 0
+        assert static_job.completed_sub_jobs == 0
         assert self._exclusive_compute_resources(static_job)  # Expensive assertion
 
         self._allocate_burst_buffers(self.time, self.time + static_job.requested_time,
@@ -367,7 +368,8 @@ class IOAwareScheduler(AllocOnlyScheduler):
         currently_assigned_compute_resources = set(
             compute_resource
             for job in self.jobs.static_job.rejected
-            if job.phase is not None and job.phase != JobPhase.COMPLETED
+            # Jobs rejected in _validate_job() are not casted to StaticJob class
+            if isinstance(job, StaticJob) and job.phase != JobPhase.COMPLETED
             for compute_resource in job.assigned_compute_resources
         )
         return currently_assigned_compute_resources.isdisjoint(
