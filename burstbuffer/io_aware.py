@@ -40,6 +40,11 @@ class StaticJob(Job):
     def __init__(self):
         raise NotImplementedError('StaticJob should not be instantiated directly')
 
+    def free_inactive_allocations(self):
+        for allocation in self.inactive_allocations:
+            allocation.remove_all_resources()
+        self.inactive_allocations.clear()
+
 
 class IOAwareScheduler(AllocOnlyScheduler):
     def __init__(self, options):
@@ -91,16 +96,16 @@ class IOAwareScheduler(AllocOnlyScheduler):
             # TODO: do not check data drain jobs
             if static_job.completed_sub_jobs == static_job.submitted_sub_jobs:
                 assert job.requested_time > 0, 'Data drain job should not meet the above condition'
-                IOAwareScheduler._free_inactive_allocations(static_job)
+                static_job.free_inactive_allocations()
                 if static_job.phase == JobPhase.STAGE_IN:
-                    if not static_job.sub_job_failure:
+                    if static_job.sub_job_failure:
+                        # All stage-in jobs finished, but some run out of time
+                        self._complete_job(static_job)
+                    else:
                         # Expensive assertion
                         assert all(stage_in_job.success for stage_in_job in static_job.sub_jobs)
                         # All stage-in jobs finished successfully
                         self._init_compute_phase(static_job, self._remaining_walltime(job))
-                    else:
-                        # All stage-in jobs finished, but some run out of time
-                        self._complete_job(static_job)
                 elif static_job.phase == JobPhase.STAGE_OUT:
                     # All stage-out jobs finished
                     self._complete_job(static_job)
@@ -110,7 +115,7 @@ class IOAwareScheduler(AllocOnlyScheduler):
         elif job.profile.type == Profiles.ParallelHomogeneous.type:
             assert static_job.phase == JobPhase.COMPUTE
             static_job.completed_compute_phases += 1
-            if not job.success:
+            if job.failure:
                 self._complete_job(static_job)
             elif static_job.completed_compute_phases == static_job.num_compute_phases:
                 self._init_stage_out_phase(static_job, self._remaining_walltime(job))
@@ -120,10 +125,14 @@ class IOAwareScheduler(AllocOnlyScheduler):
         elif job.profile.type == Profiles.ParallelPFS.type:
             assert static_job.phase == JobPhase.CHECKPOINT
             if static_job.completed_sub_jobs == static_job.submitted_sub_jobs:
-                IOAwareScheduler._free_inactive_allocations(static_job)
-                # Schedule next compute phase
-                self._init_compute_phase(static_job, self._remaining_walltime(job))
-                self._init_data_drain(static_job)
+                # All ParallelPFS jobs finished
+                static_job.free_inactive_allocations()
+                if static_job.sub_job_failure:
+                    self._complete_job(static_job)
+                else:
+                    # Schedule next compute phase
+                    self._init_compute_phase(static_job, self._remaining_walltime(job))
+                    self._init_data_drain(static_job)
             else:
                 static_job.inactive_allocations.append(Allocation(
                     start_time=self.time,
@@ -374,12 +383,6 @@ class IOAwareScheduler(AllocOnlyScheduler):
         )
         return currently_assigned_compute_resources.isdisjoint(
             static_job.assigned_compute_resources)
-
-    @staticmethod
-    def _free_inactive_allocations(static_job: StaticJob):
-        for allocation in static_job.inactive_allocations:
-            allocation.remove_all_resources()
-        static_job.inactive_allocations.clear()
 
     def _pre_schedule(self):
         # Overwrite to avoid calling self.jobs.open on all jobs (including dynamic jobs which could
