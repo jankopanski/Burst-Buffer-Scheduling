@@ -153,9 +153,11 @@ class AllocOnlyScheduler(Scheduler):
                 break
 
     def backfill_schedule(self, jobs=None, backfilling_reservation_depth=1):
+        if jobs is None:
+            jobs = self.jobs.runnable
         self.filler_schedule(jobs)
 
-        jobs = jobs.runnable if jobs else self.jobs.runnable
+        jobs = jobs.runnable
         if not jobs.open:
             return
         reserved_jobs = jobs[:backfilling_reservation_depth]

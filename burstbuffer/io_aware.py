@@ -215,6 +215,8 @@ class IOAwareScheduler(AllocOnlyScheduler):
             resources=static_job.assigned_compute_resources
         ))
         static_job.phase = JobPhase.STAGE_IN
+        assert static_job.submitted_sub_jobs == len(static_job.assigned_burst_buffers)
+        # Expensive assertion
         assert len(static_job.sub_jobs.running) == len(static_job.assigned_burst_buffers)
 
     def _init_data_drain(self, static_job: StaticJob):
@@ -307,13 +309,24 @@ class IOAwareScheduler(AllocOnlyScheduler):
         assert assigned_burst_buffers
         static_job.assigned_compute_resources = assigned_compute_resources
         static_job.assigned_burst_buffers = assigned_burst_buffers
-        assert self._exclusive_compute_resources(static_job)
+
+        assert static_job.phase is not None and static_job.phase == JobPhase.SUBMITTED
+        assert static_job.inactive_allocations is not None and \
+               len(static_job.inactive_allocations) == 0
+        assert static_job.num_compute_phases is not None and static_job.num_compute_phases > 0
+        assert static_job.compute_phase_size is not None and static_job.compute_phase_size > 0
+        assert static_job.checkpoint_phase_size is not None and static_job.checkpoint_phase_size > 0
+        assert static_job.completed_compute_phases is not None and \
+               static_job.completed_compute_phases == 0
+        assert static_job.submitted_sub_jobs is not None and static_job.submitted_sub_jobs == 0
+        assert static_job.completed_sub_jobs is not None and static_job.completed_sub_jobs == 0
+        assert self._exclusive_compute_resources(static_job)  # Expensive assertion
 
         self._allocate_burst_buffers(self.time, self.time + static_job.requested_time,
                                      assigned_burst_buffers, static_job)
         self._init_stage_in_phase(static_job)
         static_job.reject('Static job scheduled')
-        assert not static_job.sub_jobs.open
+        assert not static_job.sub_jobs.open  # Expensive assertion
 
     # TODO: could return Jobs object
     def _create_sub_job_objects(self, static_job: StaticJob):
@@ -351,13 +364,13 @@ class IOAwareScheduler(AllocOnlyScheduler):
         jobs. Must be called before static_job.reject().
         """
         assert not static_job.rejected
-        previously_assigned_compute_resources = set(
+        currently_assigned_compute_resources = set(
             compute_resource
             for job in self.jobs.static_job.rejected
-            if job.phase != JobPhase.COMPLETED
+            if job.phase is not None and job.phase != JobPhase.COMPLETED
             for compute_resource in job.assigned_compute_resources
         )
-        return previously_assigned_compute_resources.isdisjoint(
+        return currently_assigned_compute_resources.isdisjoint(
             static_job.assigned_compute_resources)
 
     @staticmethod
