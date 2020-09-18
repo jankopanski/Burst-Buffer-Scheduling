@@ -33,6 +33,12 @@ class StaticJob(Job):
     compute_phase_size: int
     checkpoint_phase_size: int
     completed_compute_phases: int
+    submitted_sub_jobs: int
+    completed_sub_jobs: int
+    sub_job_failure: bool
+
+    def __init__(self):
+        raise NotImplementedError('StaticJob should not be instantiated directly')
 
 
 class IOAwareScheduler(AllocOnlyScheduler):
@@ -56,7 +62,7 @@ class IOAwareScheduler(AllocOnlyScheduler):
         # TODO: real runtime type of static_job is job.Job.
         #  The type hint is set to StaticJob just for more convenient static type inference.
         #  Perhaps the following type casting would be helpful for runtime debugging.
-        # job.__class__ = StaticJob
+        static_job.__class__ = StaticJob
 
         static_job.inactive_allocations = []
         static_job.num_compute_phases = max(
@@ -65,22 +71,29 @@ class IOAwareScheduler(AllocOnlyScheduler):
         static_job.checkpoint_phase_size = int(
             self._checkpoint_phase_factor * static_job.profile.bb)
         static_job.completed_compute_phases = 0
+        static_job.submitted_sub_jobs = 0
+        static_job.completed_sub_jobs = 0
+        static_job.sub_job_failure = False
         static_job.phase = JobPhase.SUBMITTED
         self.allow_schedule = True
 
     def on_job_completion(self, job: Job):
         assert job.is_dynamic_job
         static_job: StaticJob = job.parent_job
-        assert not static_job.sub_jobs.open
+        static_job.completed_sub_jobs += 1
         self.allow_schedule = False
+        if job.failure:
+            static_job.sub_job_failure = True
 
         if job.profile.type == Profiles.DataStaging.type:
             # TODO: do not check data drain jobs
-            if len(static_job.sub_jobs.completed) == len(static_job.sub_jobs.submitted):
+            if static_job.completed_sub_jobs == static_job.submitted_sub_jobs:
                 assert job.requested_time > 0, 'Data drain job should not meet the above condition'
                 IOAwareScheduler._free_inactive_allocations(static_job)
                 if static_job.phase == JobPhase.STAGE_IN:
-                    if all(stage_in_job.success for stage_in_job in static_job.sub_jobs):
+                    if not static_job.sub_job_failure:
+                        # Expensive assertion
+                        assert all(stage_in_job.success for stage_in_job in static_job.sub_jobs)
                         # All stage-in jobs finished successfully
                         self._init_compute_phase(static_job, self._remaining_walltime(job))
                     else:
@@ -104,7 +117,7 @@ class IOAwareScheduler(AllocOnlyScheduler):
 
         elif job.profile.type == Profiles.ParallelPFS.type:
             assert static_job.phase == JobPhase.CHECKPOINT
-            if len(static_job.sub_jobs.completed) == len(static_job.sub_jobs.submitted):
+            if static_job.completed_sub_jobs == static_job.submitted_sub_jobs:
                 IOAwareScheduler._free_inactive_allocations(static_job)
                 # Schedule next compute phase
                 self._init_compute_phase(static_job, self._remaining_walltime(job))
@@ -118,7 +131,12 @@ class IOAwareScheduler(AllocOnlyScheduler):
 
         else:
             assert False
-        assert not static_job.sub_jobs.open
+
+        # Very expensive assertions
+        sub_jobs = static_job.sub_jobs
+        assert not sub_jobs.open
+        assert static_job.submitted_sub_jobs == len(sub_jobs.submitted)
+        assert static_job.completed_sub_jobs == len(sub_jobs.completed)
         self._progress_bar.update(0)
 
     def _remaining_walltime(self, sub_job: Job):
@@ -298,14 +316,14 @@ class IOAwareScheduler(AllocOnlyScheduler):
         assert not static_job.sub_jobs.open
 
     # TODO: could return Jobs object
-    def _create_sub_job_objects(self, job: Job):
+    def _create_sub_job_objects(self, static_job: StaticJob):
         """
         Creates high-level Job objects for submitted JobDescription of sub-jobs of the given job.
         Must be called after a sequence of job.submit_sub_job() calls if --acknowledge-dynamic-jobs
         flag is not specified for Batsim simulator.
         """
-        assert job.parent_job is None
-        for sub_job_description in job.sub_jobs_workload:
+        assert static_job.parent_job is None
+        for sub_job_description in static_job.sub_jobs_workload:
             if sub_job_description.job:
                 continue
             batsim_job: BatsimJob = self._batsim.jobs[sub_job_description.id]
@@ -323,7 +341,9 @@ class IOAwareScheduler(AllocOnlyScheduler):
             self.jobs.add(sub_job)
 
             sub_job_description.job = sub_job
-            sub_job._workload_description = job.sub_jobs_workload
+            sub_job._workload_description = static_job.sub_jobs_workload
+
+            static_job.submitted_sub_jobs += 1
 
     def _exclusive_compute_resources(self, static_job: StaticJob) -> bool:
         """

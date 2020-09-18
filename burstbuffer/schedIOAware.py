@@ -5,6 +5,7 @@ class SchedIOAware(IOAwareScheduler):
     def schedule(self):
         if not self.allow_schedule:
             return
+        # TODO: add a list of static jobs to scheduler
         jobs = self.jobs.static_job.runnable
         if self.algorithm == 'filler':
             self.filler_schedule(jobs=jobs, abort_on_first_nonfitting=False)
