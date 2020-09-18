@@ -95,7 +95,6 @@ class IOAwareScheduler(AllocOnlyScheduler):
         if job.profile.type == Profiles.DataStaging.type:
             # TODO: do not check data drain jobs
             if static_job.completed_sub_jobs == static_job.submitted_sub_jobs:
-                assert job.requested_time > 0, 'Data drain job should not meet the above condition'
                 static_job.free_inactive_allocations()
                 if static_job.phase == JobPhase.STAGE_IN:
                     if static_job.sub_job_failure:
@@ -109,6 +108,10 @@ class IOAwareScheduler(AllocOnlyScheduler):
                 elif static_job.phase == JobPhase.STAGE_OUT:
                     # All stage-out jobs finished
                     self._complete_job(static_job)
+                elif static_job.phase == JobPhase.COMPLETED:
+                    # Checkpoint data drain jobs completed after the stage-out phase.
+                    # No further action is needed.
+                    assert job.requested_time == -1
                 else:
                     assert False
 
