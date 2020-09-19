@@ -57,7 +57,6 @@ class IOAwareScheduler(AllocOnlyScheduler):
         self._num_completed_jobs = 0
         # Allow scheduling only after a static job submission or completion
         self.allow_schedule = False
-        # TODO: Change _target_compute_phase_length and _checkpoint_phase_factor to parameters.
         self._max_num_compute_phases = int(options['max_num_compute_phases'])
         self._target_compute_phase_size = int(options['target_compute_phase_size']) * GFLOPS
         self._checkpoint_phase_factor = 0.5
@@ -70,9 +69,7 @@ class IOAwareScheduler(AllocOnlyScheduler):
             self._increase_num_completed_jobs()
             return
 
-        # TODO: real runtime type of static_job is job.Job.
-        #  The type hint is set to StaticJob just for more convenient static type inference.
-        #  Perhaps the following type casting would be helpful for runtime debugging.
+        # Potentially dangerous type casting
         static_job.__class__ = StaticJob
 
         static_job.inactive_allocations = []
@@ -98,7 +95,6 @@ class IOAwareScheduler(AllocOnlyScheduler):
             static_job.sub_job_failure = True
 
         if job.profile.type == Profiles.DataStaging.type:
-            # TODO: do not check data drain jobs
             if static_job.completed_sub_jobs == static_job.submitted_sub_jobs:
                 static_job.free_inactive_allocations()
                 if static_job.phase == JobPhase.STAGE_IN:
@@ -195,13 +191,7 @@ class IOAwareScheduler(AllocOnlyScheduler):
         # New job schedule
         next_job: Job = static_job.sub_jobs.last
         assert next_job.profile.type == Profiles.ParallelHomogeneous.type
-        # TODO: remove allocation and schedule resources directly
-        new_allocation = Allocation(
-            start_time=self.time,
-            walltime=walltime,
-            resources=static_job.assigned_compute_resources
-        )
-        next_job.schedule(new_allocation)
+        next_job.schedule(static_job.assigned_compute_resources)
         static_job.phase = JobPhase.COMPUTE
 
     def _init_checkpoint_phase(self, static_job: StaticJob, walltime: float):
@@ -223,7 +213,8 @@ class IOAwareScheduler(AllocOnlyScheduler):
             new_allocation = Allocation(
                 start_time=self.time,
                 walltime=walltime,
-                resources=[compute_resource, burst_buffer]
+                resources=[compute_resource, burst_buffer],
+                # job=parallel_pfs_job
             )
             parallel_pfs_job._batsim_job.storage_mapping = {'burstbuffer': burst_buffer.id}
             parallel_pfs_job.schedule(new_allocation)
