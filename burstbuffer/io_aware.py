@@ -40,6 +40,11 @@ class StaticJob(Job):
     def __init__(self):
         raise NotImplementedError('StaticJob should not be instantiated directly')
 
+    def add_inactive_allocation(self, allocation: Allocation):
+        self.inactive_allocations.append(allocation)
+        if __debug__:
+            allocation.debug_job = self
+
     def free_inactive_allocations(self):
         for allocation in self.inactive_allocations:
             allocation.remove_all_resources()
@@ -137,9 +142,9 @@ class IOAwareScheduler(AllocOnlyScheduler):
                     self._init_compute_phase(static_job, self._remaining_walltime(job))
                     self._init_data_drain(static_job)
             else:
-                static_job.inactive_allocations.append(Allocation(
+                static_job.add_inactive_allocation(Allocation(
                     start_time=self.time,
-                    walltime=-1,
+                    walltime=self._remaining_walltime(job),
                     resources=job.allocation.resources
                 ))
 
@@ -190,6 +195,7 @@ class IOAwareScheduler(AllocOnlyScheduler):
         # New job schedule
         next_job: Job = static_job.sub_jobs.last
         assert next_job.profile.type == Profiles.ParallelHomogeneous.type
+        # TODO: remove allocation and schedule resources directly
         new_allocation = Allocation(
             start_time=self.time,
             walltime=walltime,
@@ -213,6 +219,7 @@ class IOAwareScheduler(AllocOnlyScheduler):
         assert len(static_job.sub_jobs.runnable) == len(static_job.assigned_burst_buffers)
         for parallel_pfs_job, (compute_resource, burst_buffer) in zip(
                 static_job.sub_jobs.runnable, static_job.assigned_burst_buffers.items()):
+            # TODO: add job to allocation
             new_allocation = Allocation(
                 start_time=self.time,
                 walltime=walltime,
@@ -224,9 +231,9 @@ class IOAwareScheduler(AllocOnlyScheduler):
 
     def _init_stage_in_phase(self, static_job: StaticJob):
         self._init_data_staging(static_job, static_job.requested_time, static_job.profile.bb, False)
-        static_job.inactive_allocations.append(Allocation(
+        static_job.add_inactive_allocation(Allocation(
             start_time=self.time,
-            walltime=-1,
+            walltime=static_job.requested_time,
             resources=static_job.assigned_compute_resources
         ))
         static_job.phase = JobPhase.STAGE_IN
@@ -241,9 +248,9 @@ class IOAwareScheduler(AllocOnlyScheduler):
 
     def _init_stage_out_phase(self, static_job: StaticJob, walltime: float):
         self._init_data_staging(static_job, walltime, static_job.profile.bb, True)
-        static_job.inactive_allocations.append(Allocation(
+        static_job.add_inactive_allocation(Allocation(
             start_time=self.time,
-            walltime=-1,
+            walltime=walltime,
             resources=static_job.assigned_compute_resources
         ))
         static_job.phase = JobPhase.STAGE_OUT

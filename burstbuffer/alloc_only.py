@@ -193,22 +193,29 @@ class AllocOnlyScheduler(Scheduler):
                     # What is the meaning of the flag self._allocated (active) of Allocation object?
                     # compute_allocation.allocate_all(self)
                     self._allocate_burst_buffers(start_time, end_time, assigned_burst_buffers, job)
-                    compute_allocation = Allocation(start_time,
-                                                    resources=assigned_compute_resources,
-                                                    job=job)
+                    compute_allocation = Allocation(
+                        start_time=start_time,
+                        walltime=job.requested_time,
+                        resources=assigned_compute_resources,
+                        job=job
+                    )
                     temporary_allocations.append(compute_allocation)
                     break
                 elif self.allow_schedule_without_burst_buffer:
                     self.backfill_not_enough_burst_buffer_count += 1
-                    compute_allocation = Allocation(start_time,
-                                                    resources=assigned_compute_resources,
-                                                    job=job)
+                    compute_allocation = Allocation(
+                        start_time=start_time,
+                        walltime=job.requested_time,
+                        resources=assigned_compute_resources,
+                        job=job
+                    )
                     temporary_allocations.append(compute_allocation)
                     break
 
             # After initial filtering of jobs on submission it should be always possible to find
             # enough burst buffers at some point in time.
-            assert assigned_burst_buffers, 'Not found enough burst buffer resources.'
+            # TODO: not compatible with flag self.allow_schedule_without_burst_buffer
+            # assert assigned_burst_buffers, 'Not found enough burst buffer resources.'
 
         # Allocation for reserved jobs was successful.
         assert len(temporary_allocations) == len(reserved_jobs)
