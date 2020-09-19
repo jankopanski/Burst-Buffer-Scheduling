@@ -137,7 +137,7 @@ class IOAwareScheduler(AllocOnlyScheduler):
                     # Schedule next compute phase
                     self._init_compute_phase(static_job, self._remaining_walltime(job))
                     self._init_data_drain(static_job)
-            else:
+            elif job.success:
                 static_job.add_inactive_allocation(Allocation(
                     start_time=self.time,
                     walltime=self._remaining_walltime(job),
