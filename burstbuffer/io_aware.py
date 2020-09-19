@@ -148,10 +148,11 @@ class IOAwareScheduler(AllocOnlyScheduler):
             assert False
 
         # Very expensive assertions
-        sub_jobs = static_job.sub_jobs
-        assert not sub_jobs.open
-        assert static_job.submitted_sub_jobs == len(sub_jobs.submitted)
-        assert static_job.completed_sub_jobs == len(sub_jobs.completed)
+        if __debug__:
+            sub_jobs = static_job.sub_jobs
+            assert not sub_jobs.open
+            assert static_job.submitted_sub_jobs == len(sub_jobs.submitted)
+            assert static_job.completed_sub_jobs == len(sub_jobs.completed)
         self._progress_bar.update(0)
 
     def _remaining_walltime(self, sub_job: Job):
@@ -331,7 +332,15 @@ class IOAwareScheduler(AllocOnlyScheduler):
         assert static_job.completed_compute_phases == 0
         assert static_job.submitted_sub_jobs == 0
         assert static_job.completed_sub_jobs == 0
-        assert self._exclusive_compute_resources(static_job)  # Expensive assertion
+        # Checks if newly scheduled job has exclusive compute resources with previously scheduled
+        # jobs.
+        assert set(
+            compute_resource
+            for job in self.jobs.static_job.rejected
+            # Jobs rejected in _validate_job() are not casted to StaticJob class
+            if isinstance(job, StaticJob) and job.phase != JobPhase.COMPLETED
+            for compute_resource in job.assigned_compute_resources
+        ).isdisjoint(static_job.assigned_compute_resources)  # Expensive assertion
 
         self._allocate_burst_buffers(self.time, self.time + static_job.requested_time,
                                      assigned_burst_buffers, static_job)
@@ -368,22 +377,6 @@ class IOAwareScheduler(AllocOnlyScheduler):
             sub_job._workload_description = static_job.sub_jobs_workload
 
             static_job.submitted_sub_jobs += 1
-
-    def _exclusive_compute_resources(self, static_job: StaticJob) -> bool:
-        """
-        Checks if newly scheduled job has exclusive compute resources with previously scheduled
-        jobs. Must be called before static_job.reject().
-        """
-        assert not static_job.rejected
-        currently_assigned_compute_resources = set(
-            compute_resource
-            for job in self.jobs.static_job.rejected
-            # Jobs rejected in _validate_job() are not casted to StaticJob class
-            if isinstance(job, StaticJob) and job.phase != JobPhase.COMPLETED
-            for compute_resource in job.assigned_compute_resources
-        )
-        return currently_assigned_compute_resources.isdisjoint(
-            static_job.assigned_compute_resources)
 
     def _pre_schedule(self):
         # Overwrite to avoid calling self.jobs.open on all jobs (including dynamic jobs which could

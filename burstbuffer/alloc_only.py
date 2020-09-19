@@ -211,11 +211,10 @@ class AllocOnlyScheduler(Scheduler):
                     )
                     temporary_allocations.append(compute_allocation)
                     break
-
             # After initial filtering of jobs on submission it should be always possible to find
             # enough burst buffers at some point in time.
-            # TODO: not compatible with flag self.allow_schedule_without_burst_buffer
-            # assert assigned_burst_buffers, 'Not found enough burst buffer resources.'
+            assert assigned_burst_buffers or self.allow_schedule_without_burst_buffer, \
+                'Not found enough burst buffer resources.'
 
         # Allocation for reserved jobs was successful.
         assert len(temporary_allocations) == len(reserved_jobs)
