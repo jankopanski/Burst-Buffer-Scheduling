@@ -153,7 +153,6 @@ class IOAwareScheduler(AllocOnlyScheduler):
             assert not sub_jobs.open
             assert static_job.submitted_sub_jobs == len(sub_jobs.submitted)
             assert static_job.completed_sub_jobs == len(sub_jobs.completed)
-        self._progress_bar.update(0)
 
     def _remaining_walltime(self, sub_job: Job):
         assert sub_job.completed
