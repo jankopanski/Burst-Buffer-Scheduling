@@ -10,7 +10,7 @@ lambda_scale_computations_per_node: 0
 multiply_factor_computations_per_node: 0  # GFLOPS
 expected_communication_per_node: 0.1  # GB
 stddev_communication_per_node: 0.2  # %
-expected_burst_buffer_per_node: 1  # GB
-stddev_burst_buffer_per_node: 0.2  # %
+expected_burst_buffer_per_node: 0  # GB
+stddev_burst_buffer_per_node: 0  # %
 multiply_factor_walltime: 0
 stddev_walltime: 0  # not a %

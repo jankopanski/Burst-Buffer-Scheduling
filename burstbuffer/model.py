@@ -3,10 +3,13 @@ from random import gauss, expovariate, lognormvariate, weibullvariate
 from json import dump
 from yaml import safe_load
 
+from scipy import stats
+
 # Constants
 GFLOPS = 10**9
 MB = 10**6
-GB = MB*10**3
+GB = MB*1000
+KiB = 1024
 
 
 def read_config(config_file):
@@ -21,6 +24,7 @@ class Platform:
         self.cpu_speed = config['cpu_speed'] * GFLOPS
         self.bandwidth = config['bandwidth'] * MB  # 1000 Mbps
         self.burst_buffer_capacity = config['burst_buffer_capacity'] * GB
+        self.total_burst_buffer_capacity = self.burst_buffer_capacity * self.nb_res
         self.num_groups = config['num_groups']
         self.num_chassis = config['num_chassis']
         self.num_routers = config['num_routers']
@@ -64,6 +68,12 @@ class WorkloadModel:
         self.multiply_factor_walltime = config['multiply_factor_walltime']
         self.stddev_walltime = 1 * config['stddev_walltime']
 
+        self.burst_buffer_distribution = stats.lognorm(
+            s=1.0972516604048774,
+            loc=-150361.59523836235,
+            scale=2714115.5724594607
+        )
+
     def next_submit_time(self, prev_submit_time) -> int:
         time_delta = math.ceil(weibullvariate(self.time_distribution_lambda,
                                               self.time_distribution_k))
@@ -97,6 +107,21 @@ class WorkloadModel:
             self.expected_burst_buffer_per_node,
             self.stddev_burst_buffer_per_node * (1 + num_nodes / self.platform.num_nodes)),
             self.platform.burst_buffer_capacity))
+
+    def generate_burst_buffer_lognorm(self, num_nodes) -> int:
+        """
+        Generates burst buffer requirements in bytes per processor.
+        Adjust the requirements to always fit into a platform total capacity.
+        """
+        # Set the lower bound to 100 MB per processor. About 1.5% of jobs will be assigned the lower
+        # bound.
+        burst_buffer_bytes_per_proc = round(max(
+            self.burst_buffer_distribution.rvs() * KiB, 100 * MB))
+        total_burst_buffer_bytes = min(burst_buffer_bytes_per_proc * num_nodes,
+                                       self.platform.total_burst_buffer_capacity)
+        requested_burst_buffer = round(total_burst_buffer_bytes / num_nodes)
+        assert requested_burst_buffer > 0
+        return requested_burst_buffer
 
     def estimate_running_time(self, num_nodes: int, computations: int, communication: int) -> float:
         return max(computations / self.platform.cpu_speed,
