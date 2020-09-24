@@ -33,8 +33,11 @@ class StaticJob(Job):
     compute_phase_size: int
     checkpoint_phase_size: int
     completed_compute_phases: int
-    submitted_sub_jobs: int
-    completed_sub_jobs: int
+    completed_stage_in_jobs: int
+    completed_stage_out_jobs: int
+    completed_checkpoint_jobs: int  # per phase
+    completed_data_drain_jobs: int  # all
+    submitted_data_drain_jobs: int  # all
     sub_job_failure: bool
 
     def __init__(self):
@@ -80,8 +83,11 @@ class IOAwareScheduler(AllocOnlyScheduler):
         static_job.checkpoint_phase_size = int(
             self._checkpoint_phase_factor * static_job.profile.bb)
         static_job.completed_compute_phases = 0
-        static_job.submitted_sub_jobs = 0
-        static_job.completed_sub_jobs = 0
+        static_job.completed_stage_in_jobs = 0
+        static_job.completed_stage_out_jobs = 0
+        static_job.completed_checkpoint_jobs = 0
+        static_job.submitted_data_drain_jobs = 0
+        static_job.completed_data_drain_jobs = 0
         static_job.sub_job_failure = False
         static_job.phase = JobPhase.SUBMITTED
         self.allow_schedule = True
@@ -89,15 +95,19 @@ class IOAwareScheduler(AllocOnlyScheduler):
     def on_job_completion(self, job: Job):
         assert job.is_dynamic_job
         static_job: StaticJob = job.parent_job
-        static_job.completed_sub_jobs += 1
         self.allow_schedule = False
         if job.failure:
             static_job.sub_job_failure = True
 
         if job.profile.type == Profiles.DataStaging.type:
-            if static_job.completed_sub_jobs == static_job.submitted_sub_jobs:
-                static_job.free_inactive_allocations()
-                if static_job.phase == JobPhase.STAGE_IN:
+            if job.requested_time == -1:
+                # This is a data drain job
+                static_job.completed_data_drain_jobs += 1
+            elif static_job.phase == JobPhase.STAGE_IN:
+                # This is a stage-in job
+                static_job.completed_stage_in_jobs += 1
+                if static_job.completed_stage_in_jobs == len(static_job.assigned_burst_buffers):
+                    static_job.free_inactive_allocations()
                     if static_job.sub_job_failure:
                         # All stage-in jobs finished, but some run out of time
                         self._complete_job(static_job)
@@ -106,15 +116,18 @@ class IOAwareScheduler(AllocOnlyScheduler):
                         assert all(stage_in_job.success for stage_in_job in static_job.sub_jobs)
                         # All stage-in jobs finished successfully
                         self._init_compute_phase(static_job, self._remaining_walltime(job))
-                elif static_job.phase == JobPhase.STAGE_OUT:
-                    # All stage-out jobs finished
-                    self._complete_job(static_job)
-                elif static_job.phase == JobPhase.COMPLETED:
-                    # Checkpoint data drain jobs completed after the stage-out phase.
-                    # No further action is needed.
-                    assert job.requested_time == -1
-                else:
-                    assert False
+            elif static_job.phase == JobPhase.STAGE_OUT:
+                # This is a stage-out job
+                static_job.completed_stage_out_jobs += 1
+            else:
+                assert False
+
+            if static_job.completed_stage_out_jobs == len(static_job.assigned_burst_buffers) and \
+                    static_job.completed_data_drain_jobs == static_job.submitted_data_drain_jobs:
+                assert static_job.phase == JobPhase.STAGE_OUT
+                # All sub jobs have finished
+                static_job.free_inactive_allocations()
+                self._complete_job(static_job)
 
         elif job.profile.type == Profiles.ParallelHomogeneous.type:
             assert static_job.phase == JobPhase.COMPUTE
@@ -128,7 +141,8 @@ class IOAwareScheduler(AllocOnlyScheduler):
 
         elif job.profile.type == Profiles.ParallelPFS.type:
             assert static_job.phase == JobPhase.CHECKPOINT
-            if static_job.completed_sub_jobs == static_job.submitted_sub_jobs:
+            static_job.completed_checkpoint_jobs += 1
+            if static_job.completed_checkpoint_jobs == len(static_job.assigned_burst_buffers):
                 # All ParallelPFS jobs finished
                 static_job.free_inactive_allocations()
                 if static_job.sub_job_failure:
@@ -150,9 +164,10 @@ class IOAwareScheduler(AllocOnlyScheduler):
         # Very expensive assertions
         if __debug__:
             sub_jobs = static_job.sub_jobs
-            assert not sub_jobs.open
-            assert static_job.submitted_sub_jobs == len(sub_jobs.submitted)
-            assert static_job.completed_sub_jobs == len(sub_jobs.completed)
+            assert not static_job.sub_jobs.open
+            assert len(sub_jobs.completed) == static_job.completed_stage_in_jobs + \
+                   static_job.completed_checkpoint_jobs + static_job.completed_stage_out_jobs + \
+                   static_job.completed_data_drain_jobs + static_job.completed_compute_phases
 
     def _remaining_walltime(self, sub_job: Job):
         assert sub_job.completed
@@ -196,6 +211,7 @@ class IOAwareScheduler(AllocOnlyScheduler):
 
     def _init_checkpoint_phase(self, static_job: StaticJob, walltime: float):
         assert not static_job.inactive_allocations
+        static_job.completed_checkpoint_jobs = 0
         parallel_pfs_profile = Profiles.ParallelPFS(
             size_read=0,
             size_write=static_job.checkpoint_phase_size,
@@ -228,7 +244,6 @@ class IOAwareScheduler(AllocOnlyScheduler):
             resources=static_job.assigned_compute_resources
         ))
         static_job.phase = JobPhase.STAGE_IN
-        assert static_job.submitted_sub_jobs == len(static_job.assigned_burst_buffers)
         # Expensive assertion
         assert len(static_job.sub_jobs.running) == len(static_job.assigned_burst_buffers)
 
@@ -236,6 +251,7 @@ class IOAwareScheduler(AllocOnlyScheduler):
         # Trigger draining IO traffic from burst buffers to PFS
         # This simulates moving a checkpoint from burst buffers to PFS
         self._init_data_staging(static_job, -1, static_job.checkpoint_phase_size, True)
+        static_job.submitted_data_drain_jobs += static_job.requested_resources
 
     def _init_stage_out_phase(self, static_job: StaticJob, walltime: float):
         self._init_data_staging(static_job, walltime, static_job.profile.bb, True)
@@ -329,8 +345,6 @@ class IOAwareScheduler(AllocOnlyScheduler):
         assert static_job.compute_phase_size > 0
         assert static_job.checkpoint_phase_size > 0
         assert static_job.completed_compute_phases == 0
-        assert static_job.submitted_sub_jobs == 0
-        assert static_job.completed_sub_jobs == 0
         # Checks if newly scheduled job has exclusive compute resources with previously scheduled
         # jobs.
         assert set(
@@ -374,8 +388,6 @@ class IOAwareScheduler(AllocOnlyScheduler):
 
             sub_job_description.job = sub_job
             sub_job._workload_description = static_job.sub_jobs_workload
-
-            static_job.submitted_sub_jobs += 1
 
     def _pre_schedule(self):
         # Overwrite to avoid calling self.jobs.open on all jobs (including dynamic jobs which could
