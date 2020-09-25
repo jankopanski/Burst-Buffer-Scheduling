@@ -1,4 +1,4 @@
-num_jobs: 1000  # Limit for the number of jobs to generate (null for no limit)
+num_jobs: null  # Limit for the number of jobs to generate (null for no limit)
 from_job_number: 0  # Job number in swf file from which generating starts (0 to start from the beginning)
 time_distribution_lambda: 0
 time_distribution_k: 0
