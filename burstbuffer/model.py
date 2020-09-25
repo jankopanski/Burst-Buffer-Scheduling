@@ -24,7 +24,6 @@ class Platform:
         self.cpu_speed = config['cpu_speed'] * GFLOPS
         self.bandwidth = config['bandwidth'] * MB  # 1000 Mbps
         self.burst_buffer_capacity = config['burst_buffer_capacity'] * GB
-        self.total_burst_buffer_capacity = self.burst_buffer_capacity * self.nb_res
         self.num_groups = config['num_groups']
         self.num_chassis = config['num_chassis']
         self.num_routers = config['num_routers']
@@ -32,6 +31,7 @@ class Platform:
         self.num_nodes = self.num_groups * self.num_chassis * \
                          self.num_routers * self.num_nodes_per_router
         self.num_burst_buffers = self.num_groups * self.num_chassis
+        self.total_burst_buffer_capacity = self.burst_buffer_capacity * self.num_burst_buffers
 
 
 class WorkloadModel:
@@ -116,13 +116,16 @@ class WorkloadModel:
         """
         # Set the lower bound to 100 MB per processor. About 1.5% of jobs will be assigned the lower
         # bound.
-        burst_buffer_bytes_per_proc = round(max(
-            self.burst_buffer_distribution.rvs() * KiB, 100 * MB))
-        total_burst_buffer_bytes = min(burst_buffer_bytes_per_proc * num_nodes,
-                                       self.platform.total_burst_buffer_capacity)
-        requested_burst_buffer = round(total_burst_buffer_bytes / num_nodes)
-        assert requested_burst_buffer > 0
-        return requested_burst_buffer
+        burst_buffer_bytes_per_node = round(max(
+            min(self.burst_buffer_distribution.rvs() * KiB, self.platform.burst_buffer_capacity),
+            100 * MB))
+        if num_nodes > (self.platform.burst_buffer_capacity // burst_buffer_bytes_per_node) * \
+                self.platform.num_burst_buffers:
+            nodes_per_burst_buffer = math.ceil(num_nodes / self.platform.num_burst_buffers)
+            burst_buffer_bytes_per_node = math.floor(
+                self.platform.burst_buffer_capacity / nodes_per_burst_buffer)
+        assert burst_buffer_bytes_per_node > 0
+        return burst_buffer_bytes_per_node
 
     def estimate_running_time(self, num_nodes: int, computations: int, communication: int) -> float:
         return max(computations / self.platform.cpu_speed,

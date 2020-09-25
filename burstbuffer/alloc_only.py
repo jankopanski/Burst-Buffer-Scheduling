@@ -59,6 +59,9 @@ class AllocOnlyScheduler(Scheduler):
         # job.id -> [burst_buffer_ids]
         self._burst_buffer_allocations = {}
 
+        self.reject_compute_resources = 0
+        self.reject_burst_buffer_capacity = 0
+        self.reject_total_burst_buffer = 0
         self.filler_not_enough_compute_resource_count = 0
         self.filler_not_enough_burst_buffer_count = 0
         self.backfill_not_enough_burst_buffer_count = 0
@@ -111,6 +114,12 @@ class AllocOnlyScheduler(Scheduler):
 
     def on_end(self):
         self._progress_bar.close()
+        print('# Rejected jobs: Too few resources available in the system (overall): ',
+              self.reject_compute_resources)
+        print('# Rejected jobs: Too much requested burst buffer space for a single node: ',
+              self.reject_burst_buffer_capacity)
+        print('# Rejected jobs: Too much total requested burst buffer space: ',
+              self.reject_total_burst_buffer)
         print('# filler job schedulings with insufficient compute resources: {}'.format(
             self.filler_not_enough_compute_resource_count))
         print('# filler job schedulings with insufficient burst buffers: {}'.format(
@@ -310,16 +319,19 @@ class AllocOnlyScheduler(Scheduler):
     def _validate_job(self, job: Job) -> bool:
         if job.requested_resources > len(self.resources.compute):
             job.reject('Too few resources available in the system (overall)')
+            self.reject_compute_resources += 1
             return False
         # Requested space for a single node must fit within single burst buffer.
         if job.profile.bb > self.platform.burst_buffer_capacity:
             job.reject('Too much requested burst buffer space for a single node.')
+            self.reject_burst_buffer_capacity += 1
             return False
         # Number of how many times job.profile.bb could fit as a whole in total burst buffer
         # space.
         if job.requested_resources > (self.platform.burst_buffer_capacity // job.profile.bb) * \
                 len(self._burst_buffers):
             job.reject('Too much total requested burst buffer space.')
+            self.reject_total_burst_buffer += 1
             return False
         return True
 
