@@ -67,6 +67,7 @@ class WorkloadModel:
         # How much is walltime overestimated
         self.multiply_factor_walltime = config['multiply_factor_walltime']
         self.stddev_walltime = 1 * config['stddev_walltime']
+        self.multiply_factor_runtime = config['multiply_factor_runtime']
 
         self.burst_buffer_distribution = stats.lognorm(
             s=1.0972516604048774,
