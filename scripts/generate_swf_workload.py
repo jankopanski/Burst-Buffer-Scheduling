@@ -24,6 +24,7 @@ jobs = []
 profiles = {}
 first_job_number = None
 last_job_number = None
+num_ignored_jobs = 0
 
 first_submit_time = None
 with open(args.input_file) as input_file:
@@ -33,7 +34,13 @@ with open(args.input_file) as input_file:
             break
 
         job = SWFJob.parse_line(line)
+        # Skip comment lines and first N jobs.
         if not job or job.job_number < workload_config['from_job_number']:
+            continue
+        # Ignore jobs with missing data in SWF file.
+        if job.job_number <= 0 or job.submit_time <= 0 or job.requested_time <= 0 or \
+                job.run_time <= 0 or job.requested_processors <= 0:
+            num_ignored_jobs += 1
             continue
 
         # Ignore time before first submitted job.
@@ -60,3 +67,4 @@ name = splitext(basename(args.input_file))[0]
 description = '{} jobs from swf job number {} to {} inclusive'.format(
     len(jobs), first_job_number, last_job_number)
 model.save_workload(args.output_file, name, description, platform.nb_res, jobs, profiles)
+print('Ignored {} jobs'.format(num_ignored_jobs))
