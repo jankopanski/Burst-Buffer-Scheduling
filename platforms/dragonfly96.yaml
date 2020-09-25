@@ -2,7 +2,7 @@
 topology: 'dragonfly'
 nb_res: 96  # Number of compute resources
 cpu_speed: 1  # GFLOPS
-bandwidth: 125  # MBps
+bandwidth: 1250  # MBps
 # There are 8 compute nodes per every storage node and the expected size of burst buffer is 4.9 GB
 #  per compute node
 burst_buffer_capacity: 40  # GB
