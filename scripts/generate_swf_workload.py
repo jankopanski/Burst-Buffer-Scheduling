@@ -57,7 +57,7 @@ with open(args.input_file) as input_file:
         # Alternatively 0 burst buffer could be specified as a requests, but current simulation
         # model requires a non 0 burst buffer.
         if job.requested_time <= 120:
-            burst_buffer = 100 * MB
+            burst_buffer = 10 * MB
             computations = job.run_time * platform.cpu_speed
         else:
             burst_buffer = model.generate_burst_buffer_lognorm(job.requested_processors)

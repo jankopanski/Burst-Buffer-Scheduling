@@ -14,4 +14,4 @@ expected_burst_buffer_per_node: 0  # GB
 stddev_burst_buffer_per_node: 0  # %
 multiply_factor_walltime: 0
 stddev_walltime: 0  # not a %
-multiply_factor_runtime: 0.75
+multiply_factor_runtime: 40
