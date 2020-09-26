@@ -4,9 +4,8 @@
 from argparse import ArgumentParser
 from os.path import basename, splitext
 
-from burstbuffer.model import Platform, WorkloadModel, read_config
+from burstbuffer.model import Platform, WorkloadModel, read_config, MB
 from burstbuffer.swf import SWFJob
-
 
 parser = ArgumentParser()
 parser.add_argument('platform_config_file', help='yaml')
@@ -25,6 +24,7 @@ profiles = {}
 first_job_number = None
 last_job_number = None
 num_ignored_jobs = 0
+storage_intervals = set()
 
 first_submit_time = None
 with open(args.input_file) as input_file:
@@ -53,9 +53,23 @@ with open(args.input_file) as input_file:
         last_job_number = job.job_number
 
         profile_id = str(job.job_number)
-        computations = job.run_time * model.multiply_factor_runtime * platform.cpu_speed
+        # Assign minimal burst buffer request to a very short jobs (120 seconds).
+        # Alternatively 0 burst buffer could be specified as a requests, but current simulation
+        # model requires a non 0 burst buffer.
+        if job.requested_time <= 120:
+            burst_buffer = 100 * MB
+            computations = job.run_time * platform.cpu_speed
+        else:
+            burst_buffer = model.generate_burst_buffer_lognorm(job.requested_processors)
+            computations = round(platform.cpu_speed * max(
+                job.run_time - model.multiply_factor_runtime * burst_buffer / platform.bandwidth,
+                job.run_time * 0.05))
+        # Ensure that there are no jobs that could have the same storage interval representation in
+        # a StorageResource. Just a technical correction, does not influence the model.
+        while (entry := (job.requested_time, burst_buffer)) in storage_intervals:
+            burst_buffer -= 1
+        storage_intervals.add(entry)
         communication = 0 if job.requested_processors == 1 else model.generate_communication()
-        burst_buffer = model.generate_burst_buffer_lognorm(job.requested_processors)
         jobs.append(model.generate_job(job.job_number,
                                        submit_time,
                                        job.requested_time,
