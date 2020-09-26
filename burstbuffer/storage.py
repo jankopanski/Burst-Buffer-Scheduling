@@ -27,7 +27,10 @@ class StorageResource(Resource):
         self._interval_tree = IntervalTree()
 
     def available_space(self, start: float, end: float) -> int:
-        """Available space in the storage resource in a time range (start, end)."""
+        """
+        Available space in the storage resource in a time range (start, end).
+        Should be the same as self._interval_tree.envelop(start, end).
+        """
         intervals = self._interval_tree[start:end]
         interval_starts = [(interval.begin, interval.data) for interval in intervals]
         interval_ends = [(interval.end, -interval.data) for interval in intervals]
@@ -51,11 +54,17 @@ class StorageResource(Resource):
         interval = Interval(start, end, num_bytes)
         self._job_allocations[job.id] = interval
         self._interval_tree.add(interval)
+        if __debug__:
+            self._interval_tree.verify()
 
     def free(self, job: Job):
         interval = self._job_allocations[job.id]
         self._interval_tree.remove(interval)
         del self._job_allocations[job.id]
+        assert bool(not self._job_allocations) == bool(self._interval_tree.is_empty())
+        assert len(self._job_allocations) == len(self._interval_tree.all_intervals)
+        if __debug__:
+            self._interval_tree.verify()
 
     def find_first_time_to_fit_job(self, job, time=None, future_reservation=False):
         raise NotImplementedError
