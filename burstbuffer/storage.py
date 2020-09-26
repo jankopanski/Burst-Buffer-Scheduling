@@ -54,6 +54,8 @@ class StorageResource(Resource):
         interval = Interval(start, end, num_bytes)
         self._job_allocations[job.id] = interval
         self._interval_tree.add(interval)
+        assert bool(not self._job_allocations) == bool(self._interval_tree.is_empty())
+        assert len(self._job_allocations) == len(self._interval_tree.all_intervals)
         if __debug__:
             self._interval_tree.verify()
 
