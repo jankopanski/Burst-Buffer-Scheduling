@@ -17,6 +17,7 @@ if [[ "$OSTYPE" == "linux-gnu" ]]; then
     -u $user_id:$group_id \
     -v $PWD:/data \
     oarteam/batsim:4.0.0 \
+    -s tcp://127.0.0.1:28000 \
     -q \
     "$@"
 elif [[ "$OSTYPE" == "darwin"* ]]; then
