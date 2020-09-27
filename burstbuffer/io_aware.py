@@ -36,6 +36,7 @@ class StaticJob(Job):
     completed_stage_in_jobs: int
     completed_stage_out_jobs: int
     completed_checkpoint_jobs: int  # per phase
+    submitted_checkpoint_jobs: int  # all
     completed_data_drain_jobs: int  # all
     submitted_data_drain_jobs: int  # all
     sub_job_failure: bool
@@ -85,6 +86,7 @@ class IOAwareScheduler(AllocOnlyScheduler):
         static_job.completed_compute_phases = 0
         static_job.completed_stage_in_jobs = 0
         static_job.completed_stage_out_jobs = 0
+        static_job.submitted_checkpoint_jobs = 0
         static_job.completed_checkpoint_jobs = 0
         static_job.submitted_data_drain_jobs = 0
         static_job.completed_data_drain_jobs = 0
@@ -142,7 +144,7 @@ class IOAwareScheduler(AllocOnlyScheduler):
         elif job.profile.type == Profiles.ParallelPFS.type:
             assert static_job.phase == JobPhase.CHECKPOINT
             static_job.completed_checkpoint_jobs += 1
-            if static_job.completed_checkpoint_jobs == len(static_job.assigned_burst_buffers):
+            if static_job.completed_checkpoint_jobs == static_job.submitted_checkpoint_jobs:
                 # All ParallelPFS jobs finished
                 static_job.free_inactive_allocations()
                 if static_job.sub_job_failure:
@@ -211,7 +213,6 @@ class IOAwareScheduler(AllocOnlyScheduler):
 
     def _init_checkpoint_phase(self, static_job: StaticJob, walltime: float):
         assert not static_job.inactive_allocations
-        static_job.completed_checkpoint_jobs = 0
         parallel_pfs_profile = Profiles.ParallelPFS(
             size_read=0,
             size_write=static_job.checkpoint_phase_size,
@@ -234,6 +235,7 @@ class IOAwareScheduler(AllocOnlyScheduler):
             )
             parallel_pfs_job._batsim_job.storage_mapping = {'burstbuffer': burst_buffer.id}
             parallel_pfs_job.schedule(new_allocation)
+        static_job.submitted_checkpoint_jobs += len(static_job.assigned_burst_buffers)
         static_job.phase = JobPhase.CHECKPOINT
 
     def _init_stage_in_phase(self, static_job: StaticJob):
