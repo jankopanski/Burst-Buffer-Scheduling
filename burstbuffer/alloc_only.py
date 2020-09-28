@@ -73,7 +73,7 @@ class AllocOnlyScheduler(Scheduler):
 
         # Storage machines are all burst buffers hosts plus pfs host.
         assert self.platform.num_burst_buffers == len(self.machines['storage']) - 1
-        assert self.platform.num_nodes == \
+        assert self.platform.num_all_nodes == \
                len(self.machines['storage']) - 1 + len(self.machines['compute'])
 
         for storage_resource in self.machines['storage']:
@@ -366,7 +366,7 @@ class AllocOnlyScheduler(Scheduler):
         """Creates a list of compute resource ids ordered according to Dragonfly topology."""
         self._ordered_compute_resource_ids = []
         num_nodes_in_chassis = self.platform.num_routers * self.platform.num_nodes_per_router
-        for node_id in range(self.platform.num_nodes):
+        for node_id in range(self.platform.num_all_nodes):
             if node_id % num_nodes_in_chassis == 0:
                 # This is a storage node
                 continue
@@ -376,7 +376,7 @@ class AllocOnlyScheduler(Scheduler):
                     self._ordered_compute_resource_ids.append(compute_resource.id)
                     break
         assert len(self._ordered_compute_resource_ids) == \
-               self.platform.num_nodes - self.platform.num_burst_buffers
+               self.platform.num_all_nodes - self.platform.num_burst_buffers
 
     def _create_burst_buffer_proximity(self):
         """Compute resource id to burst buffer id proximity mapping for the Dragonfly topology."""

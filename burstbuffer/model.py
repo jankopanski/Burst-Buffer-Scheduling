@@ -28,8 +28,8 @@ class Platform:
         self.num_chassis = config['num_chassis']
         self.num_routers = config['num_routers']
         self.num_nodes_per_router = config['num_nodes_per_router']
-        self.num_nodes = self.num_groups * self.num_chassis * \
-                         self.num_routers * self.num_nodes_per_router
+        self.num_all_nodes = self.num_groups * self.num_chassis * \
+                             self.num_routers * self.num_nodes_per_router
         self.num_burst_buffers = self.num_groups * self.num_chassis
         self.total_burst_buffer_capacity = self.burst_buffer_capacity * self.num_burst_buffers
 
@@ -106,7 +106,7 @@ class WorkloadModel:
     def generate_burst_buffer_increasing_std(self, num_nodes) -> int:
         return round(min(gauss(
             self.expected_burst_buffer_per_node,
-            self.stddev_burst_buffer_per_node * (1 + num_nodes / self.platform.num_nodes)),
+            self.stddev_burst_buffer_per_node * (1 + num_nodes / self.platform.num_all_nodes)),
             self.platform.burst_buffer_capacity))
 
     def generate_burst_buffer_lognorm(self, num_nodes) -> int:
