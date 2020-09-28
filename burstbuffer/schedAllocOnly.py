@@ -8,6 +8,9 @@ class SchedAllocOnly(AllocOnlyScheduler):
         elif self.algorithm == 'fcfs':
             self.filler_schedule(abort_on_first_nonfitting=True)
         elif self.algorithm == 'backfill':
-            self.backfill_schedule(backfilling_reservation_depth=self.backfilling_reservation_depth)
+            self.backfill_schedule(
+                reservation_depth=self.backfilling_reservation_depth,
+                future_burst_buffer_reservation=self.future_burst_buffer_reservation
+            )
         else:
             assert False
