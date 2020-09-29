@@ -107,6 +107,7 @@ class AllocOnlyScheduler(Scheduler):
                                   disable=self._disable_progress_bar)
 
     def on_job_submission(self, job):
+        job.comment = job.profile.bb
         self._validate_job(job)
 
     def on_job_completion(self, job):
