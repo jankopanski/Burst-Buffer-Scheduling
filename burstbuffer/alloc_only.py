@@ -1,11 +1,12 @@
 from collections import Counter
+from operator import itemgetter
 from typing import Optional, List, Dict, Callable, Tuple
 from tqdm import tqdm
 
 from batsim.batsim import Batsim
 from batsim.sched.resource import Resources, Resource, ComputeResource
 from batsim.sched.alloc import Allocation
-from batsim.sched.job import Job
+from batsim.sched.job import Job, Jobs
 from batsim.sched.scheduler import Scheduler
 from batsim.sched.algorithms.utils import generate_resources_filter
 from procset import ProcSet
@@ -54,6 +55,7 @@ class AllocOnlyScheduler(Scheduler):
             options['allow_schedule_without_burst_buffer'])
         self.future_burst_buffer_reservation = bool(options['future_burst_buffer_reservation'])
         self.backfilling_reservation_depth = int(options['backfilling_reservation_depth'])
+        self.balance_priority_policy = options['balance_priority_policy']
 
         # Resource initialisation
         self._burst_buffers = Resources()
@@ -167,7 +169,8 @@ class AllocOnlyScheduler(Scheduler):
             self,
             jobs=None,
             reservation_depth=1,
-            future_burst_buffer_reservation=True
+            future_burst_buffer_reservation=True,
+            balance_priority_policy=None
     ):
         if jobs is None:
             jobs = self.jobs.runnable
@@ -254,7 +257,10 @@ class AllocOnlyScheduler(Scheduler):
 
         # Allocation for reserved jobs was successful.
         assert len(temporary_allocations) == len(reserved_jobs)
-        self.filler_schedule(jobs=remaining_jobs, abort_on_first_nonfitting=False)
+        if balance_priority_policy:
+            self._balance_backfill(remaining_jobs, balance_priority_policy)
+        else:
+            self.filler_schedule(remaining_jobs, abort_on_first_nonfitting=False)
 
         for compute_allocation in temporary_allocations:
             job = compute_allocation.job
@@ -263,6 +269,56 @@ class AllocOnlyScheduler(Scheduler):
             compute_allocation.remove_all_resources()
             # Necessary when allocate_all() was called.
             # compute_allocation.free()
+
+    def _balance_backfill(self, jobs: Jobs, priority_policy='ratio'):
+        assert not self.allow_schedule_without_burst_buffer
+        assert priority_policy in ['largest', 'smallest', 'ratio']
+
+        while True:
+            scheduled = False
+            compute_util = self._compute_utilisation()
+            storage_util = self._storage_utilisation()
+            jobs = jobs.runnable
+            sorted_jobs = None
+            if compute_util > storage_util:
+                if priority_policy == 'largest':
+                    # Sort descending by storage
+                    sorted_jobs = sorted(((job.profile.bb, job) for job in jobs),
+                                         reverse=True, key=itemgetter(0))
+                elif priority_policy == 'smallest':
+                    # Sort ascending by compute
+                    sorted_jobs = sorted(((job.requested_resources, job) for job in jobs),
+                                         reverse=False, key=itemgetter(0))
+                elif priority_policy == 'ratio':
+                    # Sort descending by storage/compute ratio
+                    sorted_jobs = sorted(
+                        ((job.profile.bb / job.requested_resources, job) for job in jobs),
+                        reverse=True, key=itemgetter(0))
+            else:
+                if priority_policy == 'largest':
+                    # Sort descending by compute
+                    sorted_jobs = sorted(((job.requested_resources, job) for job in jobs),
+                                         reverse=True, key=itemgetter(0))
+                elif priority_policy == 'smallest':
+                    # Sort ascending by storage
+                    sorted_jobs = sorted(((job.profile.bb, job) for job in jobs),
+                                         reverse=False, key=itemgetter(0))
+                elif priority_policy == 'ratio':
+                    # Sort ascending by storage/compute ratio
+                    sorted_jobs = sorted(
+                        ((job.profile.bb / job.requested_resources, job) for job in jobs),
+                        reverse=False, key=itemgetter(0))
+
+            assert sorted_jobs is not None
+            for job in (job for _, job in sorted_jobs):
+                assigned_compute_resources, assigned_burst_buffers = self._find_all_resources(job)
+                if assigned_compute_resources and assigned_burst_buffers:
+                    self.schedule_job(job, assigned_compute_resources, assigned_burst_buffers)
+                    scheduled = True
+                    break
+
+            if not scheduled:
+                break
 
     def _compute_utilisation(self) -> float:
         assert len(self.resources.compute) == self.platform.nb_res

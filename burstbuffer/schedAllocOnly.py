@@ -10,7 +10,8 @@ class SchedAllocOnly(AllocOnlyScheduler):
         elif self.algorithm == 'backfill':
             self.backfill_schedule(
                 reservation_depth=self.backfilling_reservation_depth,
-                future_burst_buffer_reservation=self.future_burst_buffer_reservation
+                future_burst_buffer_reservation=self.future_burst_buffer_reservation,
+                balance_priority_policy=self.balance_priority_policy
             )
         else:
             assert False

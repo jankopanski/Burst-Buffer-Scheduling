@@ -15,7 +15,8 @@ class SchedIOAware(IOAwareScheduler):
             self.backfill_schedule(
                 jobs=jobs,
                 reservation_depth=self.backfilling_reservation_depth,
-                future_burst_buffer_reservation=self.future_burst_buffer_reservation
+                future_burst_buffer_reservation=self.future_burst_buffer_reservation,
+                balance_priority_policy=self.balance_priority_policy
             )
         else:
             assert False
