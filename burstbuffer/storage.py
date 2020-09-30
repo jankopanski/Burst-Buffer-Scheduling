@@ -22,9 +22,15 @@ class StorageResource(Resource):
             capacity_bytes: int = 0):
         super().__init__(scheduler, name, id, resources_list,
                          resource_sharing=True)
-        self._capacity = capacity_bytes
+        self.capacity = capacity_bytes
         self._job_allocations: Dict[JobId, Interval] = {}  # job_id -> [(start, end, num_bytes)]
         self._interval_tree = IntervalTree()
+
+    def currently_allocated_space(self) -> int:
+        intervals = self._interval_tree[self._scheduler.time]
+        allocated_space = sum(interval.data for interval in intervals)
+        assert allocated_space <= self.capacity
+        return allocated_space
 
     def available_space(self, start: float, end: float) -> int:
         """
@@ -43,8 +49,8 @@ class StorageResource(Resource):
             curr_allocated_space += value
             max_allocated_space = max(max_allocated_space, curr_allocated_space)
 
-        assert max_allocated_space <= self._capacity
-        return self._capacity - max_allocated_space
+        assert max_allocated_space <= self.capacity
+        return self.capacity - max_allocated_space
 
     def allocate(self, start: float, end: float, num_bytes: int, job: Job):
         assert self._scheduler.time <= start <= end

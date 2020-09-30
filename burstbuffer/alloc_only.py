@@ -264,6 +264,23 @@ class AllocOnlyScheduler(Scheduler):
             # Necessary when allocate_all() was called.
             # compute_allocation.free()
 
+    def _compute_utilisation(self) -> float:
+        assert len(self.resources.compute) == self.platform.nb_res
+        util = len(self.resources.compute.allocated) / self.platform.nb_res
+        assert 0 <= util <= 1
+        return util
+
+    def _storage_utilisation(self) -> float:
+        assert len(self._burst_buffers) == self.platform.num_burst_buffers
+        allocated_space = sum(burst_buffer.currently_allocated_space()
+                              for burst_buffer in self._burst_buffers)
+        total_capacity = sum(burst_buffer.capacity for burst_buffer in self._burst_buffers)
+        assert total_capacity == \
+               self.platform.num_burst_buffers * self.platform.burst_buffer_capacity
+        util = allocated_space / total_capacity
+        assert 0 <= util <= 1
+        return util
+
     def _get_burst_buffer_allocation_end_times(self) -> List[float]:
         """
         Helper function for backfilling.
