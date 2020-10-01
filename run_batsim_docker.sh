@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 
 # AllocOnlyScheduler
-#./run_batsim_docker.sh -w workloads/KTH-SP2-1996-2.1-cln-1000-1.json -e output/out
+#./run_batsim_docker.sh -w workloads/KTH-SP2-1996-2.1-cln-alloc-only.json -e output/out
 
 # IOAwareScheduler
-#./run_batsim_docker.sh -w workloads/KTH-SP2-1996-2.1-cln-1000-1.json -e output/out --enable-dynamic-jobs --enable-profile-reuse
+#./run_batsim_docker.sh -w workloads/KTH-SP2-1996-2.1-cln-io-aware.json -e output/out --enable-dynamic-jobs --enable-profile-reuse
 
 #platform=$1
 #workload=$2
