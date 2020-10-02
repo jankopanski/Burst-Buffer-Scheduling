@@ -11,7 +11,8 @@ class SchedAllocOnly(AllocOnlyScheduler):
             self.backfill_schedule(
                 reservation_depth=self.backfilling_reservation_depth,
                 future_burst_buffer_reservation=self.future_burst_buffer_reservation,
-                balance_priority_policy=self.balance_priority_policy
+                balance_priority_policy=self.balance_priority_policy,
+                balance_factor=self.balance_factor
             )
         else:
             assert False

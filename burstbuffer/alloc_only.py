@@ -55,6 +55,7 @@ class AllocOnlyScheduler(Scheduler):
             options['allow_schedule_without_burst_buffer'])
         self.future_burst_buffer_reservation = bool(options['future_burst_buffer_reservation'])
         self.backfilling_reservation_depth = int(options['backfilling_reservation_depth'])
+        self.balance_factor = float(options['balance_factor'])
         self.balance_priority_policy = options['balance_priority_policy']
 
         # Resource initialisation
@@ -170,7 +171,8 @@ class AllocOnlyScheduler(Scheduler):
             jobs=None,
             reservation_depth=1,
             future_burst_buffer_reservation=True,
-            balance_priority_policy=None
+            balance_priority_policy=None,
+            balance_factor=None
     ):
         if jobs is None:
             jobs = self.jobs.runnable
@@ -258,7 +260,11 @@ class AllocOnlyScheduler(Scheduler):
         # Allocation for reserved jobs was successful.
         assert len(temporary_allocations) == len(reserved_jobs)
         if balance_priority_policy:
-            self._balance_backfill(remaining_jobs, balance_priority_policy)
+            self._balance_backfill(
+                jobs=remaining_jobs,
+                priority_policy=balance_priority_policy,
+                balance_factor=balance_factor
+            )
         else:
             self.filler_schedule(remaining_jobs, abort_on_first_nonfitting=False)
 
@@ -270,7 +276,7 @@ class AllocOnlyScheduler(Scheduler):
             # Necessary when allocate_all() was called.
             # compute_allocation.free()
 
-    def _balance_backfill(self, jobs: Jobs, priority_policy='ratio'):
+    def _balance_backfill(self, jobs: Jobs, priority_policy='ratio', balance_factor=1):
         assert not self.allow_schedule_without_burst_buffer
         assert priority_policy in ['largest', 'smallest', 'ratio']
 
@@ -280,7 +286,7 @@ class AllocOnlyScheduler(Scheduler):
             storage_util = self._storage_utilisation()
             jobs = jobs.runnable
             sorted_jobs = None
-            if compute_util > storage_util:
+            if compute_util > balance_factor * storage_util:
                 if priority_policy == 'largest':
                     # Sort descending by storage
                     sorted_jobs = sorted(((job.profile.bb, job) for job in jobs),
