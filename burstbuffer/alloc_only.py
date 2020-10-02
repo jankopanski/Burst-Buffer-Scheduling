@@ -162,8 +162,7 @@ class AllocOnlyScheduler(Scheduler):
             if assigned_compute_resources and \
                     (assigned_burst_buffers or self.allow_schedule_without_burst_buffer):
                 self.schedule_job(job, assigned_compute_resources, assigned_burst_buffers)
-
-            if not job.scheduled and abort_on_first_nonfitting:
+            elif abort_on_first_nonfitting:
                 break
 
     def backfill_schedule(
