@@ -1,5 +1,5 @@
 from collections import Counter
-from operator import itemgetter
+from operator import itemgetter, attrgetter
 from typing import Optional, List, Dict, Callable, Tuple
 from tqdm import tqdm
 
@@ -51,12 +51,16 @@ class AllocOnlyScheduler(Scheduler):
         platform_config = read_config(options['platform'])
         self.platform = Platform(platform_config)
         self.algorithm = options['algorithm']
+        assert self.algorithm in ['fcfs', 'filler', 'backfill']
         self.allow_schedule_without_burst_buffer = bool(
             options['allow_schedule_without_burst_buffer'])
         self.future_burst_buffer_reservation = bool(options['future_burst_buffer_reservation'])
         self.backfilling_reservation_depth = int(options['backfilling_reservation_depth'])
+        assert self.backfilling_reservation_depth >= 1
         self.balance_factor = float(options['balance_factor'])
-        self.balance_priority_policy = options['balance_priority_policy']
+        assert self.balance_factor >= 0
+        self.priority_policy = options['priority_policy']
+        assert self.priority_policy in [None, 'sjf', 'largest', 'smallest', 'ratio']
 
         # Resource initialisation
         self._burst_buffers = Resources()
@@ -170,7 +174,7 @@ class AllocOnlyScheduler(Scheduler):
             jobs=None,
             reservation_depth=1,
             future_burst_buffer_reservation=True,
-            balance_priority_policy=None,
+            priority_policy=None,
             balance_factor=None
     ):
         if jobs is None:
@@ -258,14 +262,19 @@ class AllocOnlyScheduler(Scheduler):
 
         # Allocation for reserved jobs was successful.
         assert len(temporary_allocations) == len(reserved_jobs)
-        if balance_priority_policy:
+        if priority_policy is None:
+            self.filler_schedule(remaining_jobs, abort_on_first_nonfitting=False)
+        elif priority_policy == 'sjf':
+            self.filler_schedule(remaining_jobs.sorted(attrgetter('requested_time')),
+                                 abort_on_first_nonfitting=False)
+        elif priority_policy:
             self._balance_backfill(
                 jobs=remaining_jobs,
-                priority_policy=balance_priority_policy,
+                priority_policy=priority_policy,
                 balance_factor=balance_factor
             )
         else:
-            self.filler_schedule(remaining_jobs, abort_on_first_nonfitting=False)
+            assert False
 
         for compute_allocation in temporary_allocations:
             job = compute_allocation.job

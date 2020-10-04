@@ -16,7 +16,7 @@ class SchedIOAware(IOAwareScheduler):
                 jobs=jobs,
                 reservation_depth=self.backfilling_reservation_depth,
                 future_burst_buffer_reservation=self.future_burst_buffer_reservation,
-                balance_priority_policy=self.balance_priority_policy,
+                priority_policy=self.priority_policy,
                 balance_factor=self.balance_factor
             )
         else:
