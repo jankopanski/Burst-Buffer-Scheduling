@@ -5,7 +5,6 @@ from operator import itemgetter, attrgetter
 from random import seed, randint, shuffle
 from typing import Optional, List, Dict, Callable, Tuple
 from tqdm import tqdm
-from more_itertools import sample, random_permutation
 
 from batsim.batsim import Batsim
 from batsim.sched.resource import Resources, Resource, ComputeResource
