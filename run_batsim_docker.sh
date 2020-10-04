@@ -16,7 +16,7 @@ if [[ "$OSTYPE" == "linux-gnu" ]]; then
     --net host \
     -u $user_id:$group_id \
     -v $PWD:/data \
-    -m 13G \
+    -m 9G \
     oarteam/batsim:4.0.0 \
     -s tcp://127.0.0.1:28000 \
     -p platforms/dragonfly96.xml \

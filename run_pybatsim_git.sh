@@ -15,4 +15,4 @@ set -x
 # IOAwareScheduler
 #./run_pybatsim_git.sh burstbuffer/schedIOAware.py scheduler_options.json
 
-python -O pybatsim/launcher.py -v warn "$1" -O "$2"
+python -O pybatsim/launcher.py -v warn -t 10000 "$1" -O "$2"
