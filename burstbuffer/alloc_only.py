@@ -3,7 +3,7 @@ from itertools import permutations
 from math import factorial
 from operator import itemgetter, attrgetter
 from random import seed, randint, shuffle
-from typing import Optional, List, Dict, Callable, Tuple
+from typing import Optional, List, Dict, Callable, Tuple, Iterable, Iterator
 from tqdm import tqdm
 
 from batsim.batsim import Batsim
@@ -272,8 +272,10 @@ class AllocOnlyScheduler(Scheduler):
         elif priority_policy == 'sjf':
             self.filler_schedule(remaining_jobs.sorted(attrgetter('requested_time')),
                                  abort_on_first_nonfitting=False)
-        elif priority_policy == 'maxutil':
-            self._maxutil_backfill(remaining_jobs)
+        elif priority_policy == 'maxsort':
+            self._maxutil_backfill(AllocOnlyScheduler._sort_iterator(remaining_jobs))
+        elif priority_policy == 'maxperm':
+            self._maxutil_backfill(AllocOnlyScheduler._permutation_iterator(remaining_jobs))
         elif priority_policy:
             self._balance_backfill(
                 jobs=remaining_jobs,
@@ -358,7 +360,7 @@ class AllocOnlyScheduler(Scheduler):
         assert 0 <= util <= 1
         return util
 
-    def _maxutil_backfill(self, jobs: Jobs):
+    def _maxutil_backfill(self, job_permutations: Iterable[Jobs]):
         assert not self.allow_schedule_without_burst_buffer
         unused_compute = self.platform.nb_res - len(self.resources.compute.allocated)
         allocated_space = sum(burst_buffer.currently_allocated_space()
@@ -368,28 +370,9 @@ class AllocOnlyScheduler(Scheduler):
         if not unused_compute or not unused_storage:
             return
 
-        num_tries = 6
-        first_len_limit = 3
-        second_len_limit = 5
-
-        def perm_iter():
-            n = len(jobs)
-            if n <= first_len_limit:
-                return permutations(jobs)
-            elif n <= second_len_limit:
-                fact = factorial(n)
-                for perm in permutations(jobs):
-                    if randint(1, fact) <= num_tries:
-                        yield perm
-            else:
-                job_list = list(jobs)
-                for _ in range(num_tries):
-                    shuffle(job_list)
-                    yield job_list
-
         best_score = 0
         best_perm_entries = []  # (job, compute, burst_buffer)
-        for jobs_perm in perm_iter():
+        for jobs_perm in job_permutations:
             temporary_allocations = []
             current_perm_entries = []
             compute_time = 0
@@ -427,6 +410,38 @@ class AllocOnlyScheduler(Scheduler):
 
         for job, assigned_compute_resources, assigned_burst_buffers in best_perm_entries:
             self.schedule_job(job, assigned_compute_resources, assigned_burst_buffers)
+
+    @staticmethod
+    def _permutation_iterator(jobs: Jobs) -> Iterator[Jobs]:
+        num_tries = 6
+        first_len_limit = 3
+        second_len_limit = 5
+        n = len(jobs)
+        if n <= first_len_limit:
+            return permutations(jobs)
+        elif n <= second_len_limit:
+            fact = factorial(n)
+            for perm in permutations(jobs):
+                if randint(1, fact) <= num_tries:
+                    yield perm
+        else:
+            job_list = list(jobs)
+            for _ in range(num_tries):
+                shuffle(job_list)
+                yield job_list
+
+    @staticmethod
+    def _sort_iterator(jobs: Jobs) -> Iterator[Jobs]:
+        jobs_sorts = [
+            ('compute-asc', attrgetter('requested_resources'), False),
+            ('compute-desc', attrgetter('requested_resources'), True),
+            ('storage-asc', lambda j: j.profile.bb, False),
+            ('storage-desc', lambda j: j.profile.bb, True),
+            ('time-asc', attrgetter('requested_time'), False),
+            ('time-desc', attrgetter('requested_time'), True)
+        ]
+        for sort in jobs_sorts:
+            yield jobs.sorted(field_getter=sort[1], reverse=sort[2])
 
     def _get_burst_buffer_allocation_end_times(self) -> List[float]:
         """
