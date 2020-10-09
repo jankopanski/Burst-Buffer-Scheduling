@@ -59,7 +59,7 @@ class AllocOnlyScheduler(Scheduler):
         platform_config = read_config(options['platform'])
         self.platform = Platform(platform_config)
         self.algorithm = options['algorithm']
-        assert self.algorithm in ['fcfs', 'filler', 'backfill', 'moo']
+        assert self.algorithm in ['fcfs', 'filler', 'backfill', 'moo', 'maxutil']
         self.allow_schedule_without_burst_buffer = bool(
             options['allow_schedule_without_burst_buffer'])
         self.future_burst_buffer_reservation = bool(options['future_burst_buffer_reservation'])
@@ -165,10 +165,12 @@ class AllocOnlyScheduler(Scheduler):
             )
         job.schedule(assigned_compute_resources)
 
-    def filler_schedule(self, jobs=None, abort_on_first_nonfitting=True):
+    def filler_schedule(self, jobs=None, abort_on_first_nonfitting=True) -> int:
+        """Returns the number of scheduled jobs."""
         if jobs is None:
             jobs = self.jobs.runnable
 
+        num_scheduled = 0
         for job in jobs:
             assert job.runnable
 
@@ -176,8 +178,10 @@ class AllocOnlyScheduler(Scheduler):
             if assigned_compute_resources and \
                     (assigned_burst_buffers or self.allow_schedule_without_burst_buffer):
                 self.schedule_job(job, assigned_compute_resources, assigned_burst_buffers)
+                num_scheduled += 1
             elif abort_on_first_nonfitting:
                 break
+        return num_scheduled
 
     def backfill_schedule(
             self,
@@ -415,6 +419,97 @@ class AllocOnlyScheduler(Scheduler):
 
         for job, assigned_compute_resources, assigned_burst_buffers in best_perm_entries:
             self.schedule_job(job, assigned_compute_resources, assigned_burst_buffers)
+
+    def maxutil_schedule(self, jobs: Jobs = None, reservation_depth=1):
+        if jobs is None:
+            jobs = self.jobs.runnable
+
+        num_scheduled = self.filler_schedule(jobs[:reservation_depth])
+        reserved_jobs = jobs[num_scheduled:reservation_depth]
+        remaining_jobs = jobs[reservation_depth:]
+
+        reserved_temporary_allocations = []
+        for job in reserved_jobs:
+            allocation_end_times = [self.time] + self._get_burst_buffer_allocation_end_times()
+
+            assigned_burst_buffers = None
+            for time_point in allocation_end_times:
+                # Find earliest compute resources for a given starting point in time.
+                start_time, assigned_compute_resources = \
+                    self.resources.compute.find_with_earliest_start_time(
+                        job,
+                        allow_future_allocations=True,
+                        filter=self._resource_filter,
+                        time=time_point
+                    )
+                assert assigned_compute_resources, 'Not found enough compute resources.'
+                end_time = start_time + job.requested_time
+
+                # Check if for a given time interval there are sufficient burst buffer
+                # resources.
+                assigned_burst_buffers = self._find_sufficient_burst_buffers(
+                    assigned_compute_resources, start_time, end_time, job.profile.bb)
+
+                if assigned_burst_buffers:
+                    self._allocate_burst_buffers(start_time, end_time,
+                                                 assigned_burst_buffers, job)
+                    reserved_temporary_allocations.append(Allocation(
+                        start_time=start_time,
+                        walltime=job.requested_time,
+                        resources=assigned_compute_resources,
+                        job=job
+                    ))
+                    break
+            # After initial filtering of jobs on submission it should be always possible to find
+            # enough burst buffers at some point in time.
+            assert assigned_burst_buffers, 'Not found enough burst buffer resources.'
+        assert len(reserved_temporary_allocations) == len(reserved_jobs)
+
+        job_permutations = self._sort_iterator(remaining_jobs)
+
+        best_score = (0, 0)
+        best_perm_entries = []  # (job, compute, burst_buffer)
+        for jobs_perm in job_permutations:
+            temporary_allocations = []
+            curr_perm_entries = []
+            for job in jobs_perm:
+                assigned_compute_resources, assigned_burst_buffers = self._find_all_resources(job)
+                if assigned_compute_resources and assigned_burst_buffers:
+                    self._allocate_burst_buffers(
+                        start=self.time,
+                        end=self.time + job.requested_time,
+                        assigned_burst_buffers=assigned_burst_buffers,
+                        job=job
+                    )
+                    temporary_allocations.append(Allocation(
+                        start_time=self.time,
+                        walltime=job.requested_time,
+                        resources=assigned_compute_resources,
+                        job=job
+                    ))
+                    curr_perm_entries.append(
+                        (job, assigned_compute_resources, assigned_burst_buffers))
+
+            compute = sum(len(compute_resources)
+                          for _, compute_resources, _ in curr_perm_entries)
+            storage = sum(len(storage_resources) * job.profile.bb
+                          for job, _, storage_resources in curr_perm_entries)
+            curr_score = (compute, storage)
+            if curr_score > best_score:
+                best_score = curr_score
+                best_perm_entries = curr_perm_entries
+            for compute_allocation in temporary_allocations:
+                job = compute_allocation.job
+                self._free_burst_buffers(job)
+                compute_allocation.remove_all_resources()
+
+        for job, assigned_compute_resources, assigned_burst_buffers in best_perm_entries:
+            self.schedule_job(job, assigned_compute_resources, assigned_burst_buffers)
+
+        for compute_allocation in reserved_temporary_allocations:
+            job = compute_allocation.job
+            self._free_burst_buffers(job)
+            compute_allocation.remove_all_resources()
 
     @staticmethod
     def _permutation_iterator(jobs: Jobs) -> Iterator[Jobs]:

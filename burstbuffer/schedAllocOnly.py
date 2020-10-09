@@ -16,5 +16,7 @@ class SchedAllocOnly(AllocOnlyScheduler):
             )
         elif self.algorithm == 'moo':
             self.moo_schedule()
+        elif self.algorithm == 'maxutil':
+            self.maxutil_schedule(reservation_depth=self.backfilling_reservation_depth)
         else:
             assert False
