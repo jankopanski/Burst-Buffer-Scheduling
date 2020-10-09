@@ -1,10 +1,11 @@
 from collections import Counter
 from itertools import permutations
-from math import factorial
+from math import factorial, floor, ceil
 from operator import itemgetter, attrgetter
 from random import seed, randint, shuffle
 from typing import Optional, List, Dict, Callable, Tuple, Iterable, Iterator
 from tqdm import tqdm
+import z3
 
 from batsim.batsim import Batsim
 from batsim.sched.resource import Resources, Resource, ComputeResource
@@ -51,12 +52,14 @@ class AllocOnlyScheduler(Scheduler):
         self._event_logger._logger.setLevel('WARNING')
 
         seed(42)
+        self.allow_schedule = True
+        self.last_job_ids = []
 
         # Platform configuration and other options from scheduler_options.json
         platform_config = read_config(options['platform'])
         self.platform = Platform(platform_config)
         self.algorithm = options['algorithm']
-        assert self.algorithm in ['fcfs', 'filler', 'backfill']
+        assert self.algorithm in ['fcfs', 'filler', 'backfill', 'moo']
         self.allow_schedule_without_burst_buffer = bool(
             options['allow_schedule_without_burst_buffer'])
         self.future_burst_buffer_reservation = bool(options['future_burst_buffer_reservation'])
@@ -65,7 +68,8 @@ class AllocOnlyScheduler(Scheduler):
         self.balance_factor = float(options['balance_factor'])
         assert self.balance_factor >= 0
         self.priority_policy = options['priority_policy']
-        assert self.priority_policy in [None, 'sjf', 'largest', 'smallest', 'ratio', 'maxutil']
+        assert self.priority_policy in [
+            None, 'sjf', 'largest', 'smallest', 'ratio', 'maxsort', 'maxperm']
 
         # Resource initialisation
         self._burst_buffers = Resources()
@@ -123,6 +127,7 @@ class AllocOnlyScheduler(Scheduler):
         self._validate_job(job)
 
     def on_job_completion(self, job):
+        self.allow_schedule = True
         self._free_burst_buffers(job)
         self._progress_bar.update()
 
@@ -442,6 +447,97 @@ class AllocOnlyScheduler(Scheduler):
         ]
         for sort in jobs_sorts:
             yield jobs.sorted(field_getter=sort[1], reverse=sort[2])
+
+    def moo_schedule(self, jobs: Jobs = None):
+        if jobs is None:
+            jobs = self.jobs.runnable
+        if not jobs:
+            return
+
+        max_window = 2
+        window_size = min(len(jobs), max_window)
+
+        current_window_job_ids = [job.id for job in jobs[:window_size]]
+        if not self.allow_schedule and self.last_job_ids == current_window_job_ids:
+            return
+        self.last_job_ids = current_window_job_ids
+        self.allow_schedule = False
+
+        # Number of requested compute nodes
+        N = [job.requested_resources for job in jobs[:window_size]]
+        # Size of requested burst buffer per compute node rounded up to kB
+        B = [ceil(job.profile.bb / 1000) for job in jobs[:window_size]]
+
+        # i-th job in the window is selected to be scheduled
+        a = [z3.Bool('a_{}'.format(i)) for i in range(window_size)]
+        # j-th compute node is assigned to i-th job
+        c = [[z3.Bool('c_{}_{}'.format(i, j)) for j in range(self.platform.nb_res)]
+             for i in range(window_size)]
+        # k-th storage node is assigned to j-th compute node
+        b = [[z3.Bool('b_{}_{}'.format(j, k)) for k in range(self.platform.num_burst_buffers)]
+             for j in range(self.platform.nb_res)]
+
+        z3.set_param('parallel.enable', True)
+        o = z3.Optimize()
+        o.set(priority='lex')
+        o.set('pb.compile_equality', True)
+
+        # First job from the queue must always be selected
+        o.add(a[0] == True)
+        # Exclude compute nodes that are already in use
+        for j, compute_resource in enumerate(self.resources.compute):
+            if compute_resource.active:
+                for i in range(window_size):
+                    o.add(c[i][j] == False)
+        # Each application must receive requested number of nodes if selected
+        for i in range(window_size):
+            proc_count = [(c[i][j], 1) for j in range(self.platform.nb_res)]
+            all_proc_not = [z3.Not(c[i][j]) for j in range(self.platform.nb_res)]
+            o.add(z3.If(a[i], z3.PbEq(proc_count, N[i]), z3.And(all_proc_not)))
+        # Each compute node can be assigned to only one application
+        for j in range(self.platform.nb_res):
+            # o.add(z3.AtMost(*[c[i][j] for i in range(window_size)], 1))
+            o.add(z3.PbLe([(c[i][j], 1) for i in range(window_size)], 1))
+        # Each selected compute node is assigned with exactly one storage node
+        for j in range(self.platform.nb_res):
+            any_proc = [c[i][j] for i in range(window_size)]
+            bb_count = [(b[j][k], 1) for k in range(self.platform.num_burst_buffers)]
+            all_bb_not = [z3.Not(b[j][k]) for k in range(self.platform.num_burst_buffers)]
+            o.add(z3.If(z3.Or(any_proc), z3.PbEq(bb_count, 1), z3.And(all_bb_not)))
+        # Limit burst buffer assignments by the available space
+        for k, burst_buffer in enumerate(self._burst_buffers):
+            storage_sum = [(z3.And(c[i][j], b[j][k]), B[i])
+                           for i in range(window_size) for j in range(self.platform.nb_res)]
+            # Available burst buffer space rounded down to kB
+            BBAvail = floor(
+                (burst_buffer.capacity - burst_buffer.currently_allocated_space()) / 1000)
+            o.add(z3.PbLe(storage_sum, BBAvail))
+
+        # Maximise compute utilisation
+        o.maximize(z3.Sum([z3.If(a[i], N[i], 0) for i in range(window_size)]))
+        # Maximise burst buffer utilisation
+        o.maximize(z3.Sum([z3.If(a[i], N[i] * B[i], 0) for i in range(window_size)]))
+
+        if o.check() == z3.sat:
+            m = o.model()
+            for i, job in enumerate(jobs):
+                if i >= window_size:
+                    break
+                if m[a[i]]:
+                    assigned_compute_resources = []
+                    assigned_burst_buffers = {}
+                    for j, compute_resource in enumerate(self.resources.compute):
+                        if m[c[i][j]]:
+                            assigned_compute_resources.append(compute_resource)
+                            for k, burst_buffer in enumerate(self._burst_buffers):
+                                if m[b[j][k]]:
+                                    assigned_burst_buffers[compute_resource] = burst_buffer
+                                    break
+                    assert len(assigned_compute_resources) == job.requested_resources
+                    assert len(assigned_burst_buffers) == job.requested_resources
+                    self.schedule_job(job, assigned_compute_resources, assigned_burst_buffers)
+        else:
+            print('unsat')
 
     def _get_burst_buffer_allocation_end_times(self) -> List[float]:
         """

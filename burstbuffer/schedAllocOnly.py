@@ -14,5 +14,7 @@ class SchedAllocOnly(AllocOnlyScheduler):
                 priority_policy=self.priority_policy,
                 balance_factor=self.balance_factor
             )
+        elif self.algorithm == 'moo':
+            self.moo_schedule()
         else:
             assert False
