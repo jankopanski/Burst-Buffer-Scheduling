@@ -533,12 +533,16 @@ class AllocOnlyScheduler(Scheduler):
     @staticmethod
     def _sort_iterator(jobs: Jobs) -> Iterator[Jobs]:
         jobs_sorts = [
+            ('fifo', attrgetter('number'), False),
+            ('fifo-rev', attrgetter('number'), True),
             ('compute-asc', attrgetter('requested_resources'), False),
             ('compute-desc', attrgetter('requested_resources'), True),
-            ('storage-asc', lambda j: j.profile.bb, False),
-            ('storage-desc', lambda j: j.profile.bb, True),
+            ('storage-asc', attrgetter('profile.bb'), False),
+            ('storage-desc', attrgetter('profile.bb'), True),
             ('time-asc', attrgetter('requested_time'), False),
-            ('time-desc', attrgetter('requested_time'), True)
+            ('time-desc', attrgetter('requested_time'), True),
+            ('ratio-asc', lambda j: j.profile.bb / j.requested_resources, False),
+            ('ratio-asc', lambda j: j.profile.bb / j.requested_resources, True),
         ]
         for sort in jobs_sorts:
             yield jobs.sorted(field_getter=sort[1], reverse=sort[2])
