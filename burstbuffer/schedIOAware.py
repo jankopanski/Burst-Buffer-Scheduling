@@ -20,6 +20,10 @@ class SchedIOAware(IOAwareScheduler):
                 balance_factor=self.balance_factor
             )
         elif self.algorithm == 'maxutil':
-            self.maxutil_schedule(jobs=jobs, reservation_depth=self.backfilling_reservation_depth)
+            self.maxutil_schedule(
+                jobs=jobs,
+                reservation_depth=self.backfilling_reservation_depth,
+                balance_factor=self.balance_factor
+            )
         else:
             assert False

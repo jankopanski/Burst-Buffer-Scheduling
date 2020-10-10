@@ -420,7 +420,7 @@ class AllocOnlyScheduler(Scheduler):
         for job, assigned_compute_resources, assigned_burst_buffers in best_perm_entries:
             self.schedule_job(job, assigned_compute_resources, assigned_burst_buffers)
 
-    def maxutil_schedule(self, jobs: Jobs = None, reservation_depth=1):
+    def maxutil_schedule(self, jobs: Jobs = None, reservation_depth=1, balance_factor=1):
         if jobs is None:
             jobs = self.jobs.runnable
 
@@ -466,6 +466,12 @@ class AllocOnlyScheduler(Scheduler):
         assert len(reserved_temporary_allocations) == len(reserved_jobs)
 
         job_permutations = self._sort_iterator(remaining_jobs)
+        compute_queue_util = sum(job.requested_resources for job in remaining_jobs) \
+            / self.platform.nb_res
+        storage_queue_util = sum(
+            job.profile.bb * job.requested_resources for job in remaining_jobs) \
+            / (self.platform.burst_buffer_capacity * self.platform.num_burst_buffers)
+        queue_util_ratio = storage_queue_util / compute_queue_util if compute_queue_util > 0 else 0
 
         best_score = (0, 0)
         best_perm_entries = []  # (job, compute, burst_buffer)
@@ -494,7 +500,9 @@ class AllocOnlyScheduler(Scheduler):
                           for _, compute_resources, _ in curr_perm_entries)
             storage = sum(len(storage_resources) * job.profile.bb
                           for job, _, storage_resources in curr_perm_entries)
-            curr_score = (compute, storage)
+            curr_score = (compute, storage) \
+                if queue_util_ratio < balance_factor \
+                else (storage, compute)
             if curr_score > best_score:
                 best_score = curr_score
                 best_perm_entries = curr_perm_entries
