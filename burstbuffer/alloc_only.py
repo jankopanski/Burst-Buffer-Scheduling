@@ -542,7 +542,7 @@ class AllocOnlyScheduler(Scheduler):
             ('time-asc', attrgetter('requested_time'), False),
             ('time-desc', attrgetter('requested_time'), True),
             ('ratio-asc', lambda j: j.profile.bb / j.requested_resources, False),
-            ('ratio-asc', lambda j: j.profile.bb / j.requested_resources, True),
+            ('ratio-desc', lambda j: j.profile.bb / j.requested_resources, True),
         ]
         for sort in jobs_sorts:
             yield jobs.sorted(field_getter=sort[1], reverse=sort[2])
