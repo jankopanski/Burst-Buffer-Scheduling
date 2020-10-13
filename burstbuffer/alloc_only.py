@@ -424,6 +424,14 @@ class AllocOnlyScheduler(Scheduler):
         if jobs is None:
             jobs = self.jobs.runnable
 
+        compute_queue_util = sum(job.requested_resources for job in jobs) / self.platform.nb_res
+        storage_queue_util = sum(
+            job.profile.bb * job.requested_resources for job in jobs) / \
+                             (self.platform.burst_buffer_capacity * self.platform.num_burst_buffers)
+        if compute_queue_util < 5 and storage_queue_util < 5:
+            self.backfill_schedule(jobs, reservation_depth, priority_policy='sjf')
+            return
+
         num_scheduled = self.filler_schedule(jobs[:reservation_depth])
         reserved_jobs = jobs[num_scheduled:reservation_depth]
         remaining_jobs = jobs[reservation_depth:]
@@ -466,11 +474,11 @@ class AllocOnlyScheduler(Scheduler):
         assert len(reserved_temporary_allocations) == len(reserved_jobs)
 
         job_permutations = self._sort_iterator(remaining_jobs)
-        compute_queue_util = sum(job.requested_resources for job in remaining_jobs) \
-            / self.platform.nb_res
-        storage_queue_util = sum(
-            job.profile.bb * job.requested_resources for job in remaining_jobs) \
-            / (self.platform.burst_buffer_capacity * self.platform.num_burst_buffers)
+        # compute_queue_util = sum(job.requested_resources for job in remaining_jobs) \
+        #     / self.platform.nb_res
+        # storage_queue_util = sum(
+        #     job.profile.bb * job.requested_resources for job in remaining_jobs) \
+        #     / (self.platform.burst_buffer_capacity * self.platform.num_burst_buffers)
         queue_util_ratio = storage_queue_util / compute_queue_util if compute_queue_util > 0 else 0
 
         best_score = (0, 0)
@@ -657,7 +665,7 @@ class AllocOnlyScheduler(Scheduler):
         return sorted(alloc_end_times)
 
     def _find_all_resources(self, job: Job) -> Tuple[
-            Optional[List[ComputeResource]], Optional[Dict[ComputeResource, StorageResource]]]:
+        Optional[List[ComputeResource]], Optional[Dict[ComputeResource, StorageResource]]]:
         """Returns (assigned_compute_resources, assigned_storage_resources)."""
         assigned_compute_resources = self.resources.compute.find_sufficient_resources_for_job(
             job, filter=self._resource_filter)
