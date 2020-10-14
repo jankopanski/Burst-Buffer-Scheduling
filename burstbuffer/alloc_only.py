@@ -67,6 +67,8 @@ class AllocOnlyScheduler(Scheduler):
         assert self.backfilling_reservation_depth >= 1
         self.balance_factor = float(options['balance_factor'])
         assert self.balance_factor >= 0
+        self.compute_threshold = float(options['compute_threshold'])
+        self.storage_threshold = float(options['storage_threshold'])
         self.priority_policy = options['priority_policy']
         assert self.priority_policy in [
             None, 'sjf', 'largest', 'smallest', 'ratio', 'maxsort', 'maxperm']
@@ -428,7 +430,8 @@ class AllocOnlyScheduler(Scheduler):
         storage_queue_util = sum(
             job.profile.bb * job.requested_resources for job in jobs) / \
                              (self.platform.burst_buffer_capacity * self.platform.num_burst_buffers)
-        if compute_queue_util < 5 and storage_queue_util < 5:
+        if compute_queue_util < self.compute_threshold \
+                and storage_queue_util < self.storage_threshold:
             self.backfill_schedule(jobs, reservation_depth, priority_policy='sjf')
             return
 

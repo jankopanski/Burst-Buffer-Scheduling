@@ -5,8 +5,10 @@
   "allow_schedule_without_burst_buffer": false,
   "future_burst_buffer_reservation": true,
   "backfilling_reservation_depth": 1,
-  "priority_policy": "ratio",
+  "priority_policy": "sjf",
   "balance_factor": 1,
+  "compute_threshold": 2,
+  "storage_threshold": 2,
   "max_num_compute_phases": 10,
   "target_compute_phase_size": 3600
 }
