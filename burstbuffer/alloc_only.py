@@ -1,10 +1,11 @@
 from collections import Counter
 from itertools import permutations
-from math import factorial, floor, ceil
+from math import factorial, floor, ceil, inf
 from operator import itemgetter, attrgetter
 from random import seed, randint, shuffle
 from typing import Optional, List, Dict, Callable, Tuple, Iterable, Iterator
 from tqdm import tqdm
+from sortedcontainers import SortedSet
 import z3
 
 from batsim.batsim import Batsim
@@ -59,7 +60,7 @@ class AllocOnlyScheduler(Scheduler):
         platform_config = read_config(options['platform'])
         self.platform = Platform(platform_config)
         self.algorithm = options['algorithm']
-        assert self.algorithm in ['fcfs', 'filler', 'backfill', 'moo', 'maxutil']
+        assert self.algorithm in ['fcfs', 'filler', 'backfill', 'moo', 'maxutil', 'plan']
         self.allow_schedule_without_burst_buffer = bool(
             options['allow_schedule_without_burst_buffer'])
         self.future_burst_buffer_reservation = bool(options['future_burst_buffer_reservation'])
@@ -530,6 +531,98 @@ class AllocOnlyScheduler(Scheduler):
             self._free_burst_buffers(job)
             compute_allocation.remove_all_resources()
 
+    def plan_schedule(self, jobs: Jobs = None, reservation_depth=1):
+        if jobs is None:
+            jobs = self.jobs.runnable
+
+        num_scheduled = self.filler_schedule(jobs[:reservation_depth])
+        priority_jobs = jobs[num_scheduled:reservation_depth]
+        remaining_jobs = jobs[reservation_depth:]
+
+        _, priority_allocations = self._create_execution_plan(priority_jobs)
+
+        initial_permutations = self._sort_iterator(remaining_jobs)
+
+        best_score = inf
+        best_plan = None
+        for job_permutation in initial_permutations:
+            plan, allocations = self._create_execution_plan(job_permutation)
+            score = self._sum_waiting_time(plan)
+            if score < best_score:
+                best_score = score
+                best_plan = plan
+            self._free_allocations(allocations)
+
+        for job, start_time, assigned_compute_resources, assigned_burst_buffers in best_plan:
+            if start_time == self.time:
+                self.schedule_job(job, assigned_compute_resources, assigned_burst_buffers)
+
+        self._free_allocations(priority_allocations)
+
+    def _create_execution_plan(self, jobs: Jobs) -> Tuple[ExecutionPlan, List[Allocation]]:
+        plan = []
+        allocations = []
+        allocation_end_times = SortedSet(self._get_burst_buffer_allocation_end_times())
+        allocation_end_times.add(self.time)
+
+        for job in jobs:
+            assigned_compute_resources = None
+            assigned_burst_buffers = None
+            start_time = -inf
+            end_time = None
+
+            for time_point in allocation_end_times:
+                if time_point < start_time:
+                    continue
+                # Find earliest compute resources for a given starting point in time.
+                start_time, assigned_compute_resources = \
+                    self.resources.compute.find_with_earliest_start_time(
+                        job,
+                        allow_future_allocations=True,
+                        filter=self._resource_filter,
+                        time=time_point
+                    )
+                assert start_time != -inf
+                assert assigned_compute_resources, 'Not found enough compute resources.'
+                end_time = start_time + job.requested_time
+
+                # Check if for a given time interval there are sufficient burst buffer
+                # resources.
+                assigned_burst_buffers = self._find_sufficient_burst_buffers(
+                    assigned_compute_resources, start_time, end_time, job.profile.bb)
+                if assigned_burst_buffers:
+                    break
+
+            # After initial filtering of jobs on submission it should be always possible to find
+            # enough burst buffers at some point in time.
+            assert assigned_burst_buffers, 'Not found enough burst buffer resources.'
+            self._allocate_burst_buffers(start_time, end_time, assigned_burst_buffers, job)
+            allocations.append(Allocation(
+                start_time=start_time,
+                walltime=job.requested_time,
+                resources=assigned_compute_resources,
+                job=job
+            ))
+            allocation_end_times.add(end_time)
+            plan.append((job, start_time, assigned_compute_resources, assigned_burst_buffers))
+
+        assert len(allocations) == len(jobs)
+        assert len(plan) == len(jobs)
+        return plan, allocations
+
+    def _free_allocations(self, allocations: List[Allocation]):
+        for compute_allocation in allocations:
+            job = compute_allocation.job
+            self._free_burst_buffers(job)
+            compute_allocation.remove_all_resources()
+
+    @staticmethod
+    def _sum_waiting_time(execution_plan: ExecutionPlan):
+        return sum(start_time - job.submit_time for job, start_time, _, _ in execution_plan)
+
+    def _simulated_annealing(self):
+        pass
+
     @staticmethod
     def _permutation_iterator(jobs: Jobs) -> Iterator[Jobs]:
         num_tries = 6
@@ -552,17 +645,16 @@ class AllocOnlyScheduler(Scheduler):
     @staticmethod
     def _sort_iterator(jobs: Jobs) -> Iterator[Jobs]:
         jobs_sorts = [
-            ('fifo', attrgetter('number'), False),
-            ('fifo-rev', attrgetter('number'), True),
-            ('compute-asc', attrgetter('requested_resources'), False),
             ('compute-desc', attrgetter('requested_resources'), True),
-            ('storage-asc', attrgetter('profile.bb'), False),
             ('storage-desc', attrgetter('profile.bb'), True),
+            ('ratio-desc', lambda j: j.profile.bb / j.requested_resources, True),
+            ('ratio-asc', lambda j: j.profile.bb / j.requested_resources, False),
+            ('compute-asc', attrgetter('requested_resources'), False),
+            ('storage-asc', attrgetter('profile.bb'), False),
             ('time-asc', attrgetter('requested_time'), False),
             ('time-desc', attrgetter('requested_time'), True),
-            ('ratio-asc', lambda j: j.profile.bb / j.requested_resources, False),
-            ('ratio-desc', lambda j: j.profile.bb / j.requested_resources, True),
         ]
+        yield jobs
         for sort in jobs_sorts:
             yield jobs.sorted(field_getter=sort[1], reverse=sort[2])
 

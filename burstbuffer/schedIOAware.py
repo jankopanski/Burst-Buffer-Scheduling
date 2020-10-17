@@ -25,5 +25,7 @@ class SchedIOAware(IOAwareScheduler):
                 reservation_depth=self.backfilling_reservation_depth,
                 balance_factor=self.balance_factor
             )
+        elif self.algorithm == 'plan':
+            self.plan_schedule(jobs=jobs, reservation_depth=self.backfilling_reservation_depth)
         else:
             assert False
