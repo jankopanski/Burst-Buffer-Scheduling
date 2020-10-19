@@ -550,13 +550,21 @@ class AllocOnlyScheduler(Scheduler):
         num_scheduled = self.filler_schedule(jobs[:reservation_depth])
         priority_jobs = jobs[num_scheduled:reservation_depth]
         remaining_jobs = jobs[reservation_depth:]
+        if not remaining_jobs:
+            return
 
         _, priority_allocations = self._create_execution_plan(priority_jobs)
 
-        initial_permutations = self._sort_iterator(remaining_jobs)
+        if len(remaining_jobs) == 1:
+            initial_permutations = []
+            self.filler_schedule(remaining_jobs)
+        elif len(remaining_jobs) <= 3:
+            initial_permutations = permutations(remaining_jobs)
+        else:
+            initial_permutations = self._sort_iterator(remaining_jobs)
 
         best_score = inf
-        best_plan = None
+        best_plan = []
         for job_permutation in initial_permutations:
             plan, allocations = self._create_execution_plan(job_permutation)
             score = score_function(plan)
