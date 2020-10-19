@@ -72,7 +72,10 @@ class AllocOnlyScheduler(Scheduler):
         self.storage_threshold = float(options['storage_threshold'])
         self.priority_policy = options['priority_policy']
         assert self.priority_policy in [
-            None, 'sjf', 'largest', 'smallest', 'ratio', 'maxsort', 'maxperm']
+            None, 'sjf',
+            'largest', 'smallest', 'ratio',
+            'maxsort', 'maxperm',
+            'sum', 'square', 'makespan']
 
         # Resource initialisation
         self._burst_buffers = Resources()
@@ -531,9 +534,18 @@ class AllocOnlyScheduler(Scheduler):
             self._free_burst_buffers(job)
             compute_allocation.remove_all_resources()
 
-    def plan_schedule(self, jobs: Jobs = None, reservation_depth=1):
+    def plan_schedule(self, jobs: Jobs = None, reservation_depth=1, priority_policy='sum'):
         if jobs is None:
             jobs = self.jobs.runnable
+
+        if priority_policy == 'sum':
+            score_function = self._sum_waiting_time
+        elif priority_policy == 'square':
+            score_function = self._sum_square_waiting_time
+        elif priority_policy == 'makespan':
+            score_function = self._expected_queue_makespan
+        else:
+            assert False
 
         num_scheduled = self.filler_schedule(jobs[:reservation_depth])
         priority_jobs = jobs[num_scheduled:reservation_depth]
@@ -547,7 +559,7 @@ class AllocOnlyScheduler(Scheduler):
         best_plan = None
         for job_permutation in initial_permutations:
             plan, allocations = self._create_execution_plan(job_permutation)
-            score = self._sum_waiting_time(plan)
+            score = score_function(plan)
             if score < best_score:
                 best_score = score
                 best_plan = plan
@@ -619,6 +631,14 @@ class AllocOnlyScheduler(Scheduler):
     @staticmethod
     def _sum_waiting_time(execution_plan: ExecutionPlan):
         return sum(start_time - job.submit_time for job, start_time, _, _ in execution_plan)
+
+    @staticmethod
+    def _sum_square_waiting_time(execution_plan: ExecutionPlan):
+        return sum((start_time - job.submit_time) ** 2 for job, start_time, _, _ in execution_plan)
+
+    @staticmethod
+    def _expected_queue_makespan(execution_plan: ExecutionPlan):
+        return max(start_time + job.requested_time for job, start_time, _, _ in execution_plan)
 
     def _simulated_annealing(self):
         pass

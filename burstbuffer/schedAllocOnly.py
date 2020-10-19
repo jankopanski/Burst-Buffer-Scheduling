@@ -22,6 +22,9 @@ class SchedAllocOnly(AllocOnlyScheduler):
                 balance_factor=self.balance_factor
             )
         elif self.algorithm == 'plan':
-            self.plan_schedule()
+            self.plan_schedule(
+                reservation_depth=self.backfilling_reservation_depth,
+                priority_policy=self.priority_policy
+            )
         else:
             assert False

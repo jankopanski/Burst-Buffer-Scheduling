@@ -26,6 +26,10 @@ class SchedIOAware(IOAwareScheduler):
                 balance_factor=self.balance_factor
             )
         elif self.algorithm == 'plan':
-            self.plan_schedule(jobs=jobs, reservation_depth=self.backfilling_reservation_depth)
+            self.plan_schedule(
+                jobs=jobs,
+                reservation_depth=self.backfilling_reservation_depth,
+                priority_policy=self.priority_policy
+            )
         else:
             assert False
