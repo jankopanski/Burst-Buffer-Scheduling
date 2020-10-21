@@ -558,7 +558,7 @@ class AllocOnlyScheduler(Scheduler):
         if len(remaining_jobs) == 1:
             initial_permutations = []
             self.filler_schedule(remaining_jobs)
-        elif len(remaining_jobs) <= 3:
+        elif len(remaining_jobs) <= 4:
             initial_permutations = permutations(remaining_jobs)
         else:
             initial_permutations = self._sort_iterator(remaining_jobs)
