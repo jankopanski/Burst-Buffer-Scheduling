@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
-[ ! -d "pybatsim" ] && git submodule update --init
 
 set -x
+[ -z "$(ls -A pybatsim/)" ] && git submodule update --init
+#[ ! -d "pybatsim" ] && git submodule update --init
 
 # Run with arguments defined inside the script
 #./run_pybatsim_git.sh burstbuffer/schedAllocOnly.py platforms/dragonfly.yaml
