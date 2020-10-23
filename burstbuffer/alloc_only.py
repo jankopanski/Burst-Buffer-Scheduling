@@ -428,7 +428,13 @@ class AllocOnlyScheduler(Scheduler):
         for job, assigned_compute_resources, assigned_burst_buffers in best_perm_entries:
             self.schedule_job(job, assigned_compute_resources, assigned_burst_buffers)
 
-    def maxutil_schedule(self, jobs: Jobs = None, reservation_depth=1, balance_factor=1):
+    def maxutil_schedule(
+            self,
+            jobs: Jobs = None,
+            reservation_depth=1,
+            balance_factor=1,
+            simulated_annealing=False
+    ):
         if jobs is None:
             jobs = self.jobs.runnable
 
@@ -436,105 +442,72 @@ class AllocOnlyScheduler(Scheduler):
         storage_queue_util = sum(
             job.profile.bb * job.requested_resources for job in jobs) / \
                              (self.platform.burst_buffer_capacity * self.platform.num_burst_buffers)
-        if compute_queue_util < self.compute_threshold \
-                and storage_queue_util < self.storage_threshold:
-            self.backfill_schedule(jobs, reservation_depth, priority_policy='sjf')
-            return
+        # if compute_queue_util < self.compute_threshold \
+        #         and storage_queue_util < self.storage_threshold:
+        #     self.backfill_schedule(jobs, reservation_depth, priority_policy='sjf')
+        #     return
 
         num_scheduled = self.filler_schedule(jobs[:reservation_depth])
-        reserved_jobs = jobs[num_scheduled:reservation_depth]
+        priority_jobs = jobs[num_scheduled:reservation_depth]
         remaining_jobs = jobs[reservation_depth:]
+        if not remaining_jobs:
+            return
 
-        reserved_temporary_allocations = []
-        for job in reserved_jobs:
-            allocation_end_times = [self.time] + self._get_burst_buffer_allocation_end_times()
+        _, priority_allocations = self.create_execution_plan(priority_jobs)
 
-            assigned_burst_buffers = None
-            for time_point in allocation_end_times:
-                # Find earliest compute resources for a given starting point in time.
-                start_time, assigned_compute_resources = \
-                    self.resources.compute.find_with_earliest_start_time(
-                        job,
-                        allow_future_allocations=True,
-                        filter=self._resource_filter,
-                        time=time_point
-                    )
-                assert assigned_compute_resources, 'Not found enough compute resources.'
-                end_time = start_time + job.requested_time
-
-                # Check if for a given time interval there are sufficient burst buffer
-                # resources.
-                assigned_burst_buffers = self._find_sufficient_burst_buffers(
-                    assigned_compute_resources, start_time, end_time, job.profile.bb)
-
-                if assigned_burst_buffers:
-                    self._allocate_burst_buffers(start_time, end_time,
-                                                 assigned_burst_buffers, job)
-                    reserved_temporary_allocations.append(Allocation(
-                        start_time=start_time,
-                        walltime=job.requested_time,
-                        resources=assigned_compute_resources,
-                        job=job
-                    ))
-                    break
-            # After initial filtering of jobs on submission it should be always possible to find
-            # enough burst buffers at some point in time.
-            assert assigned_burst_buffers, 'Not found enough burst buffer resources.'
-        assert len(reserved_temporary_allocations) == len(reserved_jobs)
-
-        job_permutations = self._sort_iterator(remaining_jobs)
-        # compute_queue_util = sum(job.requested_resources for job in remaining_jobs) \
-        #     / self.platform.nb_res
-        # storage_queue_util = sum(
-        #     job.profile.bb * job.requested_resources for job in remaining_jobs) \
-        #     / (self.platform.burst_buffer_capacity * self.platform.num_burst_buffers)
-        queue_util_ratio = storage_queue_util / compute_queue_util if compute_queue_util > 0 else 0
+        if len(remaining_jobs) == 1:
+            initial_permutations = []
+            self.filler_schedule(remaining_jobs)
+            simulated_annealing = False
+        elif len(remaining_jobs) <= 6:
+            initial_permutations = permutations(remaining_jobs)
+            simulated_annealing = False
+        else:
+            initial_permutations = self._sort_iterator(remaining_jobs)
 
         best_score = (0, 0)
-        best_perm_entries = []  # (job, compute, burst_buffer)
-        for jobs_perm in job_permutations:
-            temporary_allocations = []
-            curr_perm_entries = []
-            for job in jobs_perm:
-                assigned_compute_resources, assigned_burst_buffers = self._find_all_resources(job)
-                if assigned_compute_resources and assigned_burst_buffers:
-                    self._allocate_burst_buffers(
-                        start=self.time,
-                        end=self.time + job.requested_time,
-                        assigned_burst_buffers=assigned_burst_buffers,
-                        job=job
-                    )
-                    temporary_allocations.append(Allocation(
-                        start_time=self.time,
-                        walltime=job.requested_time,
-                        resources=assigned_compute_resources,
-                        job=job
-                    ))
-                    curr_perm_entries.append(
-                        (job, assigned_compute_resources, assigned_burst_buffers))
-
-            compute = sum(len(compute_resources)
-                          for _, compute_resources, _ in curr_perm_entries)
+        best_plan = []  # (job, compute, burst_buffer)
+        for job_permutation in initial_permutations:
+            plan = self.find_jobs_to_execute(job_permutation)
+            compute = sum(len(compute_resources) for _, _, compute_resources, _ in plan)
             storage = sum(len(storage_resources) * job.profile.bb
-                          for job, _, storage_resources in curr_perm_entries)
-            curr_score = (compute, storage) \
-                if queue_util_ratio < balance_factor \
+                          for job, _, _, storage_resources in plan)
+            score = (compute, storage) \
+                if storage_queue_util < balance_factor * compute_queue_util \
                 else (storage, compute)
-            if curr_score > best_score:
-                best_score = curr_score
-                best_perm_entries = curr_perm_entries
-            for compute_allocation in temporary_allocations:
-                job = compute_allocation.job
-                self._free_burst_buffers(job)
-                compute_allocation.remove_all_resources()
+            if score > best_score:
+                best_score = score
+                best_plan = plan
 
-        for job, assigned_compute_resources, assigned_burst_buffers in best_perm_entries:
+        if simulated_annealing:
+            pass
+
+        for job, _, assigned_compute_resources, assigned_burst_buffers in best_plan:
             self.schedule_job(job, assigned_compute_resources, assigned_burst_buffers)
 
-        for compute_allocation in reserved_temporary_allocations:
-            job = compute_allocation.job
-            self._free_burst_buffers(job)
-            compute_allocation.remove_all_resources()
+        self.free_allocations(priority_allocations)
+
+    def find_jobs_to_execute(self, jobs) -> ExecutionPlan:
+        plan = []
+        allocations = []
+        for job in jobs:
+            assigned_compute_resources, assigned_burst_buffers = self._find_all_resources(job)
+            if assigned_compute_resources and assigned_burst_buffers:
+                self._allocate_burst_buffers(
+                    start=self.time,
+                    end=self.time + job.requested_time,
+                    assigned_burst_buffers=assigned_burst_buffers,
+                    job=job
+                )
+                allocations.append(Allocation(
+                    start_time=self.time,
+                    walltime=job.requested_time,
+                    resources=assigned_compute_resources,
+                    job=job
+                ))
+                plan.append((job, self.time, assigned_compute_resources, assigned_burst_buffers))
+        self.free_allocations(allocations)
+        return plan
 
     def plan_schedule(
             self,
@@ -1022,6 +995,13 @@ class AllocOnlyScheduler(Scheduler):
         For 'node_42' will return 42.
         """
         return ResourceId(int(node_name.split('_')[-1]))
+
+
+class MaxutilAnnealer(Annealer):
+    def __init__(self, state, scheduler, maximise_compute):
+        super().__init__(state)
+        self.scheduler: AllocOnlyScheduler = scheduler
+        self.maximise_compute = maximise_compute
 
 
 class PlanBasedAnnealer(Annealer):
