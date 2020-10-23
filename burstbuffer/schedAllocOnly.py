@@ -24,7 +24,8 @@ class SchedAllocOnly(AllocOnlyScheduler):
         elif self.algorithm == 'plan':
             self.plan_schedule(
                 reservation_depth=self.backfilling_reservation_depth,
-                priority_policy=self.priority_policy
+                priority_policy=self.priority_policy,
+                simulated_annealing=self.simulated_annealing
             )
         else:
             assert False

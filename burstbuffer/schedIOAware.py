@@ -29,7 +29,8 @@ class SchedIOAware(IOAwareScheduler):
             self.plan_schedule(
                 jobs=jobs,
                 reservation_depth=self.backfilling_reservation_depth,
-                priority_policy=self.priority_policy
+                priority_policy=self.priority_policy,
+                simulated_annealing=self.simulated_annealing
             )
         else:
             assert False

@@ -1,11 +1,12 @@
 from collections import Counter
 from itertools import permutations
-from math import factorial, floor, ceil, inf
+from math import factorial, floor, ceil, inf, e
 from operator import itemgetter, attrgetter
-from random import seed, randint, shuffle
+from random import seed, randint, random, shuffle
 from typing import Optional, List, Dict, Callable, Tuple, Iterable, Iterator
 from tqdm import tqdm
 from sortedcontainers import SortedSet
+from simanneal import Annealer
 import z3
 
 from batsim.batsim import Batsim
@@ -76,6 +77,7 @@ class AllocOnlyScheduler(Scheduler):
             'largest', 'smallest', 'ratio',
             'maxsort', 'maxperm',
             'sum', 'square', 'makespan']
+        self.simulated_annealing = bool(options['simulated_annealing'])
 
         # Resource initialisation
         self._burst_buffers = Resources()
@@ -534,16 +536,32 @@ class AllocOnlyScheduler(Scheduler):
             self._free_burst_buffers(job)
             compute_allocation.remove_all_resources()
 
-    def plan_schedule(self, jobs: Jobs = None, reservation_depth=1, priority_policy='sum'):
+    def plan_schedule(
+            self,
+            jobs: Jobs = None,
+            reservation_depth=1,
+            priority_policy='sum',
+            simulated_annealing=False
+    ):
         if jobs is None:
             jobs = self.jobs.runnable
 
+        def sum_waiting_time(execution_plan: ExecutionPlan):
+            return sum(start_time - job.submit_time for job, start_time, _, _ in execution_plan)
+
+        def sum_square_waiting_time(execution_plan: ExecutionPlan):
+            return sum(
+                (start_time - job.submit_time) ** 2 for job, start_time, _, _ in execution_plan)
+
+        def expected_queue_makespan(execution_plan: ExecutionPlan):
+            return max(start_time + job.requested_time for job, start_time, _, _ in execution_plan)
+
         if priority_policy == 'sum':
-            score_function = self._sum_waiting_time
+            score_function = sum_waiting_time
         elif priority_policy == 'square':
-            score_function = self._sum_square_waiting_time
+            score_function = sum_square_waiting_time
         elif priority_policy == 'makespan':
-            score_function = self._expected_queue_makespan
+            score_function = expected_queue_makespan
         else:
             assert False
 
@@ -553,33 +571,45 @@ class AllocOnlyScheduler(Scheduler):
         if not remaining_jobs:
             return
 
-        _, priority_allocations = self._create_execution_plan(priority_jobs)
+        _, priority_allocations = self.create_execution_plan(priority_jobs)
 
         if len(remaining_jobs) == 1:
             initial_permutations = []
             self.filler_schedule(remaining_jobs)
-        elif len(remaining_jobs) <= 4:
+            simulated_annealing = False
+        elif len(remaining_jobs) <= 6:
             initial_permutations = permutations(remaining_jobs)
+            simulated_annealing = False
         else:
             initial_permutations = self._sort_iterator(remaining_jobs)
 
         best_score = inf
         best_plan = []
         for job_permutation in initial_permutations:
-            plan, allocations = self._create_execution_plan(job_permutation)
+            plan, allocations = self.create_execution_plan(job_permutation)
+            self.free_allocations(allocations)
             score = score_function(plan)
             if score < best_score:
                 best_score = score
                 best_plan = plan
-            self._free_allocations(allocations)
+
+        if simulated_annealing:
+            annealer = PlanBasedAnnealer(
+                state=([job for job, _, _, _ in best_plan], best_plan),
+                scheduler=self,
+                score_function=score_function
+            )
+            auto_params = annealer.auto(minutes=0.2, steps=10)
+            annealer.set_schedule(auto_params)
+            (_, best_plan), best_score = annealer.anneal()
 
         for job, start_time, assigned_compute_resources, assigned_burst_buffers in best_plan:
             if start_time == self.time:
                 self.schedule_job(job, assigned_compute_resources, assigned_burst_buffers)
 
-        self._free_allocations(priority_allocations)
+        self.free_allocations(priority_allocations)
 
-    def _create_execution_plan(self, jobs: Jobs) -> Tuple[ExecutionPlan, List[Allocation]]:
+    def create_execution_plan(self, jobs) -> Tuple[ExecutionPlan, List[Allocation]]:
         plan = []
         allocations = []
         allocation_end_times = SortedSet(self._get_burst_buffer_allocation_end_times())
@@ -630,26 +660,11 @@ class AllocOnlyScheduler(Scheduler):
         assert len(plan) == len(jobs)
         return plan, allocations
 
-    def _free_allocations(self, allocations: List[Allocation]):
+    def free_allocations(self, allocations: List[Allocation]):
         for compute_allocation in allocations:
             job = compute_allocation.job
             self._free_burst_buffers(job)
             compute_allocation.remove_all_resources()
-
-    @staticmethod
-    def _sum_waiting_time(execution_plan: ExecutionPlan):
-        return sum(start_time - job.submit_time for job, start_time, _, _ in execution_plan)
-
-    @staticmethod
-    def _sum_square_waiting_time(execution_plan: ExecutionPlan):
-        return sum((start_time - job.submit_time) ** 2 for job, start_time, _, _ in execution_plan)
-
-    @staticmethod
-    def _expected_queue_makespan(execution_plan: ExecutionPlan):
-        return max(start_time + job.requested_time for job, start_time, _, _ in execution_plan)
-
-    def _simulated_annealing(self):
-        pass
 
     @staticmethod
     def _permutation_iterator(jobs: Jobs) -> Iterator[Jobs]:
@@ -1007,3 +1022,33 @@ class AllocOnlyScheduler(Scheduler):
         For 'node_42' will return 42.
         """
         return ResourceId(int(node_name.split('_')[-1]))
+
+
+class PlanBasedAnnealer(Annealer):
+    """State is a tuple (job_permutation, execution_plan)."""
+    updates = 0
+
+    def __init__(self, state, scheduler, score_function):
+        super().__init__(state)
+        self.scheduler: AllocOnlyScheduler = scheduler
+        self.score_function = score_function
+
+    def move(self):
+        jobs, _ = self.state
+        remove_index = randint(0, len(jobs) - 1)
+        insert_index = randint(0, len(jobs) - 2)
+        jobs.insert(insert_index, jobs.pop(remove_index))
+        plan, allocations = self.scheduler.create_execution_plan(jobs)
+        self.scheduler.free_allocations(allocations)
+        self.state = jobs, plan
+
+    def energy(self):
+        _, plan = self.state
+        return self.score_function(plan)
+
+    def copy_state(self, state):
+        jobs, plan = state
+        return jobs[:], plan
+
+    def update(self, *args, **kwargs):
+        pass
