@@ -19,7 +19,7 @@ from procset import ProcSet
 
 from .types import *
 from .storage import StorageResource
-from .model import read_config, Platform
+from .platform import read_config, Platform
 
 
 # Convention
