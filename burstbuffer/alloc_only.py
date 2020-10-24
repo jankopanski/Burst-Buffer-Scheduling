@@ -1,6 +1,6 @@
 from collections import Counter
 from itertools import permutations
-from math import factorial, floor, ceil, inf, e
+from math import factorial, floor, ceil, inf, exp
 from operator import itemgetter, attrgetter
 from random import seed, randint, random, shuffle
 from typing import Optional, List, Dict, Callable, Tuple, Iterable, Iterator
@@ -76,7 +76,7 @@ class AllocOnlyScheduler(Scheduler):
             None, 'sjf',
             'largest', 'smallest', 'ratio',
             'maxsort', 'maxperm',
-            'sum', 'square', 'makespan']
+            'sum', 'square', 'start', 'makespan']
         self.simulated_annealing = bool(options['simulated_annealing'])
 
         # Resource initialisation
@@ -519,20 +519,24 @@ class AllocOnlyScheduler(Scheduler):
         if jobs is None:
             jobs = self.jobs.runnable
 
-        def sum_waiting_time(execution_plan: ExecutionPlan):
-            return sum(start_time - job.submit_time for job, start_time, _, _ in execution_plan)
+        def sum_waiting_time(plan: ExecutionPlan):
+            return sum(start_time - job.submit_time for job, start_time, _, _ in plan)
 
-        def sum_square_waiting_time(execution_plan: ExecutionPlan):
-            return sum(
-                (start_time - job.submit_time) ** 2 for job, start_time, _, _ in execution_plan)
+        def sum_square_waiting_time(plan: ExecutionPlan):
+            return sum((start_time - job.submit_time) ** 2 for job, start_time, _, _ in plan)
 
-        def expected_queue_makespan(execution_plan: ExecutionPlan):
-            return max(start_time + job.requested_time for job, start_time, _, _ in execution_plan)
+        def sum_start_time(plan: ExecutionPlan):
+            return sum(start_time - self.time for _, start_time, _, _ in plan)
+
+        def expected_queue_makespan(plan: ExecutionPlan):
+            return max(start_time + job.requested_time - self.time for job, start_time, _, _ in plan)
 
         if priority_policy == 'sum':
             score_function = sum_waiting_time
         elif priority_policy == 'square':
             score_function = sum_square_waiting_time
+        elif priority_policy == 'start':
+            score_function = sum_start_time
         elif priority_policy == 'makespan':
             score_function = expected_queue_makespan
         else:
@@ -547,34 +551,74 @@ class AllocOnlyScheduler(Scheduler):
         _, priority_allocations = self.create_execution_plan(priority_jobs)
 
         if len(remaining_jobs) == 1:
-            initial_permutations = []
+            job_permutations = []
             self.filler_schedule(remaining_jobs)
             simulated_annealing = False
         elif len(remaining_jobs) <= 6:
-            initial_permutations = permutations(remaining_jobs)
+            job_permutations = permutations(remaining_jobs)
             simulated_annealing = False
         else:
-            initial_permutations = self._sort_iterator(remaining_jobs)
+            job_permutations = self._sort_iterator(remaining_jobs)
 
         best_score = inf
+        worst_score = -inf
         best_plan = []
-        for job_permutation in initial_permutations:
+        for job_permutation in job_permutations:
             plan, allocations = self.create_execution_plan(job_permutation)
             self.free_allocations(allocations)
             score = score_function(plan)
             if score < best_score:
                 best_score = score
                 best_plan = plan
+            worst_score = max(worst_score, score)
+        # end = time()
+        # print(len(remaining_jobs), end - start)
 
         if simulated_annealing:
-            annealer = PlanBasedAnnealer(
-                state=([job for job, _, _, _ in best_plan], best_plan),
-                scheduler=self,
-                score_function=score_function
-            )
-            auto_params = annealer.auto(minutes=0.2, steps=10)
-            annealer.set_schedule(auto_params)
-            (_, best_plan), best_score = annealer.anneal()
+            temperature = worst_score - best_score
+            if temperature == 0:
+                temperature = 0.1 * best_score
+            decay = 0.9
+            decay_steps = 100
+            const_temp_steps = 10
+            # decay = (threshold_temperature / temperature) ** (1. / decay_steps)
+            perm = [job for job, _, _, _ in best_plan]
+            previous_score = best_score
+
+            # print('best_score: {}, init_temp: {}'.format(best_score, temperature))
+            # from time import time
+            # start = time()
+            for _ in range(decay_steps):
+                for _ in range(const_temp_steps):
+                    # Transition: select random index and swap neighbour jobs
+                    index = randint(0, len(perm) - 2)
+                    perm[index], perm[index + 1] = perm[index + 1], perm[index]
+                    plan, allocations = self.create_execution_plan(perm)
+                    self.free_allocations(allocations)
+                    score = score_function(plan)
+                    # print('prev: {}, score: {}, temp: {}, prob: {}'.format(previous_score, score, temperature, probability))
+                    if score < best_score:
+                        previous_score = score
+                        best_score = score
+                        best_plan = plan
+                    elif score < previous_score or random() < exp((previous_score - score) / temperature):
+                        # Accept new state
+                        previous_score = score
+                    else:
+                        # Return to previous state
+                        perm[index], perm[index + 1] = perm[index + 1], perm[index]
+                temperature *= decay
+            # end = time()
+            # print('best_score: {}, previous_score: {}, temp: {}, time: {}'.format(best_score, previous_score, temperature, end - start))
+
+            # annealer = PlanBasedAnnealer(
+            #     state=([job for job, _, _, _ in best_plan], best_plan),
+            #     scheduler=self,
+            #     score_function=score_function
+            # )
+            # auto_params = annealer.auto(minutes=0.2, steps=10)
+            # annealer.set_schedule(auto_params)
+            # (_, best_plan), best_score = annealer.anneal()
 
         for job, start_time, assigned_compute_resources, assigned_burst_buffers in best_plan:
             if start_time == self.time:
