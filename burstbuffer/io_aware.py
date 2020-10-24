@@ -7,7 +7,7 @@ from procset import ProcSet
 
 from .alloc_only import AllocOnlyScheduler
 from .storage import StorageResource, StorageAllocation
-from .model import GFLOPS
+from .constants import GFLOPS
 
 
 class JobPhase(Enum):
