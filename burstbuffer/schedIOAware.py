@@ -23,7 +23,8 @@ class SchedIOAware(IOAwareScheduler):
             self.maxutil_schedule(
                 jobs=jobs,
                 reservation_depth=self.backfilling_reservation_depth,
-                balance_factor=self.balance_factor
+                balance_factor=self.balance_factor,
+                simulated_annealing=self.simulated_annealing
             )
         elif self.algorithm == 'plan':
             self.plan_schedule(
