@@ -439,11 +439,17 @@ class AllocOnlyScheduler(Scheduler):
         if jobs is None:
             jobs = self.jobs.runnable
 
+        def mean_waiting_time(plan: ExecutionPlan):
+            if not plan:
+                return 0
+            return sum(start_time - job.submit_time for job, start_time, _, _ in plan) / len(plan)
+
         def system_utilisation(optimise_compute, plan: ExecutionPlan):
             compute = sum(len(compute_resources) for _, _, compute_resources, _ in plan)
             storage = sum(len(storage_resources) * job.profile.bb
                           for job, _, _, storage_resources in plan)
-            return (compute, storage) if optimise_compute else (storage, compute)
+            wait_time = mean_waiting_time(plan)
+            return (compute, storage, wait_time) if optimise_compute else (storage, compute, wait_time)
 
         compute_queue_util = sum(job.requested_resources for job in jobs) / self.platform.nb_res
         storage_queue_util = sum(
@@ -470,76 +476,79 @@ class AllocOnlyScheduler(Scheduler):
         _, priority_allocations = self.create_execution_plan(priority_jobs)
 
         if len(remaining_jobs) == 1:
-            job_permutations = []
             self.filler_schedule(remaining_jobs)
-            simulated_annealing = False
-        elif len(remaining_jobs) <= 6:
-            job_permutations = permutations(remaining_jobs)
-            simulated_annealing = False
+            self.free_allocations(priority_allocations)
+            return
         else:
-            job_permutations = self._sort_iterator(remaining_jobs)
+            # Check if any jobs could be started
+            plan, _ = self.find_jobs_to_execute(remaining_jobs)
+            if score_function(plan) == (0, 0, 0):
+                self.free_allocations(priority_allocations)
+                return
+            if len(remaining_jobs) <= 6:
+                job_permutations = permutations(remaining_jobs)
+                simulated_annealing = False
+            else:
+                job_permutations = self._sort_iterator(remaining_jobs)
 
-        best_score = (-1, -1)
-        worst_score = (inf, inf)
+        best_score = (-1, -1, -1)
         best_plan = []
-        best_permutation = None# (job, time, compute_resources, burst_buffers)
+        best_permutation = None
+        best_last_index = None
         for job_permutation in job_permutations:
-            plan = self.find_jobs_to_execute(job_permutation)
+            plan, last_index = self.find_jobs_to_execute(job_permutation)
             score = score_function(plan)
             if score > best_score:
                 best_score = score
                 best_plan = plan
                 best_permutation = job_permutation
-            worst_score = min(worst_score, score)
+                best_last_index = last_index
 
+        assert best_score > (0, 0, 0)
         if simulated_annealing:
-            print(best_score, worst_score)
-            temperature = best_score[0] - worst_score[0]
-            if temperature == 0:
-                temperature = 0.1 * best_score[0]
-            decay = 0.9
-            decay_steps = 100
-            const_temp_steps = 10
-            # decay = (threshold_temperature / temperature) ** (1. / decay_steps)
+            # old_best = best_score
+            max_steps = 5000
+            steps = 0
             perm = list(best_permutation)
-            previous_score = best_score
-
-            print('best_score: {}, init_temp: {}'.format(best_score, temperature))
-            from time import time
-            start = time()
-            # Here we maximise energy, instead of traditional minimisation
-            for _ in range(decay_steps):
-                for _ in range(const_temp_steps):
-                    # Transition: select random index and swap neighbour jobs
-                    index = randint(0, len(perm) - 2)
-                    perm[index], perm[index + 1] = perm[index + 1], perm[index]
-                    plan = self.find_jobs_to_execute(perm)
-                    score = score_function(plan)
-                    # print('prev: {}, score: {}, temp: {}, prob: {}'.format(previous_score, score, temperature, probability))
-                    if score > best_score:
-                        previous_score = score
-                        best_score = score
-                        best_plan = plan
-                    elif score > previous_score or \
-                            random() < exp((score[0] - previous_score[0]) / temperature):
-                        # Accept new state
-                        previous_score = score
-                    else:
-                        # Return to previous state
-                        perm[index], perm[index + 1] = perm[index + 1], perm[index]
-                temperature *= decay
-            end = time()
-            print('best_score: {}, previous_score: {}, temp: {}, time: {}'.format(best_score, previous_score, temperature, end - start))
+            # from time import time
+            # start = time()
+            while steps < max_steps:
+                new_best = False
+                for distance in range(1, len(remaining_jobs)):
+                    for index in range(min(best_last_index + 1, len(remaining_jobs) - distance)):
+                        steps += 1
+                        if steps >= max_steps:
+                            break
+                        perm[index], perm[index + distance] = perm[index + distance], perm[index]
+                        plan, last_index = self.find_jobs_to_execute(perm)
+                        score = score_function(plan)
+                        if score > best_score:
+                            # Accept new permutation
+                            best_score = score
+                            best_plan = plan
+                            best_last_index = last_index
+                            new_best = True
+                            break
+                        # Reject new permutation
+                        perm[index], perm[index + distance] = perm[index + distance], perm[index]
+                    if new_best or steps >= max_steps:
+                        break
+                if not new_best:
+                    break
+            # end = time()
+            # if best_score > old_best:
+            #     print('IMPROVE!!!', old_best, best_score, end-start)
 
         for job, _, assigned_compute_resources, assigned_burst_buffers in best_plan:
             self.schedule_job(job, assigned_compute_resources, assigned_burst_buffers)
 
         self.free_allocations(priority_allocations)
 
-    def find_jobs_to_execute(self, jobs) -> ExecutionPlan:
+    def find_jobs_to_execute(self, jobs) -> Tuple[ExecutionPlan, int]:
         plan = []
         allocations = []
-        for job in jobs:
+        last_selected_index = -1
+        for i, job in enumerate(jobs):
             assigned_compute_resources, assigned_burst_buffers = self._find_all_resources(job)
             if assigned_compute_resources and assigned_burst_buffers:
                 self._allocate_burst_buffers(
@@ -555,8 +564,9 @@ class AllocOnlyScheduler(Scheduler):
                     job=job
                 ))
                 plan.append((job, self.time, assigned_compute_resources, assigned_burst_buffers))
+                last_selected_index = i
         self.free_allocations(allocations)
-        return plan
+        return plan, last_selected_index
 
     def plan_schedule(
             self,
