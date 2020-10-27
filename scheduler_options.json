@@ -6,7 +6,7 @@
   "future_burst_buffer_reservation": true,
   "backfilling_reservation_depth": 1,
   "priority_policy": "sjf",
-  "simulated_annealing": false,
+  "optimisation": false,
   "balance_factor": 1,
   "compute_threshold": 2,
   "storage_threshold": 2,

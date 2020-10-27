@@ -78,7 +78,7 @@ class AllocOnlyScheduler(Scheduler):
             'largest', 'smallest', 'ratio',
             'maxsort', 'maxperm',
             'sum', 'square', 'start', 'makespan']
-        self.simulated_annealing = bool(options['simulated_annealing'])
+        self.optimisation = bool(options['simulated_annealing'])
 
         # Resource initialisation
         self._burst_buffers = Resources()
@@ -434,7 +434,7 @@ class AllocOnlyScheduler(Scheduler):
             jobs: Jobs = None,
             reservation_depth=1,
             balance_factor=1,
-            simulated_annealing=False
+            optimisation=False
     ):
         if jobs is None:
             jobs = self.jobs.runnable
@@ -487,7 +487,7 @@ class AllocOnlyScheduler(Scheduler):
                 return
             if len(remaining_jobs) <= 6:
                 job_permutations = permutations(remaining_jobs)
-                simulated_annealing = False
+                optimisation = False
             else:
                 job_permutations = self._sort_iterator(remaining_jobs)
 
@@ -505,7 +505,7 @@ class AllocOnlyScheduler(Scheduler):
                 best_last_index = last_index
 
         assert best_score > (0, 0, 0)
-        if simulated_annealing:
+        if optimisation:
             # old_best = best_score
             max_steps = 5000
             steps = 0
@@ -573,7 +573,7 @@ class AllocOnlyScheduler(Scheduler):
             jobs: Jobs = None,
             reservation_depth=1,
             priority_policy='sum',
-            simulated_annealing=False
+            optimisation=False
     ):
         if jobs is None:
             jobs = self.jobs.runnable
@@ -621,7 +621,7 @@ class AllocOnlyScheduler(Scheduler):
                 return
             if len(remaining_jobs) <= 5:
                 job_permutations = permutations(remaining_jobs)
-                simulated_annealing = False
+                optimisation = False
             else:
                 job_permutations = self._sort_iterator(remaining_jobs)
 
@@ -639,7 +639,7 @@ class AllocOnlyScheduler(Scheduler):
         # end = time()
         # print(len(remaining_jobs), end - start)
 
-        if simulated_annealing:
+        if optimisation:
             temperature = worst_score - best_score
             if temperature == 0:
                 temperature = 0.1 * best_score
