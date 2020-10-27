@@ -123,7 +123,8 @@ class AllocOnlyScheduler(Scheduler):
 
         # self._resource_filter = None
         # self._resource_filter = consecutive_resources_filter
-        self._resource_filter = self._create_resource_filter()
+        # self._resource_filter = self._create_resource_filter()
+        self._resource_filter = self._simple_resource_filter()
 
         # Assume also that the number of job profiles equal to the number of static jobs.
         self._num_all_jobs = sum(len(workload_profiles) for workload_profiles
@@ -1072,6 +1073,29 @@ class AllocOnlyScheduler(Scheduler):
             filtered_resources = [res for res in resources if res.id in filtered_ids]
             assert len(filtered_resources) == min_entries
             return filtered_resources
+
+        return do_filter
+
+    def _simple_resource_filter(self) -> Callable[..., List[Resource]]:
+        def do_filter(
+                resources: List[Resource],
+                job: Job,
+                current_time: float,
+                max_entries: int,
+                min_entries: int,
+                **kwargs
+        ):
+            assert len(resources) >= min_entries
+            available_resources = {res.id: res for res in resources}
+            selected_compute_resources = []
+            for res_id in self._ordered_compute_resource_ids:
+                if res_id in available_resources:
+                    selected_compute_resources.append(available_resources[res_id])
+                    if len(selected_compute_resources) >= min_entries:
+                        break
+            assert len(selected_compute_resources) == min_entries
+            assert len(selected_compute_resources) == max_entries
+            return selected_compute_resources
 
         return do_filter
 
