@@ -78,7 +78,7 @@ class AllocOnlyScheduler(Scheduler):
             'largest', 'smallest', 'ratio',
             'maxsort', 'maxperm',
             'sum', 'square', 'start', 'makespan']
-        self.optimisation = bool(options['simulated_annealing'])
+        self.optimisation = bool(options['optimisation'])
 
         # Resource initialisation
         self._burst_buffers = Resources()
