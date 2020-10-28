@@ -4,6 +4,7 @@ from itertools import permutations
 from math import factorial, floor, ceil, inf, exp
 from operator import itemgetter, attrgetter
 from random import seed, randint, random, shuffle
+from time import time
 from typing import Optional, List, Dict, Callable, Tuple, Iterable, Iterator
 from tqdm import tqdm
 from sortedcontainers import SortedSet
@@ -645,17 +646,19 @@ class AllocOnlyScheduler(Scheduler):
             if temperature == 0:
                 temperature = 0.1 * best_score
             decay = 0.9
-            decay_steps = 40
+            decay_steps = 30
             const_temp_steps = 6
+            time_limit = 20
             # decay = (threshold_temperature / temperature) ** (1. / decay_steps)
             perm = [job for job, _, _, _ in best_plan]
             previous_score = best_score
 
             # print('best_score: {}, init_temp: {}'.format(best_score, temperature))
-            # from time import time
-            # start = time()
-            for _ in range(decay_steps):
-                for _ in range(const_temp_steps):
+            begin = time()
+            for i in range(decay_steps):
+                for j in range(const_temp_steps):
+                    if time() - begin > time_limit:
+                        break
                     # Transition: select random index and swap neighbour jobs
                     index1 = randint(0, len(perm) - 1)
                     index2 = randint(0, len(perm) - 1)
@@ -664,10 +667,9 @@ class AllocOnlyScheduler(Scheduler):
                     self.free_allocations(allocations)
                     score = round(score_function(plan))
                     # if score > previous_score:
-                    #     print(
-                    #         'outer: {}, inner: {}, score: {}, prev: {}, temp: {}, prob: {}'.format(
-                    #             i, j, score, previous_score, temperature,
-                    #             exp((previous_score - score) / temperature)))
+                    #     print('outer: {}, inner: {}, score: {}, prev: {}, temp: {}, prob: {}'.format(
+                    #         i, j, score, previous_score, temperature,
+                    #         exp((previous_score - score) / temperature)))
                     if score < best_score:
                         previous_score = score
                         best_score = score
@@ -680,8 +682,9 @@ class AllocOnlyScheduler(Scheduler):
                         # Return to previous state
                         perm[index1], perm[index2] = perm[index2], perm[index1]
                 temperature *= decay
-            # end = time()
-            # print('best_score: {}, previous_score: {}, temp: {}, time: {}'.format(best_score, previous_score, temperature, end - start))
+                if time() - begin > time_limit:
+                    break
+            # print('best_score: {}, previous_score: {}, temp: {}, time: {}'.format(best_score, previous_score, temperature, time() - begin))
 
             # annealer = PlanBasedAnnealer(
             #     state=([job for job, _, _, _ in best_plan], best_plan),
