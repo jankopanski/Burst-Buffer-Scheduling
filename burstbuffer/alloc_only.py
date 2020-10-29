@@ -1,6 +1,6 @@
 from collections import Counter
 from functools import partial
-from itertools import permutations
+from itertools import permutations, combinations
 from math import factorial, floor, ceil, inf, exp
 from operator import itemgetter, attrgetter
 from random import seed, randint, random, shuffle
@@ -63,7 +63,7 @@ class AllocOnlyScheduler(Scheduler):
         platform_config = read_config(options['platform'])
         self.platform = Platform(platform_config)
         self.algorithm = options['algorithm']
-        assert self.algorithm in ['fcfs', 'filler', 'backfill', 'moo', 'maxutil', 'plan']
+        assert self.algorithm in ['fcfs', 'filler', 'backfill', 'moo', 'maxutil', 'plan', 'window']
         self.allow_schedule_without_burst_buffer = bool(
             options['allow_schedule_without_burst_buffer'])
         self.future_burst_buffer_reservation = bool(options['future_burst_buffer_reservation'])
@@ -641,10 +641,8 @@ class AllocOnlyScheduler(Scheduler):
         # end = time()
         # print(len(remaining_jobs), end - start)
 
-        if optimisation:
+        if optimisation and best_score != worst_score:
             temperature = worst_score - best_score
-            if temperature == 0:
-                temperature = 0.1 * best_score
             decay = 0.9
             decay_steps = 30
             const_temp_steps = 6
@@ -681,7 +679,7 @@ class AllocOnlyScheduler(Scheduler):
                     else:
                         # Return to previous state
                         perm[index1], perm[index2] = perm[index2], perm[index1]
-                temperature *= decay
+                temperature = max(decay * temperature, 1)
                 if time() - begin > time_limit:
                     break
             # print('best_score: {}, previous_score: {}, temp: {}, time: {}'.format(best_score, previous_score, temperature, time() - begin))
@@ -792,6 +790,110 @@ class AllocOnlyScheduler(Scheduler):
         yield jobs
         for sort in jobs_sorts:
             yield jobs.sorted(field_getter=sort[1], reverse=sort[2])
+
+    def window_schedule(self, jobs: Jobs):
+        if len(jobs) <= 1:
+            self.filler_schedule(jobs)
+            return
+
+        max_window = 4
+        max_age = 50
+
+        window_size = min(len(jobs), max_window)
+        window_jobs = jobs[:window_size]
+        remaining_jobs = jobs[window_size:]
+
+        available_compute_resources = [res for res in self.resources.compute.free]
+        # Available burst buffer space rounded down to kB
+        available_burst_buffer = [bb.capacity - bb.currently_allocated_space()
+                                  for bb in self._burst_buffers]
+
+        def check_combination_satisfiability(job_indices):
+            job_subset = [job for i, job in enumerate(window_jobs) if i in job_indices]
+            num_jobs = len(job_subset)
+            # Number of requested compute nodes
+            N = [job.requested_resources for job in job_subset]
+            # Size of requested burst buffer per compute node rounded up to kB
+            B = [job.profile.bb for job in job_subset]
+
+            compute = sum(N)
+            storage = sum(n * b for n, b in zip(N, B))
+
+            if sum(N) > len(available_compute_resources):
+                return None
+
+            # Number of burst buffer allocations assigned to i-th job on j-th storage node
+            x = [[z3.Int('x_{}_{}'.format(i, j)) for j in range(self.platform.num_burst_buffers)]
+                 for i in range(num_jobs)]
+
+            s = z3.Solver()
+            for i in range(num_jobs):
+                for j in range(self.platform.num_burst_buffers):
+                    s.add(x[i][j] >= 0)
+                    s.add(x[i][j] <= N[i])
+            for i in range(num_jobs):
+                s.add(sum(x[i][j] for j in range(self.platform.num_burst_buffers)) == N[i])
+            for j in range(self.platform.num_burst_buffers):
+                s.add(sum(B[i] * x[i][j] for i in range(num_jobs)) <= available_burst_buffer[j])
+
+            if s.check() == z3.sat:
+                m = s.model()
+                # j is the index of storage node
+                burst_buffer_assignment = {}
+                for i, job in enumerate(job_subset):
+                    job_burst_buffers = {}
+                    for j, bb in enumerate(self._burst_buffers):
+                        num_assigned = m[x[i][j]].as_long()
+                        if num_assigned > 0:
+                            job_burst_buffers[bb] = num_assigned
+                    assert sum(num_assigned for num_assigned in job_burst_buffers.values()) == \
+                           job.requested_resources
+                    burst_buffer_assignment[job] = job_burst_buffers
+                return (compute, storage, 0), burst_buffer_assignment
+
+            else:
+                return None
+
+        best_score = (-1, -1, -1)
+        best_burst_buffer_assignment = None
+        open_combinations = [tuple(range(window_size))]
+        for _ in range(window_size):
+            if not open_combinations:
+                break
+            unsat_combinations = []
+
+            for job_indices in open_combinations:
+                result = check_combination_satisfiability(job_indices)
+                if result:
+                    score, burst_buffer_assignment = result
+                    if score > best_score:
+                        best_score = score
+                        best_burst_buffer_assignment = burst_buffer_assignment
+                else:
+                    unsat_combinations.append(job_indices)
+
+            open_combinations = set()
+            for com in unsat_combinations:
+                open_combinations |= set(combinations(com, len(com) - 1))
+
+        if best_burst_buffer_assignment is not None:
+            # Create assigment of burst buffer nodes to compute nodes
+            num_used = 0
+            for job,  job_burst_buffer_assigment in best_burst_buffer_assignment.items():
+                assigned_compute_resources = \
+                    available_compute_resources[num_used:num_used + job.requested_resources]
+                num_used += job.requested_resources
+                burst_buffer_list = []
+                for burst_buffer, num_assigned in job_burst_buffer_assigment.items():
+                    burst_buffer_list.extend([burst_buffer] * num_assigned)
+                assert len(assigned_compute_resources) == len(burst_buffer_list)
+                assigned_burst_buffers = {compute_node: burst_buffer
+                                          for compute_node, burst_buffer
+                                          in zip(assigned_compute_resources, burst_buffer_list)}
+                self.schedule_job(job, assigned_compute_resources, assigned_burst_buffers)
+
+        assert len(available_compute_resources) < self.platform.nb_res \
+               or best_burst_buffer_assignment
 
     def moo_schedule(self, jobs: Jobs = None):
         if jobs is None:

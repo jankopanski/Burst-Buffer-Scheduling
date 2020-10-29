@@ -33,5 +33,7 @@ class SchedIOAware(IOAwareScheduler):
                 priority_policy=self.priority_policy,
                 optimisation=self.optimisation
             )
+        elif self.algorithm == 'window':
+            self.window_schedule(jobs=jobs)
         else:
             assert False
