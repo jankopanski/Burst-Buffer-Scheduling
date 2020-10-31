@@ -843,7 +843,8 @@ class AllocOnlyScheduler(Scheduler):
             # Number of burst buffer allocations assigned to i-th job on j-th storage node
             x = [[z3.Int('x_{}_{}'.format(i, j), ctx) for j in range(self.platform.num_burst_buffers)]
                  for i in range(num_jobs)]
-            s = z3.Solver(ctx=ctx)
+            # s = z3.Solver(ctx=ctx)
+            s = z3.Tactic('qflia', ctx=ctx).solver()
             s.set(timeout=1000)  # milliseconds
 
             for i in range(num_jobs):
@@ -921,8 +922,8 @@ class AllocOnlyScheduler(Scheduler):
         assert len(available_compute_resources) < self.platform.nb_res \
                or best_burst_buffer_assignment
 
-        self.filler_schedule(jobs.runnable.sorted(attrgetter('requested_time')),
-                             abort_on_first_nonfitting=False)
+        # self.filler_schedule(jobs.runnable.sorted(attrgetter('requested_time')),
+        #                      abort_on_first_nonfitting=False)
 
     def moo_schedule(self, jobs: Jobs = None):
         if jobs is None:
