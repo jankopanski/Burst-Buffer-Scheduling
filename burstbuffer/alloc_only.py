@@ -1,4 +1,6 @@
 from collections import Counter
+from concurrent.futures.thread import ThreadPoolExecutor
+from concurrent.futures import TimeoutError
 from functools import partial
 from itertools import permutations, combinations
 from math import factorial, floor, ceil, inf, exp
@@ -791,24 +793,40 @@ class AllocOnlyScheduler(Scheduler):
         for sort in jobs_sorts:
             yield jobs.sorted(field_getter=sort[1], reverse=sort[2])
 
-    def window_schedule(self, jobs: Jobs):
+    def window_schedule(self, jobs: Jobs, balance_factor=1):
         if len(jobs) <= 1:
             self.filler_schedule(jobs)
             return
 
-        max_window = 4
+        max_window = 10
         max_age = 50
 
         window_size = min(len(jobs), max_window)
         window_jobs = jobs[:window_size]
-        remaining_jobs = jobs[window_size:]
 
         available_compute_resources = [res for res in self.resources.compute.free]
         # Available burst buffer space rounded down to kB
         available_burst_buffer = [bb.capacity - bb.currently_allocated_space()
                                   for bb in self._burst_buffers]
 
-        def check_combination_satisfiability(job_indices):
+        compute_queue_util = sum(job.requested_resources for job in jobs) / self.platform.nb_res
+        storage_queue_util = sum(
+            job.profile.bb * job.requested_resources for job in jobs) / \
+                             (self.platform.burst_buffer_capacity * self.platform.num_burst_buffers)
+
+        def mean_waiting_time(jobs: List[Job]):
+            return self.time - sum(job.submit_time for job in jobs) / len(jobs)
+
+        def score_function(jobs):
+            compute = sum(job.requested_resources for job in jobs)
+            storage = sum(job.requested_resources * job.profile.bb for job in jobs)
+            wait_time = mean_waiting_time(jobs)
+            # If storage utilisation in the queue is small than optimise compute.
+            return (compute, storage, wait_time) \
+                if storage_queue_util <= balance_factor * compute_queue_util \
+                else (storage, compute, wait_time)
+
+        def check_combination_satisfiability(job_indices, timeout=None):
             job_subset = [job for i, job in enumerate(window_jobs) if i in job_indices]
             num_jobs = len(job_subset)
             # Number of requested compute nodes
@@ -816,17 +834,20 @@ class AllocOnlyScheduler(Scheduler):
             # Size of requested burst buffer per compute node rounded up to kB
             B = [job.profile.bb for job in job_subset]
 
-            compute = sum(N)
-            storage = sum(n * b for n, b in zip(N, B))
-
             if sum(N) > len(available_compute_resources):
-                return None
+                return None, job_indices
 
+            score = score_function(job_subset)
+
+            # Solver - QF_LIA; http://smtlib.cs.uiowa.edu/logics.shtml
+            ctx = z3.Context()
             # Number of burst buffer allocations assigned to i-th job on j-th storage node
-            x = [[z3.Int('x_{}_{}'.format(i, j)) for j in range(self.platform.num_burst_buffers)]
+            x = [[z3.Int('x_{}_{}'.format(i, j), ctx) for j in range(self.platform.num_burst_buffers)]
                  for i in range(num_jobs)]
+            s = z3.Solver(ctx=ctx)
+            if timeout:
+                s.set(timeout=1000)  # milliseconds
 
-            s = z3.Solver()
             for i in range(num_jobs):
                 for j in range(self.platform.num_burst_buffers):
                     s.add(x[i][j] >= 0)
@@ -849,37 +870,49 @@ class AllocOnlyScheduler(Scheduler):
                     assert sum(num_assigned for num_assigned in job_burst_buffers.values()) == \
                            job.requested_resources
                     burst_buffer_assignment[job] = job_burst_buffers
-                return (compute, storage, 0), burst_buffer_assignment
+                return score, burst_buffer_assignment
 
             else:
-                return None
+                return None, job_indices
 
+        do_print = window_size > 20
+        start = time()
+        # if do_print: print('window size: {}'.format(window_size))
         best_score = (-1, -1, -1)
         best_burst_buffer_assignment = None
         open_combinations = [tuple(range(window_size))]
+
         for _ in range(window_size):
             if not open_combinations:
                 break
             unsat_combinations = []
 
-            for job_indices in open_combinations:
-                result = check_combination_satisfiability(job_indices)
-                if result:
-                    score, burst_buffer_assignment = result
+            # iter_start = time()
+            # results = map(check_combination_satisfiability, open_combinations)
+            with ThreadPoolExecutor(max_workers=16) as executor:
+                results = executor.map(check_combination_satisfiability, open_combinations)
+
+            for score, data in results:
+                if score:
                     if score > best_score:
                         best_score = score
-                        best_burst_buffer_assignment = burst_buffer_assignment
+                        best_burst_buffer_assignment = data
                 else:
-                    unsat_combinations.append(job_indices)
+                    unsat_combinations.append(data)
+            # iter_end = time()
+            # if do_print: print('iteration: {}, combination length: {}, total time: {}, avg time: {}'.format(i, len(job_indices), iter_end - iter_start, (iter_end - iter_start) / len(job_indices)))
 
             open_combinations = set()
-            for com in unsat_combinations:
-                open_combinations |= set(combinations(com, len(com) - 1))
+            for old_combination in unsat_combinations:
+                for new_combination in combinations(old_combination, len(old_combination) - 1):
+                    open_combinations.add(new_combination)
+
+        if do_print: print('window size: {}, scheduling time: {}'.format(window_size, time() - start))
 
         if best_burst_buffer_assignment is not None:
             # Create assigment of burst buffer nodes to compute nodes
             num_used = 0
-            for job,  job_burst_buffer_assigment in best_burst_buffer_assignment.items():
+            for job, job_burst_buffer_assigment in best_burst_buffer_assignment.items():
                 assigned_compute_resources = \
                     available_compute_resources[num_used:num_used + job.requested_resources]
                 num_used += job.requested_resources
