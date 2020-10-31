@@ -922,8 +922,8 @@ class AllocOnlyScheduler(Scheduler):
         assert len(available_compute_resources) < self.platform.nb_res \
                or best_burst_buffer_assignment
 
-        # self.filler_schedule(jobs.runnable.sorted(attrgetter('requested_time')),
-        #                      abort_on_first_nonfitting=False)
+        self.filler_schedule(jobs.runnable.sorted(attrgetter('requested_time')),
+                             abort_on_first_nonfitting=False)
 
     def moo_schedule(self, jobs: Jobs = None):
         if jobs is None:
