@@ -810,9 +810,8 @@ class AllocOnlyScheduler(Scheduler):
                                   for bb in self._burst_buffers]
 
         compute_queue_util = sum(job.requested_resources for job in jobs) / self.platform.nb_res
-        storage_queue_util = sum(
-            job.profile.bb * job.requested_resources for job in jobs) / \
-                             (self.platform.burst_buffer_capacity * self.platform.num_burst_buffers)
+        storage_queue_util = sum(job.profile.bb * job.requested_resources for job in jobs) / \
+            (self.platform.burst_buffer_capacity * self.platform.num_burst_buffers)
 
         def mean_waiting_time(jobs: List[Job]):
             return self.time - sum(job.submit_time for job in jobs) / len(jobs)
@@ -826,7 +825,7 @@ class AllocOnlyScheduler(Scheduler):
                 if storage_queue_util <= balance_factor * compute_queue_util \
                 else (storage, compute, wait_time)
 
-        def check_combination_satisfiability(job_indices, timeout=None):
+        def check_combination_satisfiability(job_indices):
             job_subset = [job for i, job in enumerate(window_jobs) if i in job_indices]
             num_jobs = len(job_subset)
             # Number of requested compute nodes
@@ -845,8 +844,7 @@ class AllocOnlyScheduler(Scheduler):
             x = [[z3.Int('x_{}_{}'.format(i, j), ctx) for j in range(self.platform.num_burst_buffers)]
                  for i in range(num_jobs)]
             s = z3.Solver(ctx=ctx)
-            if timeout:
-                s.set(timeout=1000)  # milliseconds
+            s.set(timeout=1000)  # milliseconds
 
             for i in range(num_jobs):
                 for j in range(self.platform.num_burst_buffers):
@@ -875,9 +873,6 @@ class AllocOnlyScheduler(Scheduler):
             else:
                 return None, job_indices
 
-        do_print = window_size > 20
-        start = time()
-        # if do_print: print('window size: {}'.format(window_size))
         best_score = (-1, -1, -1)
         best_burst_buffer_assignment = None
         open_combinations = [tuple(range(window_size))]
@@ -887,10 +882,11 @@ class AllocOnlyScheduler(Scheduler):
                 break
             unsat_combinations = []
 
-            # iter_start = time()
-            # results = map(check_combination_satisfiability, open_combinations)
-            with ThreadPoolExecutor(max_workers=16) as executor:
-                results = executor.map(check_combination_satisfiability, open_combinations)
+            if len(open_combinations) <= 1:
+                results = map(check_combination_satisfiability, open_combinations)
+            else:
+                with ThreadPoolExecutor(max_workers=64) as executor:
+                    results = executor.map(check_combination_satisfiability, open_combinations)
 
             for score, data in results:
                 if score:
@@ -899,15 +895,11 @@ class AllocOnlyScheduler(Scheduler):
                         best_burst_buffer_assignment = data
                 else:
                     unsat_combinations.append(data)
-            # iter_end = time()
-            # if do_print: print('iteration: {}, combination length: {}, total time: {}, avg time: {}'.format(i, len(job_indices), iter_end - iter_start, (iter_end - iter_start) / len(job_indices)))
 
             open_combinations = set()
             for old_combination in unsat_combinations:
                 for new_combination in combinations(old_combination, len(old_combination) - 1):
                     open_combinations.add(new_combination)
-
-        if do_print: print('window size: {}, scheduling time: {}'.format(window_size, time() - start))
 
         if best_burst_buffer_assignment is not None:
             # Create assigment of burst buffer nodes to compute nodes
@@ -925,8 +917,12 @@ class AllocOnlyScheduler(Scheduler):
                                           in zip(assigned_compute_resources, burst_buffer_list)}
                 self.schedule_job(job, assigned_compute_resources, assigned_burst_buffers)
 
+        # Assertion: when no resources are used, some job must be picked for execution
         assert len(available_compute_resources) < self.platform.nb_res \
                or best_burst_buffer_assignment
+
+        self.filler_schedule(jobs.runnable.sorted(attrgetter('requested_time')),
+                             abort_on_first_nonfitting=False)
 
     def moo_schedule(self, jobs: Jobs = None):
         if jobs is None:
