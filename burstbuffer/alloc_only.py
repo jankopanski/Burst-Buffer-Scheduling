@@ -82,6 +82,7 @@ class AllocOnlyScheduler(Scheduler):
             'maxsort', 'maxperm',
             'sum', 'square', 'start', 'makespan']
         self.optimisation = bool(options['optimisation'])
+        self.window_size = int(options['window_size'])
 
         # Resource initialisation
         self._burst_buffers = Resources()
@@ -793,15 +794,14 @@ class AllocOnlyScheduler(Scheduler):
         for sort in jobs_sorts:
             yield jobs.sorted(field_getter=sort[1], reverse=sort[2])
 
-    def window_schedule(self, jobs: Jobs, balance_factor=1):
+    def window_schedule(self, jobs: Jobs, max_window_size=1, balance_factor=1):
         if len(jobs) <= 1:
             self.filler_schedule(jobs)
             return
 
-        max_window = 10
         max_age = 50
 
-        window_size = min(len(jobs), max_window)
+        window_size = min(len(jobs), max_window_size)
         window_jobs = jobs[:window_size]
 
         available_compute_resources = [res for res in self.resources.compute.free]

@@ -34,6 +34,6 @@ class SchedIOAware(IOAwareScheduler):
                 optimisation=self.optimisation
             )
         elif self.algorithm == 'window':
-            self.window_schedule(jobs=jobs)
+            self.window_schedule(jobs=jobs, max_window_size=self.window_size)
         else:
             assert False
