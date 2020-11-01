@@ -96,6 +96,8 @@ class AllocOnlyScheduler(Scheduler):
         self.filler_not_enough_burst_buffer_count = 0
         self.backfill_not_enough_burst_buffer_count = 0
 
+        z3.open_log('z3_log')
+
     def on_init(self):
         # TODO: add a switch option
         # self._print_node_mapping()
@@ -854,6 +856,7 @@ class AllocOnlyScheduler(Scheduler):
             x = [[z3.Int('x_{}_{}'.format(i, j), ctx) for j in range(self.platform.num_burst_buffers)]
                  for i in range(num_jobs)]
             # s = z3.Solver(ctx=ctx)
+            # s = z3.Tactic('qflia', ctx=ctx).solver(logFile='z3_log')
             s = z3.Tactic('qflia', ctx=ctx).solver()
             s.set(timeout=1000)  # milliseconds
 
