@@ -800,9 +800,19 @@ class AllocOnlyScheduler(Scheduler):
             return
 
         max_age = 50
+        reservation_depth = 1
 
         window_size = min(len(jobs), max_window_size)
         window_jobs = jobs[:window_size]
+
+        mandatory_job_indices = set()
+        for i, job in enumerate(window_jobs):
+            if hasattr(job, 'age'):
+                job.age += 1
+                if i < reservation_depth and job.age >= max_age:
+                    mandatory_job_indices.add(i)
+            else:
+                job.age = 0
 
         available_compute_resources = [res for res in self.resources.compute.free]
         # Available burst buffer space rounded down to kB
@@ -886,7 +896,7 @@ class AllocOnlyScheduler(Scheduler):
             if len(open_combinations) <= 1:
                 results = map(check_combination_satisfiability, open_combinations)
             else:
-                with ThreadPoolExecutor(max_workers=64) as executor:
+                with ThreadPoolExecutor(max_workers=24) as executor:
                     results = executor.map(check_combination_satisfiability, open_combinations)
 
             for score, data in results:
@@ -900,7 +910,8 @@ class AllocOnlyScheduler(Scheduler):
             open_combinations = set()
             for old_combination in unsat_combinations:
                 for new_combination in combinations(old_combination, len(old_combination) - 1):
-                    open_combinations.add(new_combination)
+                    if not mandatory_job_indices or mandatory_job_indices <= set(new_combination):
+                        open_combinations.add(new_combination)
 
         if best_burst_buffer_assignment is not None:
             # Create assigment of burst buffer nodes to compute nodes
@@ -922,8 +933,15 @@ class AllocOnlyScheduler(Scheduler):
         assert len(available_compute_resources) < self.platform.nb_res \
                or best_burst_buffer_assignment
 
-        self.filler_schedule(jobs.runnable.sorted(attrgetter('requested_time')),
-                             abort_on_first_nonfitting=False)
+        backfilling_reservation_depth = 1 if jobs.first.age >= max_age and jobs.first.runnable \
+            else 0
+        self.backfill_schedule(
+            jobs=jobs.runnable,
+            reservation_depth=backfilling_reservation_depth,
+            priority_policy='sjf'
+        )
+        # self.filler_schedule(jobs.runnable.sorted(attrgetter('requested_time')),
+        #                      abort_on_first_nonfitting=False)
 
     def moo_schedule(self, jobs: Jobs = None):
         if jobs is None:
