@@ -182,13 +182,10 @@ class AllocOnlyScheduler(Scheduler):
         job.schedule(assigned_compute_resources)
 
     def filler_schedule(
-            self, jobs=None, abort_on_first_nonfitting=True, priority_policy=None) -> int:
+            self, jobs=None, abort_on_first_nonfitting=True) -> int:
         """Returns the number of scheduled jobs."""
         if jobs is None:
             jobs = self.jobs.runnable
-
-        if priority_policy == 'sjf':
-            jobs = jobs.sorted(attrgetter('requested_time'))
 
         num_scheduled = 0
         for job in jobs:

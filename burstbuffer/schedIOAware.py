@@ -1,3 +1,5 @@
+from operator import attrgetter
+
 from .io_aware import IOAwareScheduler
 
 
@@ -8,6 +10,8 @@ class SchedIOAware(IOAwareScheduler):
         # TODO: add a list of static jobs to scheduler
         jobs = self.jobs.static_job.runnable
         if self.algorithm == 'filler':
+            if self.priority_policy == 'sjf':
+                jobs = jobs.sorted(attrgetter('requested_time'))
             self.filler_schedule(jobs=jobs, abort_on_first_nonfitting=False)
         elif self.algorithm == 'fcfs':
             self.filler_schedule(jobs=jobs, abort_on_first_nonfitting=True)
