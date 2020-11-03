@@ -80,7 +80,7 @@ class AllocOnlyScheduler(Scheduler):
             None, 'sjf',
             'largest', 'smallest', 'ratio',
             'maxsort', 'maxperm',
-            'sum', 'square', 'start', 'makespan']
+            'sum', 'square', 'cube', 'start', 'makespan']
         self.optimisation = bool(options['optimisation'])
         self.window_size = int(options['window_size'])
 
@@ -181,10 +181,14 @@ class AllocOnlyScheduler(Scheduler):
             )
         job.schedule(assigned_compute_resources)
 
-    def filler_schedule(self, jobs=None, abort_on_first_nonfitting=True) -> int:
+    def filler_schedule(
+            self, jobs=None, abort_on_first_nonfitting=True, priority_policy=None) -> int:
         """Returns the number of scheduled jobs."""
         if jobs is None:
             jobs = self.jobs.runnable
+
+        if priority_policy == 'sjf':
+            jobs = jobs.sorted(attrgetter('requested_time'))
 
         num_scheduled = 0
         for job in jobs:
@@ -591,6 +595,9 @@ class AllocOnlyScheduler(Scheduler):
         def sum_square_waiting_time(plan: ExecutionPlan):
             return sum((start_time - job.submit_time) ** 2 for job, start_time, _, _ in plan)
 
+        def sum_cube_waiting_time(plan: ExecutionPlan):
+            return sum((start_time - job.submit_time) ** 3 for job, start_time, _, _ in plan)
+
         def sum_start_time(plan: ExecutionPlan):
             return sum(start_time - self.time for _, start_time, _, _ in plan)
 
@@ -601,6 +608,8 @@ class AllocOnlyScheduler(Scheduler):
             score_function = sum_waiting_time
         elif priority_policy == 'square':
             score_function = sum_square_waiting_time
+        elif priority_policy == 'cube':
+            score_function = sum_cube_waiting_time
         elif priority_policy == 'start':
             score_function = sum_start_time
         elif priority_policy == 'makespan':
