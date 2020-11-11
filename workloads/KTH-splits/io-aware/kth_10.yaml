@@ -1,0 +1,17 @@
+num_jobs: 2940  # Limit for the number of jobs to generate (null for no limit)
+from_job_number: 17077  # Job number in swf file from which generating starts (0 to start from the beginning)
+time_distribution_lambda: 0
+time_distribution_k: 0
+expected_log_num_nodes: 0
+stddev_log_num_nodes: 0
+expected_computations_per_node: 0  # GFLOPS
+stddev_computations_per_node: 0  # %
+lambda_scale_computations_per_node: 0
+multiply_factor_computations_per_node: 0  # GFLOPS
+expected_communication_per_node: 0.1  # GB
+stddev_communication_per_node: 0.2  # %
+expected_burst_buffer_per_node: 0  # GB
+stddev_burst_buffer_per_node: 0  # %
+multiply_factor_walltime: 0
+stddev_walltime: 0  # not a %
+multiply_factor_runtime: 40
