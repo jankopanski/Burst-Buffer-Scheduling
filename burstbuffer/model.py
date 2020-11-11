@@ -4,7 +4,7 @@ from json import dump
 
 from scipy import stats
 
-from .constants import GFLOPS, GB, KiB
+from .constants import GFLOPS, GB, MB, KiB
 
 
 class WorkloadModel:

@@ -4,7 +4,9 @@
 from argparse import ArgumentParser
 from os.path import basename, splitext
 
-from burstbuffer.model import Platform, WorkloadModel, read_config, MB
+from burstbuffer.platform import Platform, read_config
+from burstbuffer.model import WorkloadModel
+from burstbuffer.constants import MB
 from burstbuffer.swf import SWFJob
 
 parser = ArgumentParser()
@@ -30,7 +32,7 @@ first_submit_time = None
 with open(args.input_file) as input_file:
     for line in input_file:
         # Check if enough jobs were already processed
-        if model.num_jobs and len(jobs) == model.num_jobs:
+        if model.num_jobs and len(jobs) + num_ignored_jobs == model.num_jobs:
             break
 
         job = SWFJob.parse_line(line)
