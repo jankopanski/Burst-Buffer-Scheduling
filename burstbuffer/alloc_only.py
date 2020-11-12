@@ -162,6 +162,45 @@ class AllocOnlyScheduler(Scheduler):
         print('# backfill job schedulings with insufficient burst buffers: {}'.format(
             self.backfill_not_enough_burst_buffer_count))
 
+    def on_deadlock(self):
+        filename = 'deadlock-' + self.algorithm + '-' + str(self.priority_policy) + '-' + \
+                   str(self.backfilling_reservation_depth) + '.log'
+        with open(filename, 'w') as log:
+            log.write('Compute resources\n')
+            for compute_resource in self.resources.compute:
+                log.write('id: {}, name: {}, active: {}, is_allocated: {}\n'.format(
+                    compute_resource.id, compute_resource.name,
+                    compute_resource.active, compute_resource.is_allocated))
+                for allocation in compute_resource.allocations:
+                    log.write('start_time: {}, estimated_end_time: {}, walltime: {}\n'.format(
+                        allocation.start_time, allocation.estimated_end_time, allocation.walltime))
+            log.write('Storage resources\n')
+            for burst_buffer in self._burst_buffers:
+                log.write('id: {}, name: {}, capacity: {}, '
+                          'currently_allocated_space: {}, allocations: {}\n'.format(
+                    burst_buffer.id, burst_buffer.name,
+                    burst_buffer.capacity, burst_buffer.currently_allocated_space(),
+                    burst_buffer._job_allocations))
+            log.write('Running jobs\n')
+            for job in self.jobs.running:
+                log.write('id: {}, submit_time, {}, start_time: {}, '
+                          'requested_resources: {}, bb: {}, requested_time: {}, '
+                          'allocation start_time: {}, allocation estimated_end_time: {}, '
+                          'allocation walltime: {}'.format(
+                    job.id, job.submit_time, job.start_time, job.requested_resources,
+                    job.parent_job.profile.bb if job.parent_job else job.profile.bb,
+                    job.requested_time,
+                    job.allocation.start_time, job.allocation.estimated_end_time,
+                    job.allocation.walltime))
+            log.write('Open jobs\n')
+            for job in self.jobs.open:
+                log.write('id: {}, submit_time, {}, start_time: {}, '
+                          'requested_resources: {}, bb: {}, requested_time: {}, '.format(
+                    job.id, job.submit_time, job.start_time, job.requested_resources,
+                    job.parent_job.profile.bb if job.parent_job else job.profile.bb,
+                    job.requested_time))
+        super().on_deadlock()
+
     def schedule(self):
         raise NotImplementedError
 
