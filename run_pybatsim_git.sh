@@ -1,10 +1,5 @@
 #!/usr/bin/env bash
 
-[ -z "$(ls -A pybatsim/)" ] && git submodule update --init
-#[ ! -d "pybatsim" ] && git submodule update --init
-
-set -x
-
 # Run with arguments defined inside the script
 #./run_pybatsim_git.sh burstbuffer/schedAllocOnly.py platforms/dragonfly.yaml
 #scheduler_config="{\"platform\": \"$2\", \"progress_bar\": false}"
@@ -16,5 +11,11 @@ set -x
 
 # IOAwareScheduler
 #./run_pybatsim_git.sh burstbuffer/schedIOAware.py scheduler_options.json
+
+[ -z "$(ls -A pybatsim/)" ] && git submodule update --init
+
+source sim/bin/activate
+
+set -x
 
 python -O pybatsim/launcher.py -v warn -t 10000 "$1" -O "$2"
