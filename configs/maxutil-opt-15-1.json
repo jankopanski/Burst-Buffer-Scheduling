@@ -1,6 +1,6 @@
 {
   "platform": "platforms/dragonfly96.yaml",
-  "progress_bar": true,
+  "progress_bar": false,
   "debug": false,
   "algorithm": "maxutil",
   "allow_schedule_without_burst_buffer": false,
