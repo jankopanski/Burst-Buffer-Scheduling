@@ -55,7 +55,7 @@ class AllocOnlyScheduler(Scheduler):
             # Turn off Scheduler object logging to display a progress bar.
             # Logging should be turned off when progress bar is on.
             self._logger._logger.setLevel('WARNING')
-        self._disable_progress_bar = not options['progress_bar'] 
+        self._disable_progress_bar = not options['progress_bar']
 
         seed(42)
         self.allow_schedule = True
@@ -341,7 +341,7 @@ class AllocOnlyScheduler(Scheduler):
             self._maxutil_backfill(AllocOnlyScheduler._sort_iterator(remaining_jobs))
         elif priority_policy == 'maxperm':
             self._maxutil_backfill(AllocOnlyScheduler._permutation_iterator(remaining_jobs))
-        elif priority_policy:
+        elif priority_policy in ['largest', 'smallest', 'ratio']:
             self._balance_backfill(
                 jobs=remaining_jobs,
                 priority_policy=priority_policy,
