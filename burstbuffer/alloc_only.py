@@ -48,14 +48,14 @@ class AllocOnlyScheduler(Scheduler):
 
     def __init__(self, options):
         super().__init__(options=options)
-        if options['progress_bar']:
-            # To Turn off Batsim object logging a flag -v 'warn' needs to be passed to the launcher.
-            # Turns off Scheduler object logging to display a progress bar.
-            self._logger._logger.setLevel('WARNING')
-            self._disable_progress_bar = False
-        else:
-            self._disable_progress_bar = True
+        # To Turn off Batsim object logging a flag -v 'warn' needs to be passed to the launcher.
+        # Turn off event logging. It duplicates with scheduler logging.
         self._event_logger._logger.setLevel('WARNING')
+        if not options['debug']:
+            # Turn off Scheduler object logging to display a progress bar.
+            # Logging should be turned off when progress bar is on.
+            self._logger._logger.setLevel('WARNING')
+        self._disable_progress_bar = not options['progress_bar'] 
 
         seed(42)
         self.allow_schedule = True
