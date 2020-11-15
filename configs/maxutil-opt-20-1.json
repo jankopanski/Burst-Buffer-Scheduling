@@ -11,6 +11,7 @@
   "balance_factor": 2,
   "compute_threshold": 0,
   "storage_threshold": 0,
+  "window_size": 0,
   "max_num_compute_phases": 10,
   "target_compute_phase_size": 3600
 }

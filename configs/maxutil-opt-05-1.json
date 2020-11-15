@@ -8,7 +8,7 @@
   "backfilling_reservation_depth": 1,
   "priority_policy": null,
   "optimisation": true,
-  "balance_factor": 1,
+  "balance_factor": 0.5,
   "compute_threshold": 0,
   "storage_threshold": 0,
   "window_size": 0,
