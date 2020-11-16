@@ -841,13 +841,12 @@ class AllocOnlyScheduler(Scheduler):
         for sort in jobs_sorts:
             yield jobs.sorted(field_getter=sort[1], reverse=sort[2])
 
-    def window_schedule(self, jobs: Jobs, max_window_size=1, balance_factor=1):
+    def window_schedule(self, jobs: Jobs, max_window_size=1, balance_factor=1, reservation_depth=1):
         if len(jobs) <= 1:
             self.filler_schedule(jobs)
             return
 
         max_age = 50
-        reservation_depth = 1
 
         window_size = min(len(jobs), max_window_size)
         window_jobs = jobs[:window_size]

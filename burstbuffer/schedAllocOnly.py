@@ -28,5 +28,11 @@ class SchedAllocOnly(AllocOnlyScheduler):
                 priority_policy=self.priority_policy,
                 optimisation=self.optimisation
             )
+        elif self.algorithm == 'window':
+            self.window_schedule(
+                jobs=self.jobs.runnable,
+                max_window_size=self.window_size,
+                reservation_depth=self.backfilling_reservation_depth,
+            )
         else:
             assert False
