@@ -947,7 +947,7 @@ class AllocOnlyScheduler(Scheduler):
                 break
             unsat_combinations = []
 
-            if optimisation or len(open_combinations) <= 1:
+            if not optimisation or len(open_combinations) <= 1:
                 results = map(check_combination_satisfiability, open_combinations)
             else:
                 with ThreadPoolExecutor(max_workers=24) as executor:
