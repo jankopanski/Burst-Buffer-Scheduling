@@ -33,6 +33,7 @@ class SchedAllocOnly(AllocOnlyScheduler):
                 jobs=self.jobs.runnable,
                 max_window_size=self.window_size,
                 reservation_depth=self.backfilling_reservation_depth,
+                optimisation=self.optimisation
             )
         else:
             assert False

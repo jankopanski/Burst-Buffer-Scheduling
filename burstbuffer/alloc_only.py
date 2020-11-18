@@ -841,7 +841,14 @@ class AllocOnlyScheduler(Scheduler):
         for sort in jobs_sorts:
             yield jobs.sorted(field_getter=sort[1], reverse=sort[2])
 
-    def window_schedule(self, jobs: Jobs, max_window_size=1, balance_factor=1, reservation_depth=1):
+    def window_schedule(
+            self,
+            jobs: Jobs,
+            max_window_size=1,
+            balance_factor=1,
+            reservation_depth=1,
+            optimisation=False
+    ):
         if len(jobs) <= 1:
             self.filler_schedule(jobs)
             return
@@ -940,7 +947,7 @@ class AllocOnlyScheduler(Scheduler):
                 break
             unsat_combinations = []
 
-            if len(open_combinations) <= 1:
+            if optimisation or len(open_combinations) <= 1:
                 results = map(check_combination_satisfiability, open_combinations)
             else:
                 with ThreadPoolExecutor(max_workers=24) as executor:
