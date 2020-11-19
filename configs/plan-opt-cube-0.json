@@ -1,0 +1,17 @@
+{
+  "platform": "platforms/dragonfly96.yaml",
+  "progress_bar": false,
+  "debug": false,
+  "algorithm": "plan",
+  "allow_schedule_without_burst_buffer": false,
+  "future_burst_buffer_reservation": true,
+  "backfilling_reservation_depth": 0,
+  "priority_policy": "cube",
+  "optimisation": true,
+  "balance_factor": 0,
+  "compute_threshold": 0,
+  "storage_threshold": 0,
+  "window_size": 0,
+  "max_num_compute_phases": 10,
+  "target_compute_phase_size": 3600
+}
