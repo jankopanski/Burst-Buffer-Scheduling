@@ -1,3 +1,6 @@
 [submodule "pybatsim"]
 	path = pybatsim
 	url = https://github.com/jankopanski/pybatsim.git
+[submodule "thesis"]
+	path = thesis
+	url = https://github.com/jankopanski/Masters-Thesis
