@@ -402,13 +402,13 @@ For the truncated workloads, the first 5 algorithms should take about a minute t
 
 For the full workloads, the first 5 algorithms could take about a day to complete. Simulations with plan-based scheduling could take up to 4 days.
 
-It is also possible to run experiments in parallel on the same machine. To do so, each experiment may be run with a different network port specified for communication between Batsim and Pybatsim. One may run Batsim and Pybatsim direcly, without using `./run_batsim_docker.sh` and `./run_pybatsim_git.sh` scripts.
+It is also possible to run experiments in parallel on the same machine. To do so, each experiment may be run with a different network port specified for communication between Batsim and Pybatsim. One may run Batsim and Pybatsim direcly, without using `./run_batsim_docker.sh` and `./run_pybatsim_git.sh` scripts. The following commands work only on Linux.
 ```bash
 PORT=20081
 
 docker run --rm --net host -u $(id -u):$(id -g) -v $PWD:/data -m 9G oarteam/batsim:4.0.0 \
 -s tcp://127.0.0.1:$PORT -p platforms/dragonfly96.xml \
--r node_0,node_9,node_18,node_27,node_36,node_45,node_54,node_63,node_72,node_81,node_90, node_99:storage \
+-r node_0,node_9,node_18,node_27,node_36,node_45,node_54,node_63,node_72,node_81,node_90,node_99:storage \
 -q -w workloads/KTH-SP2-1996-2.1-cln-io-aware-1000.json -e output/out \
 --enable-dynamic-jobs --enable-profile-reuse &
 
