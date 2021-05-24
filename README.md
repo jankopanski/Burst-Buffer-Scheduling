@@ -56,13 +56,13 @@ pip install virtualenv
 
 We need to create two Python environments:
  - tools - for workload generation and results analysis
-CPython, Python >= 3.8
+CPython, Python 3.8
 Creating this one is optional, because the generated workloads are already available in the repository.
  - sim - for experiments
 PyPy, Python 3.7
 
 **Step 3.** Create `tools` environment
-We need a Python 3.8 or later, because `scripts/generate_swf_workload.py` uses syntax introduced in 3.8.
+We need a Python 3.8, because `scripts/generate_swf_workload.py` uses syntax introduced in 3.8.
 You may create this Python environment using `setup_tools_env.py` script.
 ```bash
 ./setup_tools_env.sh
@@ -398,7 +398,25 @@ In all cases, the same command for running scheduler should be used:
 ./run_batsim_docker.sh -w workloads/KTH-SP2-1996-2.1-cln-io-aware-1000.json \
 -e output/plan-3 --enable-dynamic-jobs --enable-profile-reuse
 ```
-The first 5 algorithms should take about a minute to compute. Simulations with plan-based scheduling could take 30-60 minutes.
+For the truncated workloads, the first 5 algorithms should take about a minute to compute. Simulations with plan-based scheduling could take 30-60 minutes.
+
+For the full workloads, the first 5 algorithms could take about a day to complete. Simulations with plan-based scheduling could take up to 4 days.
+
+It is also possible to run experiments in parallel on the same machine. To do so, each experiment may be run with a different network port specified for communication between Batsim and Pybatsim. One may run Batsim and Pybatsim direcly, without using `./run_batsim_docker.sh` and `./run_pybatsim_git.sh` scripts.
+```bash
+PORT=20081
+
+docker run --rm --net host -u $(id -u):$(id -g) -v $PWD:/data -m 9G oarteam/batsim:4.0.0 \
+-s tcp://127.0.0.1:$PORT -p platforms/dragonfly96.xml \
+-r node_0,node_9,node_18,node_27,node_36,node_45,node_54,node_63,node_72,node_81,node_90, node_99:storage \
+-q -w workloads/KTH-SP2-1996-2.1-cln-io-aware-1000.json -e output/out \
+--enable-dynamic-jobs --enable-profile-reuse &
+
+source sim/bin/activate
+python -O pybatsim/launcher.py -s tcp://127.0.0.1:$PORT -v warn -t 10000 burstbuffer/schedIOAware.py \
+-O scheduler_options.json
+```
+To run another experiment, open second terminal window, update `scheduler_options.json`, change `PORT` number, specify different input workload and a different output path. 
 
 ### Split workloads
 The last two Figues 11, 12 in the paper, were created using split workloads --- full workload split into 3-week parts. The split workloads are stored in `workloads/KTH-split/io-aware/`.
@@ -424,15 +442,31 @@ Please make sure that ports 28005-28020 are free. If something fails, kill all h
 **Step 11.** Run experiments with the split workloads for the above schedule configs.
 
 ### Analysing results
-We prepared a jupyter notebook to generate Figures 5-12.
+We prepared a jupyter notebook to generate Figure 3 and Figures 5-12.
 
-**Step 12.** Open jupyter notebook and generate plots
+**Step 12.** Download results for all experiments.
+In case the full experiments takes too long time to recompute, we uploaded results of our experiments. They can be downloaded from the following link:
+[https://1drv.ms/u/s!AnZ2wO-mAUeIgaE5K7o4f5HNbPFRtQ?e=E5tbOI](https://1drv.ms/u/s!AnZ2wO-mAUeIgaE5K7o4f5HNbPFRtQ?e=E5tbOI)
+To unpack the results:
+```
+tar -xvf output.tar.gz
+```
+Then copy the results to corresponding directories in `Burst-Buffer-Scheduling/output`.
+
+**Step 13.** Open jupyter notebook and generate plots.
 ```bash
 source tools/bin/activate
 cd analysis
 jupyter notebook
 ```
 Open the displayed link and navigate to `ArtifactEvaluation` notebook.
+
+**Figure 3.** The Gantt chart presented in the paper in Figure 3. is based on a simulation with Alloc-Only model, as opposed to all other presented experiments which use IO-Aware simulation model. To reproduce this experiment set  `scheduler_options.json` according to *fcfs-easy* policy in Step 10. Then start the simulation with the following commands:
+```bash
+./run_batsim_docker.sh -w workloads/KTH-SP2-1996-2.1-cln-alloc-only.json -e output/my-no-future-1
+
+./run_pybatsim_git.sh burstbuffer/schedAllocOnly.py scheduler_options.json
+```
 
 # Burst Buffer Scheduling (Old README, deprecated)
 
