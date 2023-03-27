@@ -1,4 +1,44 @@
 # Plan-based Job Scheduling for Supercomputers with Shared Burst Buffers
+This code repository is associated with:
+
+1. Paper "Plan-based Job Scheduling for Supercomputers with Shared Burst Buffers"\
+   Published at the Euro-Par 2021 conference.\
+   https://link.springer.com/chapter/10.1007/978-3-030-85665-6_8 \
+   https://arxiv.org/abs/2109.00082 \
+   Please note that arXiv contains the most recent version of the paper after corrections. The original Springer version has a mistake in Algorithm 2. describtion.\
+   Citation:
+   ```
+   @inproceedings{kopanski_rzadca_2021,
+     title={Plan-based job scheduling for supercomputers with shared burst buffers},
+     author={Kopanski, Jan and Rzadca, Krzysztof},
+     booktitle={Euro-Par 2021: Parallel Processing: 27th International Conference on Parallel and Distributed Computing, Lisbon, Portugal, September 1--3, 2021, Proceedings 27},
+     pages={120--135},
+     year={2021},
+     publisher={Springer International Publishing},
+     isbn={978-3-030-85665-6},
+     doi={10.1007/978-3-030-85665-6_8},
+     url={https://arxiv.org/abs/2109.00082}
+   }
+   ```
+2. My master's thesis "Optimisation of job scheduling for supercomputers with burst buffers"\
+   https://arxiv.org/abs/2111.10200 \
+   Citation:
+   ```
+   @article{DBLP:journals/corr/abs-2111-10200,
+     author    = {Jan Kopanski},
+     title     = {Optimisation of job scheduling for supercomputers with burst buffers},
+     journal   = {CoRR},
+     volume    = {abs/2111.10200},
+     year      = {2021},
+     url       = {https://arxiv.org/abs/2111.10200},
+     eprinttype = {arXiv},
+     eprint    = {2111.10200},
+     timestamp = {Mon, 22 Nov 2021 16:44:07 +0100},
+     biburl    = {https://dblp.org/rec/journals/corr/abs-2111-10200.bib},
+     bibsource = {dblp computer science bibliography, https://dblp.org}
+   }
+   ```
+
 ## Getting Started Guide
 Software requirements:
  - Linux or macOS
@@ -453,6 +493,9 @@ To unpack the results:
 tar -xvf output.tar.gz
 ```
 Then copy the results to corresponding directories in `Burst-Buffer-Scheduling/output`.
+
+If you cannot access the OneDrive link, then the copy of the code, input and output data is also available in the Springer Repository:\
+https://doi.org/10.6084/m9.figshare.14754507
 
 **Step 13.** Open jupyter notebook and generate plots.
 ```bash
